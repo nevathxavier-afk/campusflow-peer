@@ -14,6 +14,11 @@ const App = {
   currentSearchAction: null,
 
   init() {
+    // 0. Purge any stale legacy storage from previous prototypes
+    if (typeof AppState.purgeLegacyStorage === "function") {
+      AppState.purgeLegacyStorage();
+    }
+
     // 1. Subscribe to AppState updates
     AppState.subscribe((type) => {
       this.refreshCurrentView();
@@ -147,7 +152,7 @@ const App = {
     const container = document.getElementById("journalEntriesContainer");
     if (!container) return;
 
-    container.innerHTML = CampusData.todayTimeline.map(item => {
+    container.innerHTML = (CampusData.todayTimeline || []).map(item => {
       let badgeHtml = "";
       if (item.isPast) {
         badgeHtml = `<span class="stamp-seal approved">COMPLETED</span>`;
@@ -1459,7 +1464,7 @@ const App = {
     const grid = document.getElementById("subjectInternalsGrid");
     if (!grid) return;
 
-    grid.innerHTML = CampusData.subjects.map(s => {
+    grid.innerHTML = (CampusData.subjects || []).map(s => {
       let riskClass = s.riskStatus === "track" ? "approved" : (s.riskStatus === "attention" ? "pending" : "action");
       let riskLabel = s.riskStatus === "track" ? "ON TRACK" : (s.riskStatus === "attention" ? "NEEDS ATTENTION" : "ACTION REQUIRED");
 
@@ -1513,11 +1518,13 @@ const App = {
   // ========================================================================
   // 6. DOCUMENT VAULT ("FILL ONCE, REUSE SAFELY")
   // ========================================================================
+  // 6. DOCUMENT VAULT
+  // ========================================================================
   renderDocumentVault() {
     const grid = document.getElementById("documentVaultGrid");
     if (!grid) return;
 
-    grid.innerHTML = CampusData.documents.map(doc => `
+    grid.innerHTML = (CampusData.documents || []).map(doc => `
       <div class="paper-card" style="display:flex; flex-direction:column; justify-content:space-between;">
         <div>
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
@@ -1554,7 +1561,7 @@ const App = {
     const container = document.getElementById("requestsListContainer");
     if (!container) return;
 
-    const requests = AppState.getRequests();
+    const requests = AppState.getRequests() || [];
 
     container.innerHTML = requests.map(req => `
       <div class="paper-card">
@@ -1581,7 +1588,7 @@ const App = {
             APPROVAL STAGE PROGRESSION:
           </div>
           <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
-            ${req.workflow.map(step => `
+            ${((req && req.workflow) || []).map(step => `
               <div style="font-size:0.78rem;">
                 <div style="font-weight:700; color:${step.status === 'completed' ? 'var(--stamp-green)' : (step.status === 'current' ? 'var(--stamp-blue)' : 'var(--ink-muted)')};">
                   ${step.status === 'completed' ? '✓' : (step.status === 'current' ? '▶' : '○')} ${step.role}: ${step.name}
@@ -1643,7 +1650,7 @@ const App = {
     const container = document.getElementById("deadlinesListContainer");
     if (!container) return;
 
-    container.innerHTML = CampusData.deadlines.map(dl => {
+    container.innerHTML = (CampusData.deadlines || []).map(dl => {
       let urgClass = dl.urgency === "today" ? "action" : (dl.urgency === "tomorrow" ? "pending" : "approved");
 
       return `
@@ -1675,7 +1682,7 @@ const App = {
     const container = document.getElementById("facultyQueueContainer");
     if (!container) return;
 
-    const requests = AppState.getRequests();
+    const requests = AppState.getRequests() || [];
 
     container.innerHTML = requests.map(req => `
       <div class="paper-card">
@@ -1714,12 +1721,12 @@ const App = {
   },
 
   setFacultyDeclaredStatus(status) {
-    const fac = CampusData.faculty.find(f => f.id === "fac_arun");
+    const fac = (CampusData.faculty || []).find(f => f.id === "fac_arun");
     if (fac) {
       fac.status = status;
       fac.statusLabel = status === "available" ? "Available in Cabin" : (status === "class" ? "In Class" : "In Meeting");
     }
-    this.showToast(`Broadcasted new status: ${fac.statusLabel}`);
+    this.showToast(`Broadcasted new status: ${fac ? fac.statusLabel : status}`);
   },
 
   handleFacultyAction(reqId, newStatus) {
@@ -1739,7 +1746,7 @@ const App = {
     const container = document.getElementById("adminQueriesContainer");
     if (!container) return;
 
-    container.innerHTML = CampusData.repeatedQueries.map(q => `
+    container.innerHTML = (CampusData.repeatedQueries || []).map(q => `
       <div class="paper-card">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
           <span class="stamp-seal action">${q.count} STUDENTS ASKED</span>
@@ -1790,7 +1797,7 @@ const App = {
       badge.style.color = res.statusColor;
     }
     if (whyList) {
-      whyList.innerHTML = res.why.map(w => `<li>${w}</li>`).join("");
+      whyList.innerHTML = ((res && res.why) || []).map(w => `<li>${w}</li>`).join("");
     }
     if (actionBtn) {
       actionBtn.textContent = res.actionLabel;
@@ -1948,7 +1955,11 @@ const App = {
 
 window.App = App;
 
-// Bootstrap on DOM ready
-document.addEventListener("DOMContentLoaded", () => {
+// Safe bootstrap: runs immediately if DOM is ready, or on DOMContentLoaded
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    App.init();
+  });
+} else {
   App.init();
-});
+}

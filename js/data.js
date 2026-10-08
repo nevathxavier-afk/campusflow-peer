@@ -162,7 +162,92 @@ const CampusData = {
     }
   ],
 
-  // 4. Default Subject Pool
+  // 4. Today's Campus Timeline (Active Dispatch Stream)
+  todayTimeline: [
+    { time: "09:00 - 10:00", title: "Data Structures & Algorithms (CS3502)", location: "Room 302", faculty: "Dr. Arun Sundaram", badge: "Completed", isPast: true, why: "Core lecture. Attendance marked Present." },
+    { time: "10:00 - 11:00", title: "Database Management Systems (CS3501)", location: "Room 205", faculty: "Prof. Meena Krishnan", badge: "In Session", isNow: true, why: "Current lecture. Attendance priority (74.3% standing)." },
+    { time: "11:15 - 12:15", title: "Operating Systems (CS3503)", location: "Room 401", faculty: "Prof. Priya Ramachandran", badge: "Up Next", isPast: false, why: "Advisor office hour right after in Room 304." },
+    { time: "01:00 - 02:00", title: "Discrete Mathematics (MA3354)", location: "Room 208", faculty: "Dr. V. Ramanathan", badge: "Scheduled", isPast: false, why: "Unit 3 recurrence relation problem set review." },
+    { time: "02:00 - 04:00", title: "DBMS Laboratory (CS3511)", location: "Turing Lab 2", faculty: "Prof. Meena Krishnan", badge: "Practical", isPast: false, why: "Complex trigger and stored procedure evaluation." }
+  ],
+
+  // 5. Academic Subjects & Internal Marks Breakdown
+  subjects: [
+    {
+      code: "CS3501",
+      name: "Database Management Systems",
+      short: "DBMS",
+      faculty: "Prof. Meena Krishnan",
+      credits: 4,
+      room: "Room 205",
+      riskStatus: "attention",
+      riskReason: "Marginal attendance deficit (74.3% vs 75% goal). Cycle Test 2 approaching in 3 days.",
+      internals: { test1: 42, test1Max: 50, test2: 44, test2Max: 50, assignment: 10, assignMax: 10, quiz: 9, quizMax: 10, total: 85, max: 100 },
+      attendance: { percentage: 74.3, attended: 26, conducted: 35 }
+    },
+    {
+      code: "CS3502",
+      name: "Data Structures & Algorithms",
+      short: "DSA",
+      faculty: "Dr. Arun Sundaram",
+      credits: 4,
+      room: "Room 302",
+      riskStatus: "track",
+      riskReason: "Excellent standing (88.2%) with strong lab test component.",
+      internals: { test1: 46, test1Max: 50, test2: 45, test2Max: 50, assignment: 10, assignMax: 10, quiz: 10, quizMax: 10, total: 91, max: 100 },
+      attendance: { percentage: 88.2, attended: 30, conducted: 34 }
+    },
+    {
+      code: "CS3503",
+      name: "Operating Systems",
+      short: "OS",
+      faculty: "Prof. Priya Ramachandran",
+      credits: 3,
+      room: "Room 401",
+      riskStatus: "track",
+      riskReason: "Compliant standing above 80%. Synchronization assignment submitted.",
+      internals: { test1: 40, test1Max: 50, test2: 43, test2Max: 50, assignment: 9, assignMax: 10, quiz: 8, quizMax: 10, total: 80, max: 100 },
+      attendance: { percentage: 82.5, attended: 28, conducted: 34 }
+    },
+    {
+      code: "CS3504",
+      name: "Computer Networks",
+      short: "Networks",
+      faculty: "Prof. Divya Bharathi",
+      credits: 3,
+      room: "Room 102",
+      riskStatus: "track",
+      riskReason: "On track across all continuous internal assessments.",
+      internals: { test1: 44, test1Max: 50, test2: 45, test2Max: 50, assignment: 10, assignMax: 10, quiz: 9, quizMax: 10, total: 88, max: 100 },
+      attendance: { percentage: 85.0, attended: 29, conducted: 34 }
+    },
+    {
+      code: "MA3354",
+      name: "Discrete Mathematics",
+      short: "Discrete Maths",
+      faculty: "Dr. V. Ramanathan",
+      credits: 4,
+      room: "Room 208",
+      riskStatus: "attention",
+      riskReason: "Internal test 1 score was 38/50. Requires focus on graph theory proofs.",
+      internals: { test1: 38, test1Max: 50, test2: 42, test2Max: 50, assignment: 9, assignMax: 10, quiz: 8, quizMax: 10, total: 77, max: 100 },
+      attendance: { percentage: 76.5, attended: 26, conducted: 34 }
+    },
+    {
+      code: "CS3511",
+      name: "Cloud & DevOps Lab",
+      short: "Cloud Lab",
+      faculty: "Dr. Arun Sundaram",
+      credits: 2,
+      room: "Lab 3",
+      riskStatus: "track",
+      riskReason: "Phase-1 YAML manifest submitted. All practical exercises signed.",
+      internals: { test1: 48, test1Max: 50, test2: 49, test2Max: 50, assignment: 10, assignMax: 10, quiz: 10, quizMax: 10, total: 97, max: 100 },
+      attendance: { percentage: 95.0, attended: 19, conducted: 20 }
+    }
+  ],
+
+  // 6. Default Subject Pool
   subjectsPool: [
     { code: "CS3501", name: "Database Management Systems", short: "DBMS", faculty: "Prof. Meena Krishnan", credits: 4, room: "Room 205" },
     { code: "CS3502", name: "Data Structures & Algorithms", short: "DSA", faculty: "Dr. Arun Sundaram", credits: 4, room: "Room 302" },
@@ -375,11 +460,20 @@ const CampusData = {
 // ==========================================================================
 const AppState = {
   KEYS: {
-    TIMETABLE: "cfp_timetable",
-    ATTENDANCE: "cfp_attendance",
-    SETTINGS: "cfp_settings",
-    REQUESTS: "cfp_requests",
-    ROLE: "cfp_active_role"
+    TIMETABLE: "cfp_timetable_v3",
+    ATTENDANCE: "cfp_attendance_v3",
+    SETTINGS: "cfp_settings_v3",
+    REQUESTS: "cfp_requests_v3",
+    ROLE: "cfp_active_role_v3"
+  },
+
+  // Clear stale legacy storage from previous prototypes to ensure 100% clean state
+  purgeLegacyStorage() {
+    try {
+      ["cfp_timetable", "cfp_attendance", "cfp_timetable_v2", "cfp_attendance_v2"].forEach(k => {
+        localStorage.removeItem(k);
+      });
+    } catch (e) {}
   },
 
   // Role Management
