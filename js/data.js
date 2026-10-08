@@ -460,17 +460,17 @@ const CampusData = {
 // ==========================================================================
 const AppState = {
   KEYS: {
-    TIMETABLE: "cfp_timetable_v3",
-    ATTENDANCE: "cfp_attendance_v3",
-    SETTINGS: "cfp_settings_v3",
-    REQUESTS: "cfp_requests_v3",
-    ROLE: "cfp_active_role_v3"
+    TIMETABLE: "cfp_timetable_v4",
+    ATTENDANCE: "cfp_attendance_v4",
+    SETTINGS: "cfp_settings_v4",
+    REQUESTS: "cfp_requests_v4",
+    ROLE: "cfp_active_role_v4"
   },
 
   // Clear stale legacy storage from previous prototypes to ensure 100% clean state
   purgeLegacyStorage() {
     try {
-      ["cfp_timetable", "cfp_attendance", "cfp_timetable_v2", "cfp_attendance_v2"].forEach(k => {
+      ["cfp_timetable", "cfp_attendance", "cfp_timetable_v2", "cfp_attendance_v2", "cfp_timetable_v3", "cfp_attendance_v3"].forEach(k => {
         localStorage.removeItem(k);
       });
     } catch (e) {}
@@ -501,12 +501,13 @@ const AppState = {
     
     // Once timetable is set, initialize attendance periods ledger for these exact periods
     if (list && list.length > 0) {
-      this.initAttendanceFromTimetable(list);
+      this.initAttendanceFromTimetable(list, true);
     } else {
       localStorage.removeItem(this.KEYS.ATTENDANCE);
     }
     
     this.notifyUpdate("timetable");
+    this.notifyUpdate("attendance");
   },
 
   clearTimetable() {
@@ -539,10 +540,12 @@ const AppState = {
   },
 
   // 2. Attendance Linked Directly to Extracted Timetable Periods
-  initAttendanceFromTimetable(timetableSlots) {
+  initAttendanceFromTimetable(timetableSlots, force = false) {
     // Generate realistic seeded attendance history for these exact extracted periods over the past 3 weeks
-    const existing = localStorage.getItem(this.KEYS.ATTENDANCE);
-    if (existing) return; // preserve student edits
+    if (!force) {
+      const existing = localStorage.getItem(this.KEYS.ATTENDANCE);
+      if (existing) return; // preserve student edits
+    }
 
     const attendanceRecords = [];
     const baseDate = new Date();

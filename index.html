@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#f7f4ea">
   
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="css/style.css?v=2.5">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
 </head>
 <body>
 
@@ -1069,28 +1069,96 @@
 
   <!-- Modal 2: AI Timetable Extraction Review & Verification -->
   <div class="dossier-modal-backdrop" id="aiVerificationModal">
-    <div class="dossier-modal-folder" style="max-width:820px;">
+    <div class="dossier-modal-folder" style="max-width:980px; width:95vw;">
       <div class="modal-folder-header">
-        <h3>AI TIMETABLE EXTRACTION REVIEW</h3>
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+          <h3>TIMETABLE EXTRACTION REVIEW & REFINEMENT</h3>
+          <span class="stamp-seal approved" id="extractionSourceBadge">DOCUMENT OCR EXTRACTED</span>
+        </div>
         <button class="btn-close-modal" onclick="App.closeVerificationModal()">×</button>
       </div>
 
-      <div class="dispatch-why-box" style="margin-bottom:1.25rem;">
-        <strong>VERIFICATION DIRECTIVE:</strong> Review extracted sessions below before committing to your operations schedule. Committing will instantly activate attendance tracking for these exact periods.
+      <div class="dispatch-why-box" style="margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+        <div style="max-width:540px;">
+          <strong>VERIFICATION DIRECTIVE:</strong> Extracted directly from your uploaded timetable. Verify class periods, times, and faculty below. Every cell is editable to ensure 100% accuracy.
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.addVerificationRow()" style="font-size:0.75rem;">
+            <span>➕</span> Add Period
+          </button>
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.applyStandardTimings()" style="font-size:0.75rem;" title="Align standard college periods (09:00 - 10:00, etc.)">
+            <span>⚡</span> Auto-Align Timings
+          </button>
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.toggleRawTextEditor()" style="font-size:0.75rem;">
+            <span>📝</span> Raw OCR Text
+          </button>
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.promptGeminiKey()" style="font-size:0.75rem;" title="Configure Gemini API Key">
+            <span>🔑</span> Gemini Key
+          </button>
+        </div>
       </div>
 
-      <div style="max-height:340px; overflow-y:auto; border:1px solid var(--paper-border-dark); margin-bottom:1.5rem;">
-        <table class="typewriter-table" id="extractedReviewTable">
-          <!-- Populated dynamically -->
+      <!-- Uploaded Document Preview & Zoom Drawer -->
+      <div id="extractedDocPreviewBox" class="doc-preview-card" style="display:none; margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <img id="extractedDocThumb" class="doc-preview-img" src="" alt="Uploaded Timetable Preview" onclick="App.openFullImagePreview()">
+          <div>
+            <div style="font-family:var(--font-stamp); font-size:0.75rem; text-transform:uppercase; color:var(--ink-primary);" id="extractedDocNameLabel">
+              UPLOADED TIMETABLE DOCUMENT
+            </div>
+            <div style="font-size:0.78rem; color:var(--ink-secondary); margin-top:2px;">
+              Click thumbnail to inspect original document • Compare side-by-side with extracted cells
+            </div>
+          </div>
+        </div>
+        <button class="btn-dossier-sm btn-outline-ink" onclick="App.openFullImagePreview()" style="font-size:0.75rem;">
+          <span>🔍</span> Inspect Original
+        </button>
+      </div>
+
+      <!-- Raw OCR Text / Rapid Paste Drawer (Hidden by default) -->
+      <div id="rawTextEditorContainer" style="display:none; margin-bottom:1rem; background:var(--paper-card-subtle); padding:1rem; border:1px dashed var(--paper-border-dark); border-radius:var(--radius-dossier);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-family:var(--font-stamp); font-size:0.75rem; text-transform:uppercase; color:var(--ink-primary); margin:0;">
+            RAW EXTRACTED TEXT INSPECTOR / PASTE TIMETABLE:
+          </label>
+          <button class="btn-dossier-sm btn-primary-ink" onclick="App.reparseFromRawText()" style="font-size:0.72rem;">
+            <span>⚡</span> Re-Parse from Text
+          </button>
+        </div>
+        <textarea id="rawOcrTextarea" class="raw-text-box" placeholder="Raw OCR text extracted from your uploaded image. You can also paste your timetable text here (e.g. from WhatsApp or college portal) and click 'Re-Parse from Text'."></textarea>
+      </div>
+
+      <!-- Editable Review Table -->
+      <div style="max-height:360px; overflow-y:auto; border:1.5px solid var(--paper-border-dark); border-radius:var(--radius-tag); margin-bottom:1.25rem;">
+        <table class="typewriter-table editable-review-table" id="extractedReviewTable">
+          <!-- Populated dynamically with editable inputs -->
         </table>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <!-- Modal Footer -->
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
         <span style="font-size:0.8rem; color:var(--ink-muted);" id="extractedTotalSlotsCount">0 slots parsed</span>
         <div style="display:flex; gap:0.75rem;">
-          <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeVerificationModal()">Abort</button>
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeVerificationModal()">Cancel</button>
           <button class="btn-dispatch-action" onclick="App.commitExtractedTimetable()">Commit & Activate Attendance Tracking</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Full Size Image Inspector (for side-by-side comparison) -->
+  <div class="dossier-modal-backdrop" id="fullImagePreviewModal" style="z-index:110;">
+    <div class="dossier-modal-folder" style="max-width:900px; max-height:92vh; text-align:center;">
+      <div class="modal-folder-header">
+        <h3>ORIGINAL UPLOADED TIMETABLE SLIP</h3>
+        <button class="btn-close-modal" onclick="document.getElementById('fullImagePreviewModal').style.display='none'">×</button>
+      </div>
+      <div style="max-height:70vh; overflow:auto; border:1px solid var(--paper-border-dark); padding:0.5rem; background:#fff;">
+        <img id="fullImagePreviewImg" src="" style="max-width:100%; height:auto; display:inline-block;" alt="Original Uploaded Timetable">
+      </div>
+      <div style="margin-top:1rem; display:flex; justify-content:flex-end;">
+        <button class="btn-dispatch-action" onclick="document.getElementById('fullImagePreviewModal').style.display='none'">Back to Review Table</button>
       </div>
     </div>
   </div>
@@ -1228,10 +1296,14 @@
   <!-- Toast Notification Container -->
   <div id="toastNotification" class="typewriter-toast" style="display:none;"></div>
 
+  <!-- Document Intelligence & Neural OCR Engines (PDF.js + Tesseract.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
   <!-- Scripts with cache-busting & autonomous initialization -->
-  <script src="js/data.js?v=2.5"></script>
-  <script src="js/gemini-service.js?v=2.5"></script>
-  <script src="js/app.js?v=2.5"></script>
+  <script src="js/data.js?v=4.0"></script>
+  <script src="js/gemini-service.js?v=4.0"></script>
+  <script src="js/app.js?v=4.0"></script>
   <script>
     if (window.App && typeof window.App.init === 'function') {
       try { window.App.init(); } catch (err) { console.error('App init check:', err); }

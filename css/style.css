@@ -1565,3 +1565,149 @@ html, body {
   box-shadow: 2px 2px 0 var(--ink-primary);
 }
 
+/* ==========================================================================
+   INTERACTIVE EXTRACTION REVIEW & REFINEMENT WORKBENCH
+   ========================================================================== */
+.editable-review-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.editable-review-table th {
+  background: var(--paper-card-subtle);
+  font-family: var(--font-stamp);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.65rem 0.6rem;
+  border-bottom: 2px solid var(--paper-border-dark);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.editable-review-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px dashed var(--paper-border);
+  vertical-align: middle;
+}
+
+.edit-cell-day,
+.edit-cell-time,
+.edit-cell-subject,
+.edit-cell-faculty,
+.edit-cell-room {
+  background: var(--paper-bg);
+  border: 1px solid var(--paper-border-dark);
+  border-radius: var(--radius-tag);
+  font-family: var(--font-typewriter);
+  font-size: 0.82rem;
+  color: var(--ink-primary);
+  padding: 0.4rem 0.55rem;
+  outline: none;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.edit-cell-day:focus,
+.edit-cell-time:focus,
+.edit-cell-subject:focus,
+.edit-cell-faculty:focus,
+.edit-cell-room:focus {
+  border-color: var(--ink-primary);
+  background: var(--paper-card);
+  box-shadow: 0 0 0 1px var(--ink-primary);
+}
+
+.edit-cell-day {
+  font-weight: 700;
+  cursor: pointer;
+  width: 110px;
+}
+
+.edit-cell-time {
+  width: 68px;
+  text-align: center;
+}
+
+.edit-cell-subject {
+  width: 100%;
+  min-width: 140px;
+  font-weight: 600;
+}
+
+.edit-cell-faculty {
+  width: 100%;
+  min-width: 120px;
+}
+
+.edit-cell-room {
+  width: 85px;
+}
+
+.btn-del-slot {
+  background: transparent;
+  border: 1px solid var(--paper-border-dark);
+  color: var(--stamp-red);
+  font-family: var(--font-stamp);
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: var(--radius-tag);
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-del-slot:hover {
+  background: var(--stamp-red);
+  color: #fff;
+  border-color: var(--stamp-red);
+}
+
+.doc-preview-card {
+  background: var(--paper-card-subtle);
+  border: 1.5px dashed var(--paper-border-dark);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-dossier);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.doc-preview-img {
+  max-height: 65px;
+  max-width: 110px;
+  border: 1.5px solid var(--paper-border-dark);
+  border-radius: var(--radius-tag);
+  object-fit: cover;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 var(--ink-primary);
+  transition: transform 0.15s;
+}
+
+.doc-preview-img:hover {
+  transform: scale(1.05);
+}
+
+.raw-text-box {
+  width: 100%;
+  height: 110px;
+  font-family: var(--font-typewriter);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  background: var(--paper-bg);
+  border: 1.5px solid var(--paper-border-dark);
+  border-radius: var(--radius-tag);
+  padding: 0.75rem;
+  color: var(--ink-primary);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.raw-text-box:focus {
+  border-color: var(--ink-primary);
+  background: var(--paper-card);
+}
+
+
