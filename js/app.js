@@ -1,349 +1,182 @@
 // ==========================================================================
-// CAMPUSFLOW PEER — MAIN CONTROLLER & APPLICATION ENGINE
-// 100% Faithful LastbencherOS Architecture & Tactical Cyberpunk Workflows
+// CAMPUSFLOW PEER — MAIN APPLICATION ENGINE
+// Team: ZanLeo Warrior (Mohammed Irfaan & Nivedha)
+// Hackathon: PS06 – Smart Education | HACKNEXT'26 Series 2.0
+// Archival Paper & Typewriter Theme • Full Production Prototype
 // ==========================================================================
 
 const App = {
-  activeTab: "dashboard",
-  activeFilter: "all",
-  calendarMonth: new Date(),
-  selectedDate: new Date(),
-  resetTimer: null,
-  isResetConfirming: false,
-  chatHistory: [],
+  activeRole: "student",
+  activeTab: "home",
+  facultyFilterDept: "all",
+  facultyFilterStatus: "all",
+  extractedPendingSlots: [],
+  currentSearchAction: null,
 
   init() {
     // 1. Subscribe to AppState updates
-    AppState.subscribe(() => {
-      this.renderCurrentView();
-      this.updateHeaderBadges();
+    AppState.subscribe((type) => {
+      this.refreshCurrentView();
     });
 
-    // 2. Setup navigation links
-    document.querySelectorAll(".nav-link").forEach(link => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const tab = link.getAttribute("data-tab");
-        if (tab) this.switchTab(tab);
+    // 2. Setup Universal Search listeners
+    const searchInput = document.getElementById("universalSearchInput");
+    if (searchInput) {
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          this.executeSearch(searchInput.value);
+        }
       });
-    });
+    }
 
-    // 3. Setup time filter buttons on Dashboard
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        this.activeFilter = btn.getAttribute("data-filter") || "all";
-        this.renderDashboard();
-      });
-    });
+    // 3. Pre-load timetable preset if state is empty so prototype is immediately impressive
+    const timetable = AppState.getTimetable();
+    if (timetable.length === 0) {
+      AppState.loadPresetTimetable();
+    }
 
     // 4. Initial Render
-    this.renderCurrentView();
-    this.updateHeaderBadges();
-    this.setupTimetableListeners();
-    this.setupSettingsListeners();
-    this.setupChatListeners();
-
-    console.log("🚀 CampusFlow Peer HUD Online — LastbencherOS Architecture Activated.");
+    this.refreshCurrentView();
+    console.log("📜 CampusFlow Peer Archival Operating System Online — ZanLeo Warrior.");
   },
 
+  // Role Switcher (Student, Faculty, Department, Admin)
+  switchRole(roleId) {
+    this.activeRole = roleId;
+
+    // Update Role Switcher buttons
+    document.querySelectorAll(".role-pill-btn").forEach(btn => {
+      if (btn.getAttribute("data-role") === roleId) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    // Toggle Role View Panels
+    const studentWrapper = document.getElementById("roleViewStudent");
+    const facultyWrapper = document.getElementById("roleViewFaculty");
+    const deptWrapper = document.getElementById("roleViewDept");
+    const adminWrapper = document.getElementById("roleViewAdmin");
+    const sidebar = document.getElementById("mainSidebar");
+
+    if (studentWrapper) studentWrapper.style.display = roleId === "student" ? "block" : "none";
+    if (facultyWrapper) facultyWrapper.style.display = roleId === "faculty" ? "block" : "none";
+    if (deptWrapper) deptWrapper.style.display = roleId === "department" ? "block" : "none";
+    if (adminWrapper) adminWrapper.style.display = roleId === "admin" ? "block" : "none";
+    
+    // In faculty/admin modes, adjust sidebar view
+    if (sidebar) {
+      sidebar.style.display = roleId === "student" ? "flex" : "none";
+    }
+
+    if (roleId === "faculty") this.renderFacultyDesk();
+    if (roleId === "admin") this.renderAdminPulse();
+    if (roleId === "student") this.refreshCurrentView();
+
+    this.showToast(`Switched view to ${roleId.toUpperCase()} Role`);
+  },
+
+  // Tab Switcher for Student View
   switchTab(tabId) {
+    if (this.activeRole !== "student") {
+      this.switchRole("student");
+    }
+
     this.activeTab = tabId;
 
-    // Update nav links
-    document.querySelectorAll(".nav-link").forEach(link => {
-      if (link.getAttribute("data-tab") === tabId) {
-        link.classList.add("active");
+    // Update sidebar buttons
+    document.querySelectorAll(".dossier-tab-btn").forEach(btn => {
+      if (btn.getAttribute("data-tab") === tabId) {
+        btn.classList.add("active");
       } else {
-        link.classList.remove("active");
+        btn.classList.remove("active");
       }
     });
 
-    // Update panels
-    document.querySelectorAll(".view-panel").forEach(panel => {
+    // Toggle Tab Panels
+    document.querySelectorAll(".dossier-view-panel").forEach(panel => {
       panel.classList.remove("active");
     });
+
     const targetPanel = document.getElementById(`panel-${tabId}`);
-    if (targetPanel) targetPanel.classList.add("active");
+    if (targetPanel) {
+      targetPanel.classList.add("active");
+    }
 
-    // Update Header title
-    const titles = {
-      dashboard: "DASHBOARD",
-      timetable: "OPERATIONS SCHEDULE",
-      attendance: "ATTENDANCE LEDGER",
-      companion: "CAMPUS AI INTELLIGENCE",
-      faculty: "FACULTY ACCESSIBILITY",
-      approvals: "ROUTINE APPROVALS",
-      events: "CAMPUS CIRCULARS & EVENTS",
-      settings: "SYSTEM PREFERENCES"
-    };
-    const titleEl = document.getElementById("headerViewTitle");
-    if (titleEl) titleEl.textContent = titles[tabId] || tabId.toUpperCase();
-
-    this.renderCurrentView();
+    this.refreshCurrentView();
   },
 
-  updateHeaderBadges() {
-    const stats = AppState.getAttendanceStats();
-    const settings = AppState.getSettings();
-
-    const goalBadge = document.getElementById("headerGoalBadge");
-    if (goalBadge) {
-      goalBadge.textContent = `GOAL: ${settings.targetPercentage}%`;
+  // Theme Toggle (Paper Ivory vs Carbon Ink)
+  toggleTheme() {
+    const isCarbon = document.body.classList.toggle("theme-carbon");
+    const btn = document.getElementById("btnThemeToggle");
+    if (btn) {
+      btn.textContent = isCarbon ? "🖨️ Carbon Mode" : "📜 Paper Mode";
     }
-
-    const userHandle = document.getElementById("sidebarUserHandle");
-    if (userHandle) {
-      userHandle.textContent = settings.name || "Student";
-    }
-
-    const userInitial = document.getElementById("sidebarUserInitial");
-    if (userInitial) {
-      userInitial.textContent = (settings.name || "S").charAt(0).toUpperCase();
-    }
+    this.showToast(isCarbon ? "Carbon Ink Mode Activated" : "Paper Ivory Mode Activated");
   },
 
-  renderCurrentView() {
-    switch (this.activeTab) {
-      case "dashboard":
-        this.renderDashboard();
-        break;
-      case "timetable":
-        this.renderTimetable();
-        break;
-      case "attendance":
-        this.renderAttendance();
-        break;
-      case "settings":
-        this.renderSettings();
-        break;
-      case "companion":
-        this.renderCompanion();
-        break;
-      case "faculty":
-        this.renderFaculty();
-        break;
-      case "approvals":
-        this.renderApprovals();
-        break;
-      case "events":
-        this.renderEvents();
-        break;
-    }
+  refreshCurrentView() {
+    this.renderDispatchHome();
+    this.renderTimetableGrid();
+    this.renderFacultyGrid();
+    this.renderFacultyMatrixTable();
+    this.renderAttendanceView();
+    this.renderAcademicsView();
+    this.renderDocumentVault();
+    this.renderRequestsQueue();
+    this.renderDeadlineRadar();
   },
 
   // ========================================================================
-  // 1. DASHBOARD VIEW (System Efficiency, Bunk Capacity, Integrity, Trends)
+  // 1. DISPATCH (HOME • TODAY / NOW / NEXT & TIMELINE)
   // ========================================================================
-  renderDashboard() {
-    const stats = AppState.getAttendanceStats(this.activeFilter);
-    const settings = AppState.getSettings();
-    const isStable = stats.percentage >= settings.targetPercentage;
+  renderDispatchHome() {
+    const container = document.getElementById("journalEntriesContainer");
+    if (!container) return;
 
-    // 1. Radial Percentage & Ring
-    const pctNumEl = document.getElementById("radialPercentageNum");
-    if (pctNumEl) {
-      pctNumEl.textContent = `${Math.round(stats.percentage)}%`;
-      pctNumEl.style.color = isStable ? "var(--color-brand-green)" : "var(--color-brand-red)";
-      pctNumEl.style.textShadow = isStable ? "0 0 20px rgba(0, 255, 102, 0.4)" : "0 0 20px rgba(255, 0, 68, 0.4)";
-    }
-
-    const statusTextEl = document.getElementById("radialStatusText");
-    if (statusTextEl) {
-      statusTextEl.textContent = stats.totalClasses === 0 ? "SCHEDULE IDLE" : (isStable ? "SYSTEM STABLE" : "CRITICAL FAILURE");
-      statusTextEl.style.color = stats.totalClasses === 0 ? "var(--color-zinc-500)" : (isStable ? "var(--color-brand-green)" : "var(--color-brand-red)");
-    }
-
-    const dividerEl = document.getElementById("radialDivider");
-    if (dividerEl) {
-      dividerEl.style.backgroundColor = isStable ? "var(--color-brand-green)" : "var(--color-brand-red)";
-      dividerEl.style.boxShadow = isStable ? "var(--glow-green)" : "var(--glow-red)";
-    }
-
-    const fillCircle = document.getElementById("radialFillCircle");
-    if (fillCircle) {
-      const circum = 691;
-      const offset = stats.totalClasses === 0 ? circum : Math.max(0, circum - (circum * stats.percentage / 100));
-      fillCircle.style.strokeDashoffset = offset;
-      fillCircle.style.stroke = isStable ? "var(--color-brand-green)" : "var(--color-brand-red)";
-      fillCircle.style.filter = isStable ? "drop-shadow(0 0 8px rgba(0, 255, 102, 0.5))" : "drop-shadow(0 0 8px rgba(255, 0, 68, 0.5))";
-    }
-
-    const glowBackdrop = document.getElementById("radialGlowBackdrop");
-    if (glowBackdrop) {
-      glowBackdrop.style.backgroundColor = stats.totalClasses === 0 ? "rgba(0, 170, 255, 0.05)" : (isStable ? "rgba(0, 255, 102, 0.15)" : "rgba(255, 0, 68, 0.15)");
-    }
-
-    // 2. Tactical Guidance Box
-    const guidanceTextEl = document.getElementById("tacticalGuidanceText");
-    if (guidanceTextEl) {
-      if (stats.totalClasses === 0) {
-        guidanceTextEl.textContent = "No academic commitments logged yet. Establish timetable directives or manual entries to activate predictive bunk telemetry.";
-      } else if (isStable) {
-        guidanceTextEl.textContent = `Operational redundancy active. ${stats.canBunk} sessions may be deferred while maintaining compliance.`;
+    container.innerHTML = CampusData.todayTimeline.map(item => {
+      let badgeHtml = "";
+      if (item.isPast) {
+        badgeHtml = `<span class="stamp-seal approved">COMPLETED</span>`;
+      } else if (item.isNow) {
+        badgeHtml = `<span class="stamp-seal action">IN SESSION</span>`;
+      } else if (item.badge === "Up Next") {
+        badgeHtml = `<span class="stamp-seal verified">UP NEXT</span>`;
       } else {
-        guidanceTextEl.textContent = `Immediate mitigation required. Register attendance for the next ${stats.requiredToReachTarget} sessions without absence.`;
+        badgeHtml = `<span class="stamp-seal pending">${item.badge}</span>`;
       }
-    }
 
-    const efficiencyTargetEl = document.getElementById("efficiencyTargetLabel");
-    if (efficiencyTargetEl) {
-      efficiencyTargetEl.textContent = `Target: ${settings.targetPercentage}%`;
-    }
-
-    // 3. Bunk Capacity Card
-    const bunkCard = document.getElementById("bunkCapacityCard");
-    const bunkNumEl = document.getElementById("bunkCapacityNum");
-    const bunkPill = document.getElementById("bunkStatusPill");
-    const bunkSubtext = document.getElementById("bunkSubtext");
-    const bunkBottomBar = document.getElementById("bunkBottomBar");
-
-    if (bunkNumEl) {
-      bunkNumEl.textContent = stats.canBunk;
-      bunkNumEl.style.color = isStable ? "#fff" : "var(--color-brand-red)";
-      bunkNumEl.style.textShadow = isStable ? "0 0 20px rgba(0, 170, 255, 0.4)" : "0 0 20px rgba(255, 0, 68, 0.4)";
-    }
-
-    if (bunkPill) {
-      if (isStable) {
-        bunkPill.textContent = "ACTIVE";
-        bunkPill.style.backgroundColor = "rgba(0, 170, 255, 0.2)";
-        bunkPill.style.color = "var(--color-brand-blue)";
-        bunkPill.style.boxShadow = "var(--glow-blue)";
-      } else {
-        bunkPill.textContent = "LOCKED";
-        bunkPill.style.backgroundColor = "rgba(255, 0, 68, 0.2)";
-        bunkPill.style.color = "var(--color-brand-red)";
-        bunkPill.style.boxShadow = "var(--glow-red)";
-      }
-    }
-
-    if (bunkSubtext) {
-      bunkSubtext.textContent = isStable ? "Sessions remaining in safe-zone." : "Zero session redundancy.";
-    }
-
-    if (bunkBottomBar) {
-      bunkBottomBar.style.backgroundColor = isStable ? "var(--color-brand-blue)" : "var(--color-brand-red)";
-      bunkBottomBar.style.boxShadow = isStable ? "var(--glow-blue)" : "var(--glow-red)";
-    }
-
-    if (bunkCard) {
-      bunkCard.style.backgroundColor = isStable ? "var(--color-zinc-900)" : "var(--color-zinc-950)";
-      bunkCard.style.borderColor = isStable ? "rgba(39, 39, 42, 0.8)" : "rgba(255, 0, 68, 0.3)";
-    }
-
-    // 4. Session Integrity Donut & Stats
-    const presentCountEl = document.getElementById("presentCountVal");
-    if (presentCountEl) presentCountEl.textContent = stats.presentCount;
-
-    const absentCountEl = document.getElementById("absentCountVal");
-    if (absentCountEl) absentCountEl.textContent = stats.absentCount;
-
-    const donutPresentArc = document.getElementById("donutPresentArc");
-    const donutAbsentArc = document.getElementById("donutAbsentArc");
-    if (donutPresentArc && donutAbsentArc) {
-      const circum = 2 * Math.PI * 45; // ~282.7
-      if (stats.totalClasses === 0) {
-        donutPresentArc.style.strokeDashoffset = circum;
-        donutAbsentArc.style.strokeDashoffset = circum;
-      } else {
-        const presentPct = stats.presentCount / stats.totalClasses;
-        donutPresentArc.style.strokeDasharray = circum;
-        donutPresentArc.style.strokeDashoffset = circum - (circum * presentPct);
-
-        donutAbsentArc.style.strokeDasharray = circum;
-        donutAbsentArc.style.strokeDashoffset = circum * presentPct;
-      }
-    }
-
-    // 5. Weekly Activity Trend Bar Chart
-    this.renderActivityBars();
-
-    // 6. Heatmap 21-Day Tactical Grid
-    this.renderHeatmap(stats);
-  },
-
-  renderActivityBars() {
-    const barsWrap = document.getElementById("trendBarsContainer");
-    if (!barsWrap) return;
-
-    const attendance = AppState.getAttendance();
-    const days = [];
-    const today = new Date();
-
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
-      const dateStr = this.formatDate(d);
-      const dayLabel = d.toLocaleDateString("en-US", { weekday: "short" });
-      const presentCount = attendance.filter(a => a.date === dateStr && a.status === "present").length;
-      days.push({ dateStr, dayLabel, count: presentCount, isToday: i === 0 });
-    }
-
-    const maxCount = Math.max(1, ...days.map(d => d.count));
-
-    barsWrap.innerHTML = days.map(d => {
-      const heightPct = d.count === 0 ? 8 : Math.max(12, Math.round((d.count / maxCount) * 90));
       return `
-        <div class="bar-col">
-          <div class="bar-track">
-            <div class="bar-fill ${d.isToday ? 'active' : ''}" style="height:${heightPct}%;"></div>
+        <div class="journal-entry-row">
+          <div class="journal-time">${item.time}</div>
+          <div class="journal-title">
+            <h4>${item.title}</h4>
+            <p>📍 ${item.location} ${item.faculty ? `• ${item.faculty}` : ""}</p>
+            ${item.why ? `<div style="font-size:0.75rem; color:var(--stamp-blue); margin-top:0.25rem;">✦ ${item.why}</div>` : ""}
           </div>
-          <span class="bar-label">${d.dayLabel}</span>
+          <div>${badgeHtml}</div>
         </div>
       `;
     }).join("");
-  },
 
-  renderHeatmap(stats) {
-    const grid = document.getElementById("heatmapGrid");
-    if (!grid) return;
-
-    const dayHeaders = ["S", "M", "T", "W", "T", "F", "S"];
-    let html = dayHeaders.map(h => `<div class="heatmap-day-label">${h}</div>`).join("");
-
-    const attendance = AppState.getAttendance();
-    const today = new Date();
-
-    for (let i = 20; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
-      const dateStr = this.formatDate(d);
-      const records = attendance.filter(a => a.date === dateStr);
-      const hasPresent = records.some(a => a.status === "present");
-      const hasAbsent = records.some(a => a.status === "absent");
-
-      let cellClass = "";
-      if (hasPresent) cellClass = "status-green";
-      else if (hasAbsent) cellClass = "status-red";
-
-      html += `<div class="heatmap-cell ${cellClass}" title="${dateStr}"></div>`;
-    }
-
-    grid.innerHTML = html;
-
-    const avgEl = document.getElementById("heatmapAvgDaily");
-    if (avgEl) {
-      avgEl.textContent = `${Math.round(stats.presentCount / 7)} Classes`;
-    }
+    // Update Academic Twin Card Numbers
+    const stats = AppState.getAttendanceStats();
+    const attNum = document.getElementById("twinAttendanceNum");
+    if (attNum) attNum.textContent = `${stats.percentage}%`;
   },
 
   // ========================================================================
-  // 2. TIMETABLE VIEW (Zero Preload • Schedule Idle • AI Extraction)
+  // 2. TIMETABLE AI & OPERATIONS SCHEDULE
   // ========================================================================
-  renderTimetable() {
+  renderTimetableGrid() {
     const timetable = AppState.getTimetable();
-    const container = document.getElementById("timetableDaysContainer");
     const idleCard = document.getElementById("timetableIdleCard");
-    const resetBtn = document.getElementById("btnResetTimetable");
-
-    if (resetBtn) {
-      resetBtn.style.display = timetable.length > 0 ? "flex" : "none";
-    }
+    const container = document.getElementById("timetableDaysGrid");
 
     if (timetable.length === 0) {
-      if (idleCard) idleCard.style.display = "flex";
+      if (idleCard) idleCard.style.display = "block";
       if (container) container.innerHTML = "";
       return;
     }
@@ -351,606 +184,879 @@ const App = {
     if (idleCard) idleCard.style.display = "none";
     if (!container) return;
 
-    container.innerHTML = DAYS_OF_WEEK.map(dayName => {
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    container.innerHTML = days.map(dayName => {
       const slots = timetable
-        .filter(item => item.day.toLowerCase() === dayName.toLowerCase())
+        .filter(s => s.day.toLowerCase() === dayName.toLowerCase())
         .sort((a, b) => (a.startTime || "").localeCompare(b.startTime || ""));
 
       if (slots.length === 0) return "";
 
       const slotItems = slots.map(slot => `
-        <div class="slot-item-card">
-          <div class="slot-subject-row">
-            <div class="slot-subject-title">${this.escapeHtml(slot.subject)}</div>
-            <button class="btn-delete-slot" onclick="App.deleteTimetableSlot('${slot.id}')" title="Delete slot">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            </button>
+        <div class="timetable-slot-entry" onclick="App.openOneContextModal('${slot.subject}')">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="font-family:var(--font-editorial); font-size:1.05rem; font-weight:700; color:var(--ink-primary);">
+              ${slot.subject}
+            </div>
+            <button onclick="event.stopPropagation(); App.deleteTimetableSlot('${slot.id}')" style="background:none; border:none; cursor:pointer; color:var(--ink-muted); font-size:0.8rem;" title="Delete Slot">×</button>
           </div>
-          <div class="slot-time-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>${slot.startTime}</span>
-            <span style="opacity:0.3;">/</span>
-            <span>${slot.endTime}</span>
+          <div style="font-size:0.76rem; color:var(--ink-muted); margin-top:0.25rem;">
+            👤 ${slot.faculty || "Faculty"} • 📍 ${slot.room || "Room 205"}
+          </div>
+          <div style="margin-top:0.4rem; font-family:var(--font-stamp); font-size:0.75rem; color:var(--stamp-blue);">
+            🕒 ${slot.startTime} – ${slot.endTime}
           </div>
         </div>
       `).join("");
 
       return `
-        <div class="day-column-card">
-          <div class="day-card-header">
-            <h5>${dayName}</h5>
-            <div class="day-header-pill"></div>
+        <div class="day-dossier-column">
+          <div class="day-dossier-header">
+            <span>${dayName.toUpperCase()}</span>
+            <span style="font-size:0.72rem; color:var(--ink-muted);">${slots.length} SESSIONS</span>
           </div>
-          <div class="day-slots-list">
-            ${slotItems}
-          </div>
+          <div>${slotItems}</div>
         </div>
       `;
     }).join("");
+  },
+
+  loadPresetSchedule() {
+    AppState.loadPresetTimetable();
+    this.renderTimetableGrid();
+    this.showToast("⚡ SNS College CSE Timetable Loaded & Connected to Graph!");
+  },
+
+  async handleTimetableFile(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.showToast("🤖 Preprocessing & Scanning Timetable via Gemini Vision...");
+
+    try {
+      const extracted = await GeminiService.extractTimetable(file);
+      if (extracted && extracted.length > 0) {
+        this.extractedPendingSlots = extracted;
+        this.openVerificationModal(extracted);
+      } else {
+        alert("Could not detect lecture matrix. Please try another image or load the demo preset.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Timetable extraction encountered an issue. Loading sample verification dataset.");
+      this.extractedPendingSlots = GeminiService.generateAutonomousExtraction();
+      this.openVerificationModal(this.extractedPendingSlots);
+    } finally {
+      input.value = "";
+    }
+  },
+
+  openVerificationModal(slots) {
+    const modal = document.getElementById("aiVerificationModal");
+    const table = document.getElementById("extractedReviewTable");
+    const countLabel = document.getElementById("extractedTotalSlotsCount");
+
+    if (countLabel) countLabel.textContent = `${slots.length} Sessions Extracted`;
+    if (!table || !modal) return;
+
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Time Window</th>
+          <th>Subject Designation</th>
+          <th>Faculty</th>
+          <th>Room</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${slots.map(s => `
+          <tr style="${s.needsVerification ? 'background:rgba(245, 158, 11, 0.1);' : ''}">
+            <td><strong>${s.day}</strong></td>
+            <td>${s.startTime} – ${s.endTime}</td>
+            <td>${s.subject}</td>
+            <td>${s.faculty}</td>
+            <td>
+              ${s.room}
+              ${s.needsVerification ? `<span class="stamp-seal action" style="font-size:0.65rem; margin-left:4px;">VERIFY ROOM</span>` : ''}
+            </td>
+            <td>
+              <span class="stamp-seal ${s.confidence >= 0.9 ? 'approved' : 'pending'}">
+                ${Math.round(s.confidence * 100)}%
+              </span>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    `;
+
+    modal.style.display = "flex";
+  },
+
+  closeVerificationModal() {
+    const modal = document.getElementById("aiVerificationModal");
+    if (modal) modal.style.display = "none";
+  },
+
+  commitExtractedTimetable() {
+    if (this.extractedPendingSlots.length > 0) {
+      AppState.setTimetable([...this.extractedPendingSlots]);
+      this.closeVerificationModal();
+      this.renderTimetableGrid();
+      this.showToast(`✓ Committed ${this.extractedPendingSlots.length} sessions to Operations Schedule!`);
+      this.extractedPendingSlots = [];
+    }
   },
 
   deleteTimetableSlot(id) {
     AppState.removeTimetableEntry(id);
-    this.renderTimetable();
+    this.renderTimetableGrid();
   },
 
-  setupTimetableListeners() {
-    // 1. Reset All button with 3-second red countdown confirmation
-    const resetBtn = document.getElementById("btnResetTimetable");
-    if (resetBtn) {
-      resetBtn.addEventListener("click", () => {
-        if (this.isResetConfirming) {
-          clearTimeout(this.resetTimer);
-          this.isResetConfirming = false;
-          AppState.clearTimetable();
-          resetBtn.classList.remove("confirming");
-          resetBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            <span>Reset All</span>
-          `;
-          this.renderTimetable();
-        } else {
-          this.isResetConfirming = true;
-          resetBtn.classList.add("confirming");
-          resetBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            <span>Confirm Reset?</span>
-          `;
-          this.resetTimer = setTimeout(() => {
-            this.isResetConfirming = false;
-            resetBtn.classList.remove("confirming");
-            resetBtn.innerHTML = `
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              <span>Reset All</span>
-            `;
-          }, 3000);
-        }
-      });
+  handleResetTimetable() {
+    if (confirm("Reset current timetable sheet to empty?")) {
+      AppState.clearTimetable();
+      this.renderTimetableGrid();
+      this.showToast("Timetable sheet cleared.");
     }
+  },
 
-    // 2. AI Intelligence file upload
-    const fileInput = document.getElementById("timetableFileInput");
-    const aiBtn = document.getElementById("btnAiIntel");
-    if (fileInput && aiBtn) {
-      aiBtn.addEventListener("click", () => fileInput.click());
+  openAddEntryModal() {
+    const sub = prompt("Enter Subject Name (e.g. Operating Systems):", "Operating Systems");
+    if (!sub) return;
+    const day = prompt("Enter Day (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday):", "Monday");
+    if (!day) return;
+    const room = prompt("Enter Room (e.g. Room 205):", "Room 205");
 
-      fileInput.addEventListener("change", async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        aiBtn.innerHTML = `
-          <svg class="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-          <span>Analyzing...</span>
-        `;
-        aiBtn.disabled = true;
-
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            const dataUrl = event.target.result;
-            const base64Data = dataUrl.split(",")[1];
-            const mimeType = file.type || "image/jpeg";
-
-            const extracted = await GeminiService.extractTimetable(base64Data, mimeType);
-            if (extracted && extracted.length > 0) {
-              const current = AppState.getTimetable();
-              AppState.setTimetable([...current, ...extracted]);
-              this.renderTimetable();
-            } else {
-              alert("No lecture slots detected in timetable image. Please try a clearer picture or add entries manually.");
-            }
-          } catch (err) {
-            console.error("AI schedule extraction failed:", err);
-            alert("AI schedule extraction failed. Please check network connectivity or try another image.");
-          } finally {
-            aiBtn.innerHTML = `
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
-              <span>AI Intelligence</span>
-            `;
-            aiBtn.disabled = false;
-            fileInput.value = "";
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // 3. Add Entry Modal
-    const modal = document.getElementById("entryModal");
-    const openBtn = document.getElementById("btnOpenAddEntry");
-    const abortBtn = document.getElementById("btnAbortEntry");
-    const commitBtn = document.getElementById("btnCommitEntry");
-
-    if (openBtn && modal) {
-      openBtn.addEventListener("click", () => {
-        modal.style.display = "flex";
-        document.getElementById("entrySubject").value = "";
-        document.getElementById("entrySubject").focus();
-      });
-    }
-
-    if (abortBtn && modal) {
-      abortBtn.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
-    }
-
-    if (commitBtn && modal) {
-      commitBtn.addEventListener("click", () => {
-        const subject = document.getElementById("entrySubject").value.trim();
-        const day = document.getElementById("entryDay").value;
-        const startTime = document.getElementById("entryStartTime").value;
-        const endTime = document.getElementById("entryEndTime").value;
-
-        if (!subject || !startTime || !endTime) {
-          alert("Please fill in Designation, Commence time, and Conclude time.");
-          return;
-        }
-
-        AppState.addTimetableEntry({ subject, day, startTime, endTime });
-        modal.style.display = "none";
-        this.renderTimetable();
-      });
-    }
+    AppState.addTimetableEntry({
+      subject: sub,
+      day: day,
+      room: room || "Room 205",
+      startTime: "09:00",
+      endTime: "10:00"
+    });
+    this.renderTimetableGrid();
+    this.showToast("Entry added to schedule!");
   },
 
   // ========================================================================
-  // 3. ATTENDANCE VIEW (Chronicle Ledger & Daily Manifest Marking)
+  // 3. FACULTY AVAILABILITY GRID (STRICTLY NO GRAPH)
   // ========================================================================
-  renderAttendance() {
-    this.renderCalendarLedger();
-    this.renderDailyManifest();
-  },
+  filterFaculty(type, val) {
+    if (type === "dept") this.facultyFilterDept = val;
+    if (type === "status") this.facultyFilterStatus = val;
 
-  renderCalendarLedger() {
-    const titleEl = document.getElementById("calendarMonthTitle");
-    if (titleEl) {
-      titleEl.textContent = this.calendarMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-    }
-
-    const grid = document.getElementById("calendarDaysGrid");
-    if (!grid) return;
-
-    const year = this.calendarMonth.getFullYear();
-    const month = this.calendarMonth.getMonth();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    const startDayIndex = firstDay.getDay(); // 0 is Sunday
-    const daysInMonth = lastDay.getDate();
-
-    const attendance = AppState.getAttendance();
-    const todayStr = this.formatDate(new Date());
-    const selectedStr = this.formatDate(this.selectedDate);
-
-    let html = "";
-
-    // Blank cells before month start
-    for (let i = 0; i < startDayIndex; i++) {
-      html += `<div class="cal-day-cell inactive-month"></div>`;
-    }
-
-    // Days in current month
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cellDate = new Date(year, month, d);
-      const dateStr = this.formatDate(cellDate);
-      const isToday = dateStr === todayStr;
-      const isSelected = dateStr === selectedStr;
-
-      const records = attendance.filter(a => a.date === dateStr);
-      const hasPresent = records.some(a => a.status === "present");
-      const hasAbsent = records.some(a => a.status === "absent");
-
-      html += `
-        <button class="cal-day-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="App.selectDate('${dateStr}')">
-          <div class="day-num-badge">${d}</div>
-          <div class="day-pills-row">
-            ${hasPresent ? '<div class="dot-present"></div>' : ''}
-            ${hasAbsent ? '<div class="dot-absent"></div>' : ''}
-          </div>
-        </button>
-      `;
-    }
-
-    grid.innerHTML = html;
-  },
-
-  changeMonth(delta) {
-    this.calendarMonth.setMonth(this.calendarMonth.getMonth() + delta);
-    this.renderCalendarLedger();
-  },
-
-  selectDate(dateStr) {
-    const parts = dateStr.split("-");
-    this.selectedDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-    this.renderAttendance();
-  },
-
-  renderDailyManifest() {
-    const dateStr = this.formatDate(this.selectedDate);
-    const dayName = this.selectedDate.toLocaleDateString("en-US", { weekday: "long" });
-
-    // Date Titles
-    const titleEl = document.getElementById("manifestDateTitle");
-    if (titleEl) {
-      const dayNum = this.selectedDate.getDate();
-      const suffix = this.getDaySuffix(dayNum);
-      const monthName = this.selectedDate.toLocaleDateString("en-US", { month: "long" });
-      titleEl.textContent = `${dayNum}${suffix} ${monthName}`;
-    }
-
-    const dayNameEl = document.getElementById("manifestDayName");
-    if (dayNameEl) dayNameEl.textContent = dayName;
-
-    // Saturday Phase Configuration Box
-    const phaseBox = document.getElementById("saturdayPhaseBox");
-    const isSaturday = this.selectedDate.getDay() === 6;
-
-    let targetDay = dayName;
-    if (isSaturday) {
-      if (phaseBox) phaseBox.style.display = "flex";
-      const followDay = AppState.getSaturdayFollowDay(dateStr);
-      targetDay = followDay === "Default" ? "Saturday" : followDay;
-      this.updatePhaseButtons(followDay);
-    } else {
-      if (phaseBox) phaseBox.style.display = "none";
-    }
-
-    // Slots for that day
-    const timetable = AppState.getTimetable();
-    const daySlots = targetDay === "Holiday" ? [] : timetable.filter(t => t.day.toLowerCase() === targetDay.toLowerCase());
-
-    const totalBadge = document.getElementById("missionScopeTotalBadge");
-    if (totalBadge) totalBadge.textContent = `${daySlots.length} TOTAL`;
-
-    const scopeList = document.getElementById("missionScopeSlotsList");
-    if (!scopeList) return;
-
-    if (daySlots.length === 0) {
-      scopeList.innerHTML = `
-        <div class="zero-constraints-box">
-          <div class="zero-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-          </div>
-          <h5>Zero Constraints</h5>
-          <p>No academic commitments found in the timetable for this cycle.</p>
-        </div>
-      `;
-      return;
-    }
-
-    scopeList.innerHTML = daySlots.map(slot => {
-      const status = AppState.getSlotStatus(slot.id, dateStr);
-      const isPresent = status === "present";
-      const isAbsent = status === "absent";
-
-      return `
-        <div class="attendance-slot-card ${isPresent ? 'is-present' : ''} ${isAbsent ? 'is-absent' : ''}">
-          <div class="slot-content-row">
-            <div class="slot-text-info">
-              <div class="slot-subject-name">${this.escapeHtml(slot.subject)}</div>
-              <div class="slot-time-info">
-                <div class="slot-time-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                </div>
-                <span>${slot.startTime}</span>
-                <span style="opacity:0.3;">|</span>
-                <span>${slot.endTime}</span>
-              </div>
-            </div>
-            <div class="slot-actions-toggles">
-              <button class="btn-toggle-att btn-present ${isPresent ? 'active' : ''}" onclick="App.toggleAttendance('${slot.id}', 'present')" title="Mark Present">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </button>
-              <button class="btn-toggle-att btn-absent ${isAbsent ? 'active' : ''}" onclick="App.toggleAttendance('${slot.id}', 'absent')" title="Mark Absent">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
-            </div>
-          </div>
-          <div class="slot-bottom-accent-bar">
-            <div class="slot-bottom-accent-fill ${isPresent ? 'present-fill' : (isAbsent ? 'absent-fill' : '')}"></div>
-          </div>
-        </div>
-      `;
-    }).join("");
-  },
-
-  toggleAttendance(slotId, status) {
-    const dateStr = this.formatDate(this.selectedDate);
-    AppState.markAttendance(slotId, dateStr, status);
-    this.renderAttendance();
-  },
-
-  setPhaseOverride(followDay) {
-    const dateStr = this.formatDate(this.selectedDate);
-    AppState.setSaturdayOverride(dateStr, followDay);
-    this.renderDailyManifest();
-  },
-
-  updatePhaseButtons(currentFollow) {
-    document.querySelectorAll(".phase-btn").forEach(btn => {
-      const val = btn.getAttribute("data-day");
-      if (val === currentFollow) {
+    // Update active pills
+    document.querySelectorAll(`.filter-tab-stamp[data-${type}]`).forEach(btn => {
+      if (btn.getAttribute(`data-${type}`) === val) {
         btn.classList.add("active");
       } else {
         btn.classList.remove("active");
       }
     });
+
+    this.renderFacultyGrid();
   },
 
-  // ========================================================================
-  // 4. SETTINGS VIEW (Identity & Target Percentage Slider)
-  // ========================================================================
-  renderSettings() {
-    const settings = AppState.getSettings();
-
-    const handleInput = document.getElementById("settingHandleInput");
-    if (handleInput) handleInput.value = settings.name;
-
-    const slider = document.getElementById("targetPercentSlider");
-    const numDisplay = document.getElementById("targetPercentVal");
-    const barFill = document.getElementById("targetPercentFill");
-
-    if (slider) slider.value = settings.targetPercentage;
-    if (numDisplay) numDisplay.textContent = settings.targetPercentage;
-    if (barFill) barFill.style.width = `${settings.targetPercentage}%`;
-  },
-
-  setupSettingsListeners() {
-    const slider = document.getElementById("targetPercentSlider");
-    const numDisplay = document.getElementById("targetPercentVal");
-    const barFill = document.getElementById("targetPercentFill");
-
-    if (slider) {
-      slider.addEventListener("input", (e) => {
-        const val = parseInt(e.target.value);
-        if (numDisplay) numDisplay.textContent = val;
-        if (barFill) barFill.style.width = `${val}%`;
-      });
-    }
-
-    const syncBtn = document.getElementById("btnSyncSettings");
-    if (syncBtn) {
-      syncBtn.addEventListener("click", () => {
-        const handle = document.getElementById("settingHandleInput").value.trim() || "Student";
-        const target = parseInt(document.getElementById("targetPercentSlider").value) || 78;
-
-        AppState.updateSettings({ name: handle, targetPercentage: target });
-
-        syncBtn.textContent = "Preferences Updated!";
-        syncBtn.style.backgroundColor = "var(--color-brand-green)";
-        syncBtn.style.color = "#000";
-
-        setTimeout(() => {
-          syncBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            <span>Synchronize Configuration</span>
-          `;
-          syncBtn.style.backgroundColor = "var(--color-brand-blue)";
-          syncBtn.style.color = "#fff";
-        }, 2000);
-      });
-    }
-
-    const formatBtn = document.getElementById("btnFormatNode");
-    if (formatBtn) {
-      formatBtn.addEventListener("click", () => {
-        if (confirm("Are you sure you want to clear all data? This cannot be undone.")) {
-          AppState.resetAllData();
-          window.location.reload();
-        }
-      });
-    }
-  },
-
-  // ========================================================================
-  // 5. EXTENDED CONNECTED CAMPUSFLOW PEER VIEWS (Companion, Faculty, etc.)
-  // ========================================================================
-  renderCompanion() {
-    const container = document.getElementById("companionMessagesList");
+  renderFacultyGrid() {
+    const container = document.getElementById("facultyCardsContainer");
     if (!container) return;
 
-    if (this.chatHistory.length === 0) {
-      this.chatHistory.push({
-        role: "model",
-        text: "⚡ **CampusFlow Neural Agent Active.** Ask me anything about your timetable, bunk safety margins, required sessions, faculty accessibility, or routine approvals."
-      });
-    }
+    const filtered = CampusData.faculty.filter(f => {
+      const matchDept = this.facultyFilterDept === "all" || f.department === this.facultyFilterDept;
+      const matchStatus = this.facultyFilterStatus === "all" || f.status === this.facultyFilterStatus;
+      return matchDept && matchStatus;
+    });
 
-    container.innerHTML = this.chatHistory.map(msg => `
-      <div class="chat-msg ${msg.role}">
-        ${this.formatChatText(msg.text)}
-      </div>
-    `).join("");
-
-    container.scrollTop = container.scrollHeight;
-  },
-
-  setupChatListeners() {
-    const sendBtn = document.getElementById("btnSendChat");
-    const input = document.getElementById("companionInput");
-
-    const doSend = async () => {
-      const query = (input.value || "").trim();
-      if (!query) return;
-
-      this.chatHistory.push({ role: "user", text: query });
-      input.value = "";
-      this.renderCompanion();
-
-      try {
-        const reply = await GeminiService.chatWithAI(query, this.chatHistory);
-        this.chatHistory.push({ role: "model", text: reply });
-      } catch (err) {
-        this.chatHistory.push({ role: "model", text: "Tactical connection error. Please try again." });
+    container.innerHTML = filtered.map(f => {
+      let statusSeal = "";
+      if (f.status === "available") {
+        statusSeal = `<span class="stamp-seal approved">AVAILABLE IN CABIN</span>`;
+      } else if (f.status === "class") {
+        statusSeal = `<span class="stamp-seal action">IN LECTURE</span>`;
+      } else {
+        statusSeal = `<span class="stamp-seal pending">IN MEETING</span>`;
       }
-      this.renderCompanion();
-    };
 
-    if (sendBtn) sendBtn.addEventListener("click", doSend);
-    if (input) {
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") doSend();
-      });
-    }
-  },
-
-  renderFaculty() {
-    const grid = document.getElementById("facultyListGrid");
-    if (!grid) return;
-
-    grid.innerHTML = CampusData.faculty.map(f => {
-      const isFree = f.status === "free";
-      const badgeColor = isFree ? "var(--color-brand-green)" : (f.status === "class" ? "var(--color-brand-blue)" : "var(--color-brand-amber)");
+      const freeChips = f.freeTimeSlots ? f.freeTimeSlots.map(slot => `
+        <span class="typewriter-time-chip" onclick="App.planFacultyVisit('${f.id}', '${slot}')">🕒 ${slot}</span>
+      `).join("") : "";
 
       return `
-        <div class="faculty-card">
+        <div class="faculty-dossier-card">
           <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <div>
-                <h4 style="font-size:1.15rem; font-weight:800; color:#fff; font-style:italic;">${f.name}</h4>
-                <p style="font-size:11px; font-weight:700; color:var(--color-zinc-500); text-transform:uppercase; margin-top:2px;">${f.designation}</p>
+            <div class="faculty-card-header">
+              <div class="faculty-name-block">
+                <h4>${f.name}</h4>
+                <p>${f.department} • ${f.designation}</p>
               </div>
-              <span style="font-size:9px; font-weight:900; padding:0.35rem 0.65rem; border-radius:0.5rem; text-transform:uppercase; letter-spacing:0.1em; background:rgba(255,255,255,0.05); color:${badgeColor}; border:1px solid ${badgeColor};">
-                ${f.statusLabel}
-              </span>
+              <div>${statusSeal}</div>
             </div>
-            <div style="font-size:12px; color:var(--color-zinc-400); margin-bottom:1rem;">
+
+            <div class="faculty-cabin-row">
               📍 <strong>Cabin:</strong> ${f.cabin}
             </div>
-            <div style="font-size:11px; color:var(--color-zinc-500); margin-bottom:1.25rem;">
-              🕒 <strong>Free Slots:</strong> ${f.freeTimeSlots.join(", ")}
+
+            <div class="faculty-activity-box">
+              <strong>STATUS DIRECTIVE:</strong> ${f.statusDetails}
+            </div>
+
+            <div style="font-size:0.75rem; color:var(--ink-muted); margin-bottom:0.35rem; font-family:var(--font-stamp); text-transform:uppercase;">
+              DECLARED CONSULTATION SLOTS:
+            </div>
+            <div class="faculty-free-chips-wrap">
+              ${freeChips}
             </div>
           </div>
-          <button style="width:100%; padding:0.75rem; border-radius:0.85rem; background:var(--color-zinc-900); border:1px solid var(--color-zinc-700); color:#fff; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.15em; cursor:pointer;" onclick="alert('Digital routine query routed to ${f.name}. Notification queued.')">
-            Route Action Query
-          </button>
+
+          <div class="faculty-card-actions">
+            <button class="btn-dossier-sm btn-primary-ink" onclick="App.openNewRequestModal('On-Duty (OD)', '${f.name}')">
+              ✍️ Request OD
+            </button>
+            <button class="btn-dossier-sm btn-outline-ink" onclick="App.notifyWhenFree('${f.name}')">
+              🔔 Notify Free
+            </button>
+            <button class="btn-dossier-sm btn-outline-ink" onclick="App.showLocationModal('${f.roomCode}')">
+              🗺️ Locate
+            </button>
+          </div>
         </div>
       `;
     }).join("");
   },
 
-  renderApprovals() {
-    const container = document.getElementById("approvalsListContainer");
-    if (!container) return;
+  renderFacultyMatrixTable() {
+    const table = document.getElementById("facultyMatrixTable");
+    if (!table) return;
 
-    container.innerHTML = CampusData.requests.map(req => `
-      <div class="tactical-card" style="margin-bottom:1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem;">
-          <div>
-            <span style="font-size:10px; font-weight:900; color:var(--color-brand-blue); text-transform:uppercase; letter-spacing:0.2em;">${req.type}</span>
-            <h4 style="font-size:1.25rem; font-weight:800; color:#fff; margin-top:0.25rem;">${req.title}</h4>
-          </div>
-          <span style="font-size:10px; font-weight:900; padding:0.4rem 0.75rem; border-radius:0.6rem; background:rgba(245,158,11,0.15); color:var(--color-brand-amber); border:1px solid rgba(245,158,11,0.3);">
-            ${req.statusLabel}
-          </span>
-        </div>
-        <div style="font-size:12px; color:var(--color-zinc-400); margin-bottom:1.5rem;">
-          📅 Event Date: ${req.eventDate} &nbsp;|&nbsp; ⏱️ Impacted: ${req.impactedSessions}
-        </div>
-        <div style="display:flex; flex-direction:column; gap:0.75rem;">
-          ${req.steps.map(step => `
-            <div style="display:flex; align-items:center; justify-content:space-between; background:var(--color-zinc-950); padding:0.75rem 1.25rem; border-radius:1rem; border:1px solid var(--color-zinc-800);">
-              <span style="font-size:11px; font-weight:700; color:var(--color-zinc-300);">${step.role}: ${step.name}</span>
-              <span style="font-size:10px; font-weight:900; text-transform:uppercase; color:${step.status === 'approved' ? 'var(--color-brand-green)' : (step.status === 'pending' ? 'var(--color-brand-amber)' : 'var(--color-zinc-500)')};">
-                ${step.status.toUpperCase()}
-              </span>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-    `).join("");
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Faculty Member</th>
+          <th>Cabin Code</th>
+          <th>P1 (09:00-10:00)</th>
+          <th>P2 (10:00-11:00)</th>
+          <th>P3 (11:15-12:15)</th>
+          <th>P4 (01:00-02:00)</th>
+          <th>P5 (02:00-03:00)</th>
+          <th>P6 (03:15-04:15)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${CampusData.faculty.map(f => `
+          <tr>
+            <td><strong>${f.name}</strong><br><span style="font-size:0.72rem; color:var(--ink-muted);">${f.department}</span></td>
+            <td><strong>${f.roomCode}</strong></td>
+            ${f.scheduleToday.map(s => {
+              let cls = s.status === 'available' ? 'approved' : (s.status === 'class' ? 'action' : 'pending');
+              return `
+                <td>
+                  <span class="stamp-seal ${cls}" style="font-size:0.65rem;">
+                    ${s.status.toUpperCase()}
+                  </span>
+                  <div style="font-size:0.7rem; color:var(--ink-muted); margin-top:2px;">${s.detail}</div>
+                </td>
+              `;
+            }).join("")}
+          </tr>
+        `).join("")}
+      </tbody>
+    `;
   },
 
-  renderEvents() {
-    const container = document.getElementById("eventsListContainer");
-    if (!container) return;
-
-    container.innerHTML = CampusData.events.map(evt => `
-      <div class="tactical-card" style="margin-bottom:1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-          <div>
-            <span style="font-size:10px; font-weight:900; color:var(--color-brand-green); text-transform:uppercase; letter-spacing:0.2em;">${evt.type}</span>
-            <h4 style="font-size:1.35rem; font-weight:800; color:#fff; margin-top:0.25rem;">${evt.title}</h4>
-            <p style="font-size:11px; color:var(--color-zinc-500); margin-top:2px;">Organized by: ${evt.organizer}</p>
-          </div>
-          ${evt.requiresOD ? '<span style="font-size:10px; font-weight:900; padding:0.4rem 0.75rem; border-radius:0.6rem; background:rgba(0,170,255,0.15); color:var(--color-brand-blue); border:1px solid rgba(0,170,255,0.3);">OD REQUIRED</span>' : ''}
-        </div>
-        <div style="font-size:12px; color:var(--color-zinc-400); margin-bottom:1rem;">
-          📍 ${evt.venue} &nbsp;|&nbsp; 🗓️ ${evt.date} &nbsp;|&nbsp; ⏱️ ${evt.time}
-        </div>
-        ${evt.hasConflict ? `
-          <div style="background:rgba(255,0,68,0.1); border:1px solid rgba(255,0,68,0.25); border-radius:1rem; padding:0.85rem 1.25rem; font-size:12px; color:var(--color-brand-red); font-weight:600; display:flex; justify-content:space-between; align-items:center;">
-            <span>⚠️ Conflict Detected: ${evt.conflictDetails}</span>
-            <button style="background:var(--color-brand-blue); color:#fff; border:none; padding:0.5rem 1rem; border-radius:0.65rem; font-size:10px; font-weight:900; cursor:pointer;" onclick="App.switchTab('approvals')">Auto-Draft OD</button>
-          </div>
-        ` : ''}
-      </div>
-    `).join("");
+  planFacultyVisit(facultyId, slotTime) {
+    const fac = CampusData.faculty.find(f => f.id === facultyId) || CampusData.faculty[0];
+    alert(`Consultation window booked with ${fac.name} for ${slotTime || fac.currentWindow}.\nLocation: ${fac.cabin}.\nPre-routing OD draft prepared.`);
+    this.openNewRequestModal("On-Duty (OD)", fac.name);
   },
 
-  // Helpers
-  formatDate(d) {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
+  notifyWhenFree(facultyName) {
+    this.showToast(`🔔 Alert Registered! You will be notified when ${facultyName} returns to cabin.`);
   },
 
-  getDaySuffix(n) {
-    if (n >= 11 && n <= 13) return "th";
-    switch (n % 10) {
-      case 1: return "st";
-      case 2: return "nd";
-      case 3: return "rd";
-      default: return "th";
+  // ========================================================================
+  // 4. ATTENDANCE INTELLIGENCE & SCENARIO PLANNER
+  // ========================================================================
+  renderAttendanceView() {
+    const stats = AppState.getAttendanceStats();
+    const settings = AppState.getSettings();
+
+    const pctText = document.getElementById("attendancePercentageText");
+    const targetLabel = document.getElementById("attendanceTargetLabel");
+    const seal = document.getElementById("attendanceComplianceSeal");
+    const attendedEl = document.getElementById("attAttendedCount");
+    const missedEl = document.getElementById("attMissedCount");
+    const totalEl = document.getElementById("attTotalCount");
+    const neededEl = document.getElementById("attNeededCount");
+    const adviceBox = document.getElementById("attendanceAdviceBox");
+
+    if (pctText) pctText.textContent = `${stats.percentage}%`;
+    if (targetLabel) targetLabel.textContent = `INSTITUTIONAL TARGET: ${stats.targetPercentage}%`;
+    if (attendedEl) attendedEl.textContent = stats.present;
+    if (missedEl) missedEl.textContent = stats.absent;
+    if (totalEl) totalEl.textContent = stats.total;
+
+    const isCompliant = stats.percentage >= stats.targetPercentage;
+
+    if (seal) {
+      seal.className = `stamp-seal ${isCompliant ? 'approved' : 'action'}`;
+      seal.textContent = isCompliant ? "COMPLIANT STANDING" : "ACTION REQUIRED";
+    }
+
+    if (neededEl) {
+      neededEl.textContent = isCompliant ? `${stats.safeBuffer} Buffer Classes` : `${stats.requiredConsecutive} Consecutive Needed`;
+      neededEl.style.color = isCompliant ? "var(--stamp-green)" : "var(--stamp-red)";
+    }
+
+    if (adviceBox) {
+      adviceBox.innerHTML = isCompliant
+        ? `<strong>SAFE BUFFER:</strong> You hold a buffer of <strong>${stats.safeBuffer} future classes</strong> while remaining above ${stats.targetPercentage}%. Use prudently for hackathons and project milestones.`
+        : `<strong>MITIGATION DIRECTIVE:</strong> Attendance is <strong>${stats.percentage}%</strong>. Attend the next <strong>${stats.requiredConsecutive} consecutive sessions</strong> without absence to restore compliance.`;
+    }
+
+    // Precalculate scenario buttons
+    const p5 = Number(((stats.present + 5) / (stats.total + 5) * 100).toFixed(1));
+    const p10 = Number(((stats.present + 10) / (stats.total + 10) * 100).toFixed(1));
+    const m1 = Number((stats.present / (stats.total + 1) * 100).toFixed(1));
+
+    const s5 = document.getElementById("scenPlus5Val");
+    const s10 = document.getElementById("scenPlus10Val");
+    const sm1 = document.getElementById("scenMinus1Val");
+
+    if (s5) s5.textContent = `${p5}%`;
+    if (s10) s10.textContent = `${p10}%`;
+    if (sm1) sm1.textContent = `${m1}%`;
+  },
+
+  runAttendanceScenario(attendN, missN) {
+    const stats = AppState.getAttendanceStats();
+    const box = document.getElementById("scenarioOutputBox");
+
+    if (attendN === "reach") {
+      const target = missN / 100;
+      const needed = Math.max(0, Math.ceil((target * stats.total - stats.present) / (1 - target)));
+      if (box) {
+        box.innerHTML = `<strong>RECOVERY CALCULATION:</strong> To reach an overall attendance of <strong>80%</strong> from your current <strong>${stats.percentage}%</strong>, you must attend <strong>${needed} consecutive classes</strong> without missing any.`;
+      }
+      return;
+    }
+
+    const projectedTotal = stats.total + attendN + missN;
+    const projectedPresent = stats.present + attendN;
+    const projectedPct = Number((projectedPresent / projectedTotal * 100).toFixed(1));
+
+    if (box) {
+      box.innerHTML = `<strong>PROJECTED RESULT:</strong> If you ${attendN > 0 ? `attend the next ${attendN} classes` : `miss 1 upcoming class`}, your attendance shifts from <strong>${stats.percentage}%</strong> to <strong>${projectedPct}%</strong> (${projectedPresent}/${projectedTotal}). Target: <strong>${stats.targetPercentage}%</strong>.`;
     }
   },
 
-  escapeHtml(str) {
-    if (!str) return "";
-    return str.replace(/[&<>'"]/g, tag => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      "'": '&#39;',
-      '"': '&quot;'
-    }[tag] || tag));
+  updateTargetThreshold(val) {
+    const num = parseInt(val) || 75;
+    AppState.updateSettings({ targetPercentage: num });
+    const disp = document.getElementById("targetPercentSliderValue");
+    if (disp) disp.textContent = `${num}%`;
+    this.renderAttendanceView();
   },
 
-  formatChatText(txt) {
-    if (!txt) return "";
-    return txt
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
+  // ========================================================================
+  // 5. ACADEMICS & WHAT-IF SIMULATOR
+  // ========================================================================
+  renderAcademicsView() {
+    const grid = document.getElementById("subjectInternalsGrid");
+    if (!grid) return;
+
+    grid.innerHTML = CampusData.subjects.map(s => {
+      let riskClass = s.riskStatus === "track" ? "approved" : (s.riskStatus === "attention" ? "pending" : "action");
+      let riskLabel = s.riskStatus === "track" ? "ON TRACK" : (s.riskStatus === "attention" ? "NEEDS ATTENTION" : "ACTION REQUIRED");
+
+      return `
+        <div class="twin-index-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <h4 style="font-family:var(--font-editorial); font-size:1.15rem; font-weight:700;">${s.name} (${s.short})</h4>
+              <p style="font-size:0.75rem; color:var(--ink-muted);">${s.faculty} • ${s.credits} Credits</p>
+            </div>
+            <span class="stamp-seal ${riskClass}">${riskLabel}</span>
+          </div>
+
+          <div style="margin:0.85rem 0; font-size:0.8rem; line-height:1.7; border-top:1px dashed var(--paper-border); border-bottom:1px dashed var(--paper-border); padding:0.5rem 0;">
+            <div>Internal 1: <strong>${s.internals.test1}/${s.internals.test1Max}</strong> • Internal 2: <strong>${s.internals.test2}/${s.internals.test2Max}</strong></div>
+            <div>Assignment: <strong>${s.internals.assignment}/${s.internals.assignMax}</strong> • Quiz: <strong>${s.internals.quiz}/${s.internals.quizMax}</strong></div>
+            <div>Internal Total: <strong>${s.internals.total}/${s.internals.max}</strong> (${Math.round(s.internals.total/s.internals.max*100)}%)</div>
+            <div>Attendance: <strong>${s.attendance.percentage}%</strong> (${s.attendance.attended}/${s.attendance.conducted})</div>
+          </div>
+
+          <p style="font-size:0.78rem; color:var(--ink-secondary); line-height:1.4;">
+            ✦ ${s.riskReason}
+          </p>
+        </div>
+      `;
+    }).join("");
+  },
+
+  updateWhatIfCgpa(val) {
+    const sgpa = parseFloat(val);
+    const disp = document.getElementById("whatIfSgpaDisplay");
+    const resultBox = document.getElementById("whatIfResultBox");
+
+    if (disp) disp.textContent = sgpa.toFixed(2);
+
+    // Existing: 68 credits at 8.42 = 572.56 quality points
+    // New sem: 24 credits at sgpa
+    const existingPts = 68 * 8.42;
+    const newPts = 24 * sgpa;
+    const totalCredits = 68 + 24;
+    const projectedCgpa = (existingPts + newPts) / totalCredits;
+
+    if (resultBox) {
+      resultBox.innerHTML = `
+        With a <strong>${sgpa.toFixed(2)} SGPA</strong> in Semester 4 (24 credits), your Cumulative CGPA shifts from <strong>8.42</strong> to <strong>${projectedCgpa.toFixed(2)}</strong>.
+        ${projectedCgpa >= 8.80 ? `<span style="color:var(--stamp-green); display:block; margin-top:0.35rem;">✓ Target of 8.80 CGPA achieved in this scenario!</span>` : `<span style="color:var(--stamp-amber); display:block; margin-top:0.35rem;">To hit 8.80, maintain a 9.15+ average through Semester 5.</span>`}
+      `;
+    }
+  },
+
+  // ========================================================================
+  // 6. DOCUMENT VAULT ("FILL ONCE, REUSE SAFELY")
+  // ========================================================================
+  renderDocumentVault() {
+    const grid = document.getElementById("documentVaultGrid");
+    if (!grid) return;
+
+    grid.innerHTML = CampusData.documents.map(doc => `
+      <div class="paper-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+            <span class="stamp-seal ${doc.status === 'verified' ? 'approved' : 'pending'}">${doc.statusLabel}</span>
+            <span style="font-size:0.72rem; color:var(--ink-muted); font-family:var(--font-stamp);">${doc.type}</span>
+          </div>
+
+          <h4 style="font-family:var(--font-editorial); font-size:1.25rem; font-weight:700; margin-bottom:0.35rem;">
+            ${doc.name}
+          </h4>
+          <p style="font-size:0.78rem; color:var(--ink-muted);">Issued by: ${doc.issuedBy} • ${doc.date}</p>
+
+          <div class="dispatch-why-box" style="margin:1rem 0; font-size:0.78rem;">
+            "${doc.previewText}"
+          </div>
+        </div>
+
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn-dossier-sm btn-outline-ink" onclick="alert('Viewing secure local credential: ${doc.fileName}\\nPrivate student record verified.')">
+            👁️ Inspect
+          </button>
+          <button class="btn-dossier-sm btn-primary-ink" onclick="App.openNewRequestModal('${doc.name}')">
+            Autofill Use
+          </button>
+        </div>
+      </div>
+    `).join("");
+  },
+
+  // ========================================================================
+  // 7. ROUTINE APPROVALS & SIGNATURE WORKFLOW
+  // ========================================================================
+  renderRequestsQueue() {
+    const container = document.getElementById("requestsListContainer");
+    if (!container) return;
+
+    const requests = AppState.getRequests();
+
+    container.innerHTML = requests.map(req => `
+      <div class="paper-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <span class="stamp-seal ${req.status === 'approved' ? 'approved' : (req.status === 'under_review' ? 'pending' : 'action')}">
+              ${req.statusLabel}
+            </span>
+            <h3 style="font-family:var(--font-editorial); font-size:1.35rem; margin:0.4rem 0 0.2rem;">
+              ${req.title}
+            </h3>
+            <p style="font-size:0.78rem; color:var(--ink-muted);">Submitted: ${req.dateSubmitted} • Impact: ${req.impactedLectures || "N/A"}</p>
+          </div>
+          <span style="font-family:var(--font-stamp); font-size:0.8rem; color:var(--ink-primary);">${req.type}</span>
+        </div>
+
+        <div class="dispatch-why-box" style="margin:1rem 0;">
+          <strong>PURPOSE:</strong> ${req.purpose}
+        </div>
+
+        <!-- Workflow Stepper -->
+        <div style="border-top:1px dashed var(--paper-border-dark); padding-top:0.85rem; margin-top:0.85rem;">
+          <div style="font-family:var(--font-stamp); font-size:0.72rem; text-transform:uppercase; color:var(--ink-muted); margin-bottom:0.5rem;">
+            APPROVAL STAGE PROGRESSION:
+          </div>
+          <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+            ${req.workflow.map(step => `
+              <div style="font-size:0.78rem;">
+                <div style="font-weight:700; color:${step.status === 'completed' ? 'var(--stamp-green)' : (step.status === 'current' ? 'var(--stamp-blue)' : 'var(--ink-muted)')};">
+                  ${step.status === 'completed' ? '✓' : (step.status === 'current' ? '▶' : '○')} ${step.role}: ${step.name}
+                </div>
+                <div style="font-size:0.72rem; color:var(--ink-muted);">${step.action} (${step.timestamp})</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    const badge = document.getElementById("pendingRequestsBadge");
+    if (badge) {
+      const pendingCount = requests.filter(r => r.status === "under_review").length;
+      badge.textContent = pendingCount;
+    }
+  },
+
+  openNewRequestModal(defaultType = "On-Duty (OD)", targetFaculty = "Dr. Arun Sundaram") {
+    const modal = document.getElementById("newRequestModal");
+    const typeSelect = document.getElementById("newReqType");
+    const facSelect = document.getElementById("newReqFaculty");
+
+    if (typeSelect) typeSelect.value = defaultType;
+    if (facSelect) facSelect.value = targetFaculty;
+
+    if (modal) modal.style.display = "flex";
+  },
+
+  closeNewRequestModal() {
+    const modal = document.getElementById("newRequestModal");
+    if (modal) modal.style.display = "none";
+  },
+
+  submitNewRequest() {
+    const type = document.getElementById("newReqType").value;
+    const title = document.getElementById("newReqTitle").value.trim() || `${type} Exemption Request`;
+    const faculty = document.getElementById("newReqFaculty").value;
+    const hours = document.getElementById("newReqHours").value.trim() || "3 Periods";
+
+    AppState.addRequest({
+      type: type,
+      title: title,
+      targetFaculty: faculty,
+      impactedLectures: hours,
+      purpose: `Official student request for ${type} submitted with verified credentials.`
+    });
+
+    this.closeNewRequestModal();
+    this.renderRequestsQueue();
+    this.showToast("✓ Request pre-routed and delivered to Class Advisor desk!");
+  },
+
+  // ========================================================================
+  // 8. DEADLINE RADAR
+  // ========================================================================
+  renderDeadlineRadar() {
+    const container = document.getElementById("deadlinesListContainer");
+    if (!container) return;
+
+    container.innerHTML = CampusData.deadlines.map(dl => {
+      let urgClass = dl.urgency === "today" ? "action" : (dl.urgency === "tomorrow" ? "pending" : "approved");
+
+      return `
+        <div class="paper-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+            <span class="stamp-seal ${urgClass}">${dl.urgencyLabel}</span>
+            <span style="font-family:var(--font-stamp); font-size:0.75rem; color:var(--ink-muted);">${dl.subject}</span>
+          </div>
+
+          <h4 style="font-family:var(--font-editorial); font-size:1.25rem; font-weight:700; margin-bottom:0.35rem;">
+            ${dl.title}
+          </h4>
+          <p style="font-size:0.8rem; color:var(--ink-secondary);">
+            📅 ${dl.displayDate} • 🕒 ${dl.time} • 📍 ${dl.venue}
+          </p>
+
+          <div class="dispatch-why-box" style="margin:1rem 0 0.5rem; font-size:0.78rem;">
+            <strong>IMPACT:</strong> ${dl.impact}
+          </div>
+        </div>
+      `;
+    }).join("");
+  },
+
+  // ========================================================================
+  // 9. FACULTY DESK VIEW (DR. ARUN SUNDARAM)
+  // ========================================================================
+  renderFacultyDesk() {
+    const container = document.getElementById("facultyQueueContainer");
+    if (!container) return;
+
+    const requests = AppState.getRequests();
+
+    container.innerHTML = requests.map(req => `
+      <div class="paper-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <span class="stamp-seal ${req.status === 'approved' ? 'approved' : 'pending'}">${req.statusLabel}</span>
+            <h4 style="font-family:var(--font-editorial); font-size:1.3rem; margin:0.35rem 0 0.15rem;">${req.title}</h4>
+            <p style="font-size:0.78rem; color:var(--ink-muted);">From: ${req.studentName} (${req.studentRoll}) • ${req.department}</p>
+          </div>
+          <span style="font-family:var(--font-stamp); font-size:0.8rem;">${req.type}</span>
+        </div>
+
+        <div class="dispatch-why-box" style="margin:1rem 0;">
+          <strong>STUDENT JUSTIFICATION:</strong> ${req.purpose}
+        </div>
+
+        ${req.status === 'under_review' ? `
+          <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+            <button class="btn-dossier-sm btn-outline-ink" onclick="App.handleFacultyAction('${req.id}', 'rejected')">
+              Decline
+            </button>
+            <button class="btn-dossier-sm btn-outline-ink" onclick="App.handleFacultyAction('${req.id}', 'correction')">
+              Request Correction
+            </button>
+            <button class="btn-dispatch-action" onclick="App.handleFacultyAction('${req.id}', 'approved')">
+              ✓ Approve & Digitally Seal
+            </button>
+          </div>
+        ` : `
+          <div style="font-size:0.8rem; color:var(--stamp-green); font-family:var(--font-stamp);">
+            ✓ ACTION COMPLETED • SEALED IN STUDENT AUDIT TRAIL
+          </div>
+        `}
+      </div>
+    `).join("");
+  },
+
+  setFacultyDeclaredStatus(status) {
+    const fac = CampusData.faculty.find(f => f.id === "fac_arun");
+    if (fac) {
+      fac.status = status;
+      fac.statusLabel = status === "available" ? "Available in Cabin" : (status === "class" ? "In Class" : "In Meeting");
+    }
+    this.showToast(`Broadcasted new status: ${fac.statusLabel}`);
+  },
+
+  handleFacultyAction(reqId, newStatus) {
+    let reason = "";
+    if (newStatus === "correction") reason = prompt("Enter correction note for student:", "Clarify impacted hours");
+    if (newStatus === "rejected") reason = prompt("Enter reason for declining:", "Schedule conflict");
+
+    AppState.updateRequestStatus(reqId, newStatus, "Dr. Arun Sundaram", reason);
+    this.renderFacultyDesk();
+    this.showToast(`Request marked as ${newStatus.toUpperCase()}`);
+  },
+
+  // ========================================================================
+  // 10. CAMPUS PULSE & "WHY ARE STUDENTS ASKING THIS?" (ADMIN VIEW)
+  // ========================================================================
+  renderAdminPulse() {
+    const container = document.getElementById("adminQueriesContainer");
+    if (!container) return;
+
+    container.innerHTML = CampusData.repeatedQueries.map(q => `
+      <div class="paper-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+          <span class="stamp-seal action">${q.count} STUDENTS ASKED</span>
+          <span style="font-size:0.72rem; color:var(--ink-muted); font-family:var(--font-stamp);">${q.department}</span>
+        </div>
+
+        <h4 style="font-family:var(--font-editorial); font-size:1.25rem; font-weight:700; margin-bottom:0.5rem;">
+          "${q.query}"
+        </h4>
+
+        <div class="dispatch-why-box" style="margin:0.75rem 0; font-size:0.78rem;">
+          <strong>DIAGNOSED BOTTLENECK:</strong> ${q.gapIdentified}
+        </div>
+
+        <div style="font-size:0.8rem; color:var(--stamp-green);">
+          <strong>RECOMMENDED ACTION:</strong> ${q.recommendation}
+        </div>
+      </div>
+    `).join("");
+  },
+
+  // ========================================================================
+  // 11. UNIVERSAL SEARCH ENGINE
+  // ========================================================================
+  runSampleSearch(query) {
+    const input = document.getElementById("universalSearchInput");
+    if (input) input.value = query;
+    this.executeSearch(query);
+  },
+
+  async executeSearch(query) {
+    if (!query || !query.trim()) return;
+
+    this.showToast("🔎 Querying Campus Knowledge Graph...");
+    const res = await GeminiService.interpretCampusQuery(query);
+
+    const modal = document.getElementById("searchResultModal");
+    const title = document.getElementById("searchModalTitle");
+    const dept = document.getElementById("searchModalDept");
+    const badge = document.getElementById("searchModalStatusBadge");
+    const whyList = document.getElementById("searchModalWhyList");
+    const actionBtn = document.getElementById("searchModalActionButton");
+
+    if (title) title.textContent = res.title;
+    if (dept) dept.textContent = `${res.department} • ${res.location}`;
+    if (badge) {
+      badge.textContent = res.status;
+      badge.style.color = res.statusColor;
+    }
+    if (whyList) {
+      whyList.innerHTML = res.why.map(w => `<li>${w}</li>`).join("");
+    }
+    if (actionBtn) {
+      actionBtn.textContent = res.actionLabel;
+      this.currentSearchAction = res.actionFn;
+    }
+
+    if (modal) modal.style.display = "flex";
+  },
+
+  closeSearchModal() {
+    const modal = document.getElementById("searchResultModal");
+    if (modal) modal.style.display = "none";
+  },
+
+  triggerSearchAction() {
+    this.closeSearchModal();
+    if (this.currentSearchAction) {
+      try {
+        eval(this.currentSearchAction);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  },
+
+  // ========================================================================
+  // 12. INDOOR ROUTE & LOCATION MODAL
+  // ========================================================================
+  showLocationModal(roomCode) {
+    const loc = CampusData.locations.find(l => l.code === roomCode) || CampusData.locations[0];
+    const modal = document.getElementById("locationModal");
+    const headerTitle = document.getElementById("locModalTitle");
+    const blockFloor = document.getElementById("locModalBlockFloor");
+    const roomName = document.getElementById("locModalRoomName");
+    const directions = document.getElementById("locModalDirections");
+
+    if (headerTitle) headerTitle.textContent = `CAMPUS ROUTE: ${loc.code}`;
+    if (blockFloor) blockFloor.textContent = `${loc.block.toUpperCase()} • ${loc.floor.toUpperCase()}`;
+    if (roomName) roomName.textContent = loc.name;
+    if (directions) directions.textContent = loc.directions;
+
+    if (modal) modal.style.display = "flex";
+
+    // Also update inline box in Navigator tab if active
+    const inlineBox = document.getElementById("inlineLocationDetails");
+    if (inlineBox) {
+      inlineBox.innerHTML = `<strong>${loc.name} (${loc.block}, ${loc.floor}):</strong><br>${loc.directions}`;
+    }
+  },
+
+  closeLocationModal() {
+    const modal = document.getElementById("locationModal");
+    if (modal) modal.style.display = "none";
+  },
+
+  // ========================================================================
+  // 13. ONE-CONTEXT MODAL
+  // ========================================================================
+  openOneContextModal(subjectCodeOrName) {
+    const sub = CampusData.subjects.find(s => s.code === subjectCodeOrName || s.name.includes(subjectCodeOrName) || s.short === subjectCodeOrName) || CampusData.subjects[0];
+    const modal = document.getElementById("oneContextModal");
+    const header = document.getElementById("oneCtxHeader");
+    const body = document.getElementById("oneCtxBodyContent");
+
+    if (header) header.textContent = `ONE-CONTEXT VIEW: ${sub.name}`;
+    if (body) {
+      body.innerHTML = `
+        <div style="margin-bottom:1.25rem;">
+          <span class="stamp-seal approved">${sub.code} • ${sub.credits} CREDITS</span>
+          <h3 style="font-family:var(--font-editorial); font-size:1.6rem; margin:0.4rem 0;">${sub.name}</h3>
+          <p style="font-size:0.82rem; color:var(--ink-muted);">Instructor: ${sub.faculty} • Allocated Hall: ${sub.room}</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+          <div class="dispatch-why-box">
+            <strong>ATTENDANCE TELEMETRY:</strong><br>
+            Current: <strong>${sub.attendance.percentage}%</strong> (${sub.attendance.attended}/${sub.attendance.conducted} sessions)<br>
+            Compliance Status: <strong>${sub.attendance.percentage >= 75 ? 'Compliant' : 'Needs Attendance'}</strong>
+          </div>
+          <div class="dispatch-why-box">
+            <strong>INTERNAL SCORE PROFILE:</strong><br>
+            Test 1: <strong>${sub.internals.test1}/${sub.internals.test1Max}</strong> • Test 2: <strong>${sub.internals.test2}/${sub.internals.test2Max}</strong><br>
+            Current Internal Sum: <strong>${sub.internals.total}/${sub.internals.max}</strong>
+          </div>
+        </div>
+
+        <div class="dispatch-why-box" style="margin-bottom:1.5rem;">
+          <strong>NEXT UPCOMING ASSESSMENT:</strong><br>
+          Cycle Test II approaching in 3 days. Focus on Unit 3 (Transactions) & Unit 4 (NoSQL).
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeOneContextModal()">Dismiss</button>
+          <button class="btn-dispatch-action" onclick="App.closeOneContextModal(); App.showLocationModal('205')">Show Room Route</button>
+        </div>
+      `;
+    }
+
+    if (modal) modal.style.display = "flex";
+  },
+
+  closeOneContextModal() {
+    const modal = document.getElementById("oneContextModal");
+    if (modal) modal.style.display = "none";
+  },
+
+  // ========================================================================
+  // 14. PRESENTATION PITCH DECK MODAL
+  // ========================================================================
+  openPitchDeckModal() {
+    const modal = document.getElementById("pitchDeckModal");
+    if (modal) modal.style.display = "flex";
+  },
+
+  closePitchDeckModal() {
+    const modal = document.getElementById("pitchDeckModal");
+    if (modal) modal.style.display = "none";
+  },
+
+  // ========================================================================
+  // 15. PREFERENCES & CRYPTOGRAPHY
+  // ========================================================================
+  savePreferences() {
+    const name = document.getElementById("prefStudentName").value.trim() || "Nivedha";
+    const roll = document.getElementById("prefRollNo").value.trim() || "7376231CS204";
+    const target = parseInt(document.getElementById("prefTargetPercent").value) || 75;
+
+    AppState.updateSettings({ studentName: name, rollNo: roll, targetPercentage: target });
+    this.showToast("✓ System preferences updated in Local Node.");
+  },
+
+  handleFormatNode() {
+    if (confirm("Format local storage node? All cached records will be reseeded.")) {
+      AppState.resetAll();
+      window.location.reload();
+    }
+  },
+
+  // ========================================================================
+  // 16. TOAST HELPER
+  // ========================================================================
+  showToast(msg, duration = 3200) {
+    const toast = document.getElementById("toastNotification");
+    if (!toast) return;
+
+    toast.textContent = msg;
+    toast.style.display = "block";
+
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      toast.style.display = "none";
+    }, duration);
   }
 };
 
 window.App = App;
 
-// Bootstrap on DOMContentLoaded
+// Bootstrap on DOM ready
 document.addEventListener("DOMContentLoaded", () => {
   App.init();
 });

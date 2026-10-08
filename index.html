@@ -3,585 +3,982 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusFlow Peer — Autonomous Student Operating System</title>
-  <meta name="description" content="Tactical Academic Operating System and Smart Attendance Intelligence. From scattered campus schedules to connected autonomous action.">
-  <meta name="theme-color" content="#050505">
+  <title>CampusFlow Peer — Archival Campus Intelligence & Connected Action</title>
+  <meta name="description" content="From scattered campus information to connected campus action. Academic Intelligence, Faculty Grid, Timetable AI, Attendance Scenarios, and Smart Requests.">
+  <meta name="theme-color" content="#f7f4ea">
   
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- Ambient Cyberpunk Lighting -->
-  <div class="ambient-glow" aria-hidden="true">
-    <div class="glow-orb-1"></div>
-    <div class="glow-orb-2"></div>
-  </div>
+  <!-- Subtle Ruled Paper Background Texture -->
+  <div class="paper-texture-canvas" aria-hidden="true"></div>
 
-  <div class="app-layout">
+  <div class="app-dossier-layout">
     
-    <!-- Left Sidebar (LastbencherOS Architecture) -->
-    <aside class="sidebar">
+    <!-- Top Archival Header -->
+    <header class="archival-header">
       
-      <!-- Brand Logo -->
-      <a href="#dashboard" class="sidebar-brand" onclick="App.switchTab('dashboard'); return false;">
-        <div class="brand-icon-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="brand-name">CampusFlow <br><span>PEER</span></h1>
-          <p class="brand-tagline">Autonomous Node 2026</p>
+      <!-- Brand Logo & Motto -->
+      <a href="#home" class="brand-dossier" onclick="App.switchTab('home'); return false;">
+        <div class="typewriter-key-icon">CP</div>
+        <div class="brand-text-block">
+          <h1>CampusFlow <span>PEER</span></h1>
+          <p>Scattered Info ➔ Connected Action • ZanLeo Warrior</p>
         </div>
       </a>
 
-      <!-- Navigation Links -->
-      <nav class="sidebar-nav">
-        <button class="nav-link active" data-tab="dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-          <span>Dashboard</span>
-        </button>
-        <button class="nav-link" data-tab="attendance">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          <span>Attendance</span>
-        </button>
-        <button class="nav-link" data-tab="timetable">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          <span>Timetable</span>
-        </button>
-        <button class="nav-link" data-tab="companion">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          <span>AI Companion</span>
-        </button>
-        <button class="nav-link" data-tab="faculty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          <span>Faculty Matrix</span>
-        </button>
-        <button class="nav-link" data-tab="approvals">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          <span>Routine Approvals</span>
-        </button>
-        <button class="nav-link" data-tab="events">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          <span>Events Hub</span>
-        </button>
-        <button class="nav-link" data-tab="settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          <span>Settings</span>
-        </button>
-      </nav>
-
-      <!-- Sidebar User Profile -->
-      <div class="sidebar-footer">
-        <div class="user-avatar" id="sidebarUserInitial">M</div>
-        <div class="user-info">
-          <p class="user-name" id="sidebarUserHandle">Mohammed Irfaan</p>
-          <div class="user-status">
-            <div class="pulse-dot"></div>
-            <p class="user-status-text">Connected</p>
-          </div>
-        </div>
+      <!-- Universal Campus Search Bar -->
+      <div class="search-dossier-wrap">
+        <svg class="search-dossier-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" class="search-dossier-input" id="universalSearchInput" placeholder="Ask your campus anything (e.g. 'When can I meet Prof. Arun?', 'Where is Room 205?')...">
       </div>
 
-    </aside>
+      <!-- Demo Role Selector & Actions -->
+      <div class="header-actions-group">
+        
+        <!-- 4-Role Demo Switcher -->
+        <div class="role-selector-bar" title="Switch Demo Role for Live Evaluation">
+          <button class="role-pill-btn active" data-role="student" onclick="App.switchRole('student')">
+            <span>🎓</span> Student
+          </button>
+          <button class="role-pill-btn" data-role="faculty" onclick="App.switchRole('faculty')">
+            <span>👨‍🏫</span> Faculty
+          </button>
+          <button class="role-pill-btn" data-role="department" onclick="App.switchRole('department')">
+            <span>🏛️</span> Dept
+          </button>
+          <button class="role-pill-btn" data-role="admin" onclick="App.switchRole('admin')">
+            <span>📊</span> Pulse
+          </button>
+        </div>
 
-    <!-- Main Workspace Area -->
-    <main class="main-area">
+        <!-- Carbon Ink / Paper Ivory Toggle -->
+        <button class="theme-toggle-btn" id="btnThemeToggle" onclick="App.toggleTheme()" title="Toggle Paper Ivory / Carbon Ink">
+          📜 Paper Mode
+        </button>
+
+        <!-- Presentation Pitch Deck Modal Button -->
+        <button class="btn-pitch-deck" onclick="App.openPitchDeckModal()">
+          <span>★</span> Pitch Deck
+        </button>
+
+      </div>
+
+    </header>
+
+    <!-- Quick Query Prompts Bar -->
+    <div style="background:var(--paper-card); border-bottom:1px solid var(--paper-border); padding:0.45rem 1.75rem; display:flex; align-items:center; gap:0.6rem; overflow-x:auto;">
+      <span style="font-family:var(--font-stamp); font-size:0.7rem; text-transform:uppercase; color:var(--ink-muted); white-space:nowrap;">Quick Queries:</span>
+      <button class="typewriter-time-chip" onclick="App.runSampleSearch('When can I meet Prof. Arun?')">"When can I meet Prof. Arun?"</button>
+      <button class="typewriter-time-chip" onclick="App.runSampleSearch('Where is my next class?')">"Where is Room 205?"</button>
+      <button class="typewriter-time-chip" onclick="App.runSampleSearch('How is my attendance?')">"How is my attendance?"</button>
+      <button class="typewriter-time-chip" onclick="App.runSampleSearch('What tests do I have this week?')">"Cycle Test schedule"</button>
+      <button class="typewriter-time-chip" onclick="App.runSampleSearch('Which documents are pending?')">"Pending OD requests"</button>
+      <button class="typewriter-time-chip" onclick="App.runSampleSearch('What is my current CGPA?')">"Current CGPA & What-If"</button>
+    </div>
+
+    <!-- Main Dossier Framework -->
+    <div class="dossier-framework">
       
-      <!-- Top Tactical Header -->
-      <header class="top-header">
-        <div class="header-titles">
-          <h2 id="headerViewTitle">DASHBOARD</h2>
-          <p>Tactical Deployment</p>
-        </div>
-        <div class="header-badges">
-          <div class="pill-badge" id="headerGoalBadge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>GOAL: 78%</span>
-          </div>
-          <div class="pill-badge" style="border-color: rgba(0, 255, 102, 0.3);">
-            <div class="pulse-dot" style="margin-right:2px;"></div>
-            <span style="color:var(--color-brand-green);">Gemini 3.5 Active</span>
-          </div>
-        </div>
-      </header>
-
-      <!-- VIEW 1: DASHBOARD -->
-      <section class="view-panel active" id="panel-dashboard">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar-dossier" id="mainSidebar">
         
-        <!-- Hero Banner -->
-        <div class="dashboard-hero">
-          <div class="hero-glow-blob"></div>
-          <div class="hero-title-row">
-            <div class="hero-indicator-bar"></div>
-            <h1>CampusFlow <span>PEER</span></h1>
+        <div class="dossier-index-label">Academic Dossier</div>
+        
+        <button class="dossier-tab-btn active" data-tab="home" onclick="App.switchTab('home')">
+          <span>🏠</span> <span>Dispatch (Home)</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="timetable" onclick="App.switchTab('timetable')">
+          <span>📅</span> <span>Timetable AI</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="faculty" onclick="App.switchTab('faculty')">
+          <span>👥</span> <span>Faculty Grid</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="attendance" onclick="App.switchTab('attendance')">
+          <span>📈</span> <span>Attendance</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="academics" onclick="App.switchTab('academics')">
+          <span>📊</span> <span>Academics & CGPA</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="vault" onclick="App.switchTab('vault')">
+          <span>📁</span> <span>Document Vault</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="requests" onclick="App.switchTab('requests')">
+          <span>✍️</span> <span>Signatures & OD</span>
+          <span class="dossier-badge-count" id="pendingRequestsBadge">1</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="deadlines" onclick="App.switchTab('deadlines')">
+          <span>🎯</span> <span>Deadline Radar</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="map" onclick="App.switchTab('map')">
+          <span>🗺️</span> <span>Campus Navigator</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="preferences" onclick="App.switchTab('preferences')">
+          <span>⚙️</span> <span>Preferences</span>
+        </button>
+
+        <!-- Sidebar Student Profile Card -->
+        <div class="sidebar-student-card">
+          <div class="student-card-header">
+            <div class="student-stamp-avatar" id="sidebarAvatar">N</div>
+            <div class="student-info-meta">
+              <h4 id="sidebarStudentName">Nivedha</h4>
+              <p id="sidebarStudentRoll">7376231CS204 • CSE 3rd Year</p>
+            </div>
           </div>
-          <p class="hero-lead">Your intelligent academic assistant and tactical attendance tracker.</p>
-          <p class="hero-sub">Designed to optimize your presence strategy and shield your academic performance. Track lectures, analyze attendance fluctuations, and maintain your target percentage with AI-driven precision.</p>
+          <div style="font-size:0.74rem; color:var(--ink-secondary); border-top:1px dashed var(--paper-border); padding-top:0.45rem; display:flex; justify-content:space-between;">
+            <span>Compliance Goal:</span>
+            <strong id="sidebarGoalText" style="font-family:var(--font-stamp); color:var(--stamp-green);">75% MIN</strong>
+          </div>
         </div>
 
-        <!-- Time Range Filters -->
-        <div class="time-filter-bar">
-          <button class="filter-btn active" data-filter="all">ALL</button>
-          <button class="filter-btn" data-filter="month">MONTH</button>
-          <button class="filter-btn" data-filter="week">WEEK</button>
-          <button class="filter-btn" data-filter="day">DAY</button>
-        </div>
+      </aside>
 
-        <!-- Main Dashboard 12-Column Grid -->
-        <div class="dashboard-grid">
+      <!-- Main Dossier Workspace Panels -->
+      <main class="main-dossier-workspace">
+        
+        <!-- ================================================================== -->
+        <!-- ROLE VIEW: STUDENT (NIVEDHA) -->
+        <!-- ================================================================== -->
+        <div id="roleViewStudent">
           
-          <!-- System Efficiency (Col 4) -->
-          <div class="efficiency-card">
-            <div>
-              <div class="card-header-label">
-                <div style="width:8px; height:8px; border-radius:50%; background:var(--color-brand-blue); box-shadow:var(--glow-blue);"></div>
-                <span>System Efficiency</span>
+          <!-- TAB 1: DISPATCH (MY CAMPUS • TODAY / NOW / NEXT) -->
+          <section class="dossier-view-panel active" id="panel-home">
+            
+            <div class="dispatch-banner">
+              <div class="stamp-seal approved dispatch-stamp-tag">OPERATIONAL DIRECTIVE</div>
+              <div style="font-family:var(--font-stamp); font-size:0.82rem; color:var(--stamp-red); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.35rem;">
+                TODAY • WEDNESDAY, 8 OCTOBER 2026
               </div>
-              <p class="card-sub-label" id="efficiencyTargetLabel">Target: 78%</p>
-            </div>
-
-            <!-- Radial Gauge -->
-            <div class="radial-meter-wrap">
-              <div class="radial-glow-backdrop" id="radialGlowBackdrop"></div>
-              <svg class="radial-meter-svg" viewBox="0 0 256 256">
-                <circle class="radial-bg-circle" cx="128" cy="128" r="110"></circle>
-                <circle class="radial-fill-circle" id="radialFillCircle" cx="128" cy="128" r="110"></circle>
-              </svg>
-              <div class="radial-center-content">
-                <div class="radial-percentage-num" id="radialPercentageNum">0%</div>
-                <div class="radial-divider" id="radialDivider"></div>
-                <div class="radial-status-text" id="radialStatusText">SCHEDULE IDLE</div>
-              </div>
-            </div>
-
-            <!-- Tactical Guidance Box -->
-            <div class="guidance-box">
-              <div class="guidance-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:var(--color-brand-blue);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                <span class="guidance-title">Tactical Guidance</span>
-              </div>
-              <p class="guidance-text" id="tacticalGuidanceText">
-                No academic commitments logged yet. Establish timetable directives or manual entries to activate predictive bunk telemetry.
+              <h3>Good Morning, Nivedha</h3>
+              <p class="dispatch-sublead">
+                NEXT ACTION: <strong>DBMS starts in 24 minutes — Room 205</strong> (Prof. Meena Krishnan).
               </p>
-            </div>
-          </div>
+              
+              <div class="dispatch-why-box">
+                <strong>WHY THIS ACTION:</strong> Your current DBMS attendance is at <strong>74.3%</strong>, marginally under your 75% threshold. Attending today's lecture restores your standing to compliant status.
+              </div>
 
-          <!-- Bunk Capacity Card (Col 3) -->
-          <div class="bunk-capacity-card" id="bunkCapacityCard">
-            <div class="capacity-top">
-              <div class="card-header-label">Bunk Capacity</div>
-              <div class="status-pill" id="bunkStatusPill">LOCKED</div>
+              <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <button class="btn-dispatch-action" onclick="App.showLocationModal('205')">
+                  <span>🗺️</span> View Room 205 Route
+                </button>
+                <button class="btn-dossier-sm btn-outline-ink" onclick="App.openOneContextModal('CS3501')">
+                  <span>✦</span> One-Context View
+                </button>
+              </div>
             </div>
-            <div>
-              <div class="bunk-number" id="bunkCapacityNum">0</div>
-              <div class="bunk-subtext" id="bunkSubtext">Zero session redundancy.</div>
-            </div>
-            <div class="capacity-bottom-bar" id="bunkBottomBar"></div>
-          </div>
 
-          <!-- Session Integrity Card (Col 5) -->
-          <div class="integrity-card">
-            <div class="mini-donut-wrap">
-              <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" stroke="var(--color-zinc-800)" stroke-width="10" fill="none"></circle>
-                <circle id="donutPresentArc" cx="50" cy="50" r="45" stroke="var(--color-brand-green)" stroke-width="10" fill="none" stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"></circle>
-                <circle id="donutAbsentArc" cx="50" cy="50" r="45" stroke="var(--color-brand-red)" stroke-width="10" fill="none" stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"></circle>
-              </svg>
-            </div>
-            <div class="integrity-stats">
-              <div class="integrity-title">Session Integrity</div>
-              <div class="stat-pill-row">
-                <div class="stat-tag-wrap">
-                  <div class="stat-tag-dot" style="background:var(--color-brand-green); box-shadow:var(--glow-green);"></div>
-                  <span class="stat-tag-label">Present</span>
+            <!-- Personal Academic Twin 4-Card Summary -->
+            <div class="twin-index-cards-row">
+              <div class="twin-index-card" onclick="App.switchTab('attendance')">
+                <div class="twin-card-category">
+                  <span>Attendance Standing</span>
+                  <span class="stamp-seal action">72.0%</span>
                 </div>
-                <span class="stat-tag-val" id="presentCountVal" style="color:var(--color-brand-green);">0</span>
+                <div class="twin-card-val" id="twinAttendanceNum">72.0%</div>
+                <p class="twin-card-note">36 Attended of 50 Classes • Goal: 75%</p>
               </div>
-              <div class="stat-pill-row">
-                <div class="stat-tag-wrap">
-                  <div class="stat-tag-dot" style="background:var(--color-brand-red); box-shadow:var(--glow-red);"></div>
-                  <span class="stat-tag-label">Absent</span>
+
+              <div class="twin-index-card" onclick="App.switchTab('academics')">
+                <div class="twin-card-category">
+                  <span>Academic Standing</span>
+                  <span class="stamp-seal approved">CGPA 8.42</span>
                 </div>
-                <span class="stat-tag-val" id="absentCountVal" style="color:var(--color-brand-red);">0</span>
+                <div class="twin-card-val">8.42</div>
+                <p class="twin-card-note">68 Credits Completed • Target: 8.80</p>
               </div>
-            </div>
-          </div>
 
-          <!-- Weekly Activity Trend (Col 5) -->
-          <div class="trend-card">
-            <div class="trend-top">
-              <h3>Weekly Activity Trend</h3>
-              <div class="pill-badge" style="padding:0.35rem 0.75rem;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                <span>7-Day Log</span>
+              <div class="twin-index-card" onclick="App.switchTab('deadlines')">
+                <div class="twin-card-category">
+                  <span>Upcoming Tests</span>
+                  <span class="stamp-seal pending">3 Active</span>
+                </div>
+                <div class="twin-card-val">3</div>
+                <p class="twin-card-note">DBMS Cycle Test II approaching in 3 days</p>
               </div>
-            </div>
-            <div class="bars-container" id="trendBarsContainer">
-              <!-- Dynamically rendered -->
-            </div>
-          </div>
 
-          <!-- Engagement Heatmap (Col 3) -->
-          <div class="heatmap-card">
-            <div class="heatmap-title">Engagement Heatmap</div>
-            <div class="heatmap-grid" id="heatmapGrid">
-              <!-- 21 day cells dynamically rendered -->
-            </div>
-            <div class="heatmap-metrics">
-              <div class="metric-row">
-                <span>Consistency</span>
-                <span>High</span>
-              </div>
-              <div class="metric-row">
-                <span>Avg. Daily</span>
-                <span id="heatmapAvgDaily">0 Classes</span>
+              <div class="twin-index-card" onclick="App.switchTab('requests')">
+                <div class="twin-card-category">
+                  <span>Routine Approvals</span>
+                  <span class="stamp-seal verified">1 Pending</span>
+                </div>
+                <div class="twin-card-val">1</div>
+                <p class="twin-card-note">HACKNEXT'26 OD Exemption with Dr. Arun</p>
               </div>
             </div>
-          </div>
+
+            <!-- Typed Campus Timeline Sheet -->
+            <div class="timeline-journal-sheet">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--ink-primary); padding-bottom:0.75rem; margin-bottom:1.25rem;">
+                <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase;">
+                  TODAY'S CONNECTED CAMPUS TIMELINE
+                </h3>
+                <span class="stamp-seal verified">DYNAMIC SCHEDULE</span>
+              </div>
+
+              <div id="journalEntriesContainer">
+                <!-- Dynamically populated from CampusData.todayTimeline -->
+              </div>
+            </div>
+
+          </section>
+
+          <!-- TAB 2: TIMETABLE AI (MULTIMODAL INTELLIGENCE & SCHEDULE) -->
+          <section class="dossier-view-panel" id="panel-timetable">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>OPERATIONS SCHEDULE & AI INTELLIGENCE</h2>
+                <p>Upload timetable image/PDF or load realistic preset • Connects directly to Attendance & Faculty Graph</p>
+              </div>
+              
+              <div class="timetable-btn-cluster">
+                <!-- Preset Sample Button -->
+                <button class="btn-pitch-deck" onclick="App.loadPresetSchedule()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
+                  <span>⚡</span> Load SNS College CSE Timetable
+                </button>
+
+                <!-- Hidden file input for OCR upload -->
+                <input type="file" id="timetableUploadInput" accept="image/*,.pdf" style="display:none;" onchange="App.handleTimetableFile(this)">
+                <button class="btn-dispatch-action" onclick="document.getElementById('timetableUploadInput').click()">
+                  <span>📸</span> AI OCR Extract (Image/PDF)
+                </button>
+
+                <!-- Add Entry Button -->
+                <button class="btn-dossier-sm btn-outline-ink" onclick="App.openAddEntryModal()">
+                  <span>+</span> Manual Entry
+                </button>
+
+                <!-- Reset Button -->
+                <button class="btn-dossier-sm btn-outline-ink" id="btnResetTimetable" onclick="App.handleResetTimetable()">
+                  <span>🗑️</span> Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Idle Empty State (shown if timetable is empty) -->
+            <div id="timetableIdleCard" class="paper-card" style="text-align:center; padding:3.5rem 2rem; display:none;">
+              <div style="font-size:3rem; margin-bottom:1rem;">📜</div>
+              <h3 style="font-family:var(--font-editorial); font-size:1.75rem; margin-bottom:0.5rem;">Schedule Sheet Idle</h3>
+              <p style="color:var(--ink-muted); max-width:520px; margin:0 auto 1.5rem;">
+                No timetable directives loaded yet. You can extract directly from a timetable photo or PDF, or load the instant SNS College CSE demo preset.
+              </p>
+              <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+                <button class="btn-pitch-deck" onclick="App.loadPresetSchedule()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
+                  <span>⚡</span> 1-Click Load CSE Timetable
+                </button>
+                <button class="btn-dispatch-action" onclick="document.getElementById('timetableUploadInput').click()">
+                  <span>📸</span> Upload Timetable Photo/PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Columns Grid (Monday through Saturday) -->
+            <div class="timetable-columns-grid" id="timetableDaysGrid">
+              <!-- Dynamically populated -->
+            </div>
+
+          </section>
+
+          <!-- TAB 3: FACULTY AVAILABILITY (DIGITALIZED GRID • STRICTLY NO GRAPH) -->
+          <section class="dossier-view-panel" id="panel-faculty">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>DIGITALIZED PROFESSOR AVAILABILITY GRID</h2>
+                <p>Eliminate physical corridor chasing • Real-time cabin status, declared free hours, and 1-click OD routing</p>
+              </div>
+              <span class="stamp-seal approved">INTERACTIVE GRID VIEW</span>
+            </div>
+
+            <!-- Filter Controls Bar -->
+            <div class="faculty-controls-bar">
+              <div class="dept-filter-pills">
+                <button class="filter-tab-stamp active" data-dept="all" onclick="App.filterFaculty('dept', 'all')">All Depts</button>
+                <button class="filter-tab-stamp" data-dept="CSE" onclick="App.filterFaculty('dept', 'CSE')">CSE</button>
+                <button class="filter-tab-stamp" data-dept="IT" onclick="App.filterFaculty('dept', 'IT')">IT</button>
+                <button class="filter-tab-stamp" data-dept="AI & DS" onclick="App.filterFaculty('dept', 'AI & DS')">AI & DS</button>
+              </div>
+
+              <div class="dept-filter-pills">
+                <button class="filter-tab-stamp active" data-status="all" onclick="App.filterFaculty('status', 'all')">All Status</button>
+                <button class="filter-tab-stamp" data-status="available" onclick="App.filterFaculty('status', 'available')">🟢 Available in Cabin</button>
+                <button class="filter-tab-stamp" data-status="class" onclick="App.filterFaculty('status', 'class')">🔴 In Class</button>
+                <button class="filter-tab-stamp" data-status="meeting" onclick="App.filterFaculty('status', 'meeting')">🟡 In Meeting</button>
+              </div>
+            </div>
+
+            <!-- Interactive Faculty Cards Grid -->
+            <div class="faculty-dossier-grid" id="facultyCardsContainer">
+              <!-- Dynamically populated from CampusData.faculty -->
+            </div>
+
+            <!-- Tabular Slot-by-Period Timetable Grid -->
+            <div class="tabular-grid-sheet">
+              <div style="padding:1rem 1.25rem; border-bottom:1.5px solid var(--paper-border-dark); display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="font-family:var(--font-stamp); font-size:0.95rem; text-transform:uppercase;">
+                  DAILY FACULTY CONSULTATION SLOT-MATRIX (TODAY)
+                </h4>
+                <span style="font-size:0.75rem; color:var(--ink-muted);">PERIOD 1 (09:00 AM) TO PERIOD 6 (04:15 PM)</span>
+              </div>
+              <table class="typewriter-table" id="facultyMatrixTable">
+                <!-- Populated dynamically -->
+              </table>
+            </div>
+
+          </section>
+
+          <!-- TAB 4: ATTENDANCE INTELLIGENCE & SCENARIO PLANNER -->
+          <section class="dossier-view-panel" id="panel-attendance">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>ATTENDANCE INTELLIGENCE & SCENARIO PLANNER</h2>
+                <p>Auditable, deterministic attendance calculations • Simulate future class scenarios without guessing</p>
+              </div>
+              <span class="stamp-seal verified">POLICY COMPLIANCE</span>
+            </div>
+
+            <div class="attendance-split-grid">
+              
+              <!-- Metric Sheet -->
+              <div class="attendance-index-sheet">
+                <span class="stamp-seal action" id="attendanceComplianceSeal">ATTENTION REQUIRED</span>
+                <div class="attendance-meter-number" id="attendancePercentageText">72.0%</div>
+                <div class="attendance-target-label" id="attendanceTargetLabel">INSTITUTIONAL TARGET: 75%</div>
+                
+                <div style="margin:1.5rem 0; border-top:1px dashed var(--paper-border-dark); border-bottom:1px dashed var(--paper-border-dark); padding:1rem 0; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; text-align:left; font-size:0.8rem;">
+                  <div>Classes Attended: <strong id="attAttendedCount">36</strong></div>
+                  <div>Classes Missed: <strong id="attMissedCount">14</strong></div>
+                  <div>Total Conducted: <strong id="attTotalCount">50</strong></div>
+                  <div>Consecutive Needed: <strong id="attNeededCount" style="color:var(--stamp-red);">6 Classes</strong></div>
+                </div>
+
+                <div class="dispatch-why-box" id="attendanceAdviceBox" style="text-align:left; margin-bottom:0;">
+                  <!-- Dynamic advice text -->
+                </div>
+              </div>
+
+              <!-- Interactive Scenario Simulator -->
+              <div class="paper-card scenario-planner-box">
+                <span class="stamp-seal approved">WHAT-IF SCENARIO ENGINE</span>
+                <h3 style="margin-top:0.5rem;">Simulate Academic Attendance Scenarios</h3>
+                <p style="color:var(--ink-secondary); font-size:0.84rem;">
+                  Select a hypothesis below to project your compliance percentage based on current recorded totals.
+                </p>
+
+                <div class="scenario-buttons-row">
+                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario(5, 0)">
+                    <h5>Attend Next 5</h5>
+                    <p id="scenPlus5Val">74.5%</p>
+                    <span style="font-size:0.72rem; color:var(--ink-muted);">+2.5% boost</span>
+                  </div>
+
+                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario(10, 0)">
+                    <h5>Attend Next 10</h5>
+                    <p id="scenPlus10Val">76.7%</p>
+                    <span style="font-size:0.72rem; color:var(--stamp-green);">Crosses Target!</span>
+                  </div>
+
+                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario(0, 1)">
+                    <h5>Miss 1 Future</h5>
+                    <p id="scenMinus1Val">70.6%</p>
+                    <span style="font-size:0.72rem; color:var(--stamp-red);">-1.4% drop</span>
+                  </div>
+
+                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario('reach', 80)">
+                    <h5>Reach 80%</h5>
+                    <p>20 Classes</p>
+                    <span style="font-size:0.72rem; color:var(--ink-muted);">Mandatory count</span>
+                  </div>
+                </div>
+
+                <div class="dispatch-why-box" id="scenarioOutputBox">
+                  Select any scenario button above to project your exact attendance percentage and verify compliance.
+                </div>
+
+                <!-- Configurable Policy Slider -->
+                <div style="margin-top:1.5rem; border-top:1px dashed var(--paper-border-dark); padding-top:1.25rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-family:var(--font-stamp); font-size:0.8rem; text-transform:uppercase;">
+                      Adjust Institutional Target Threshold:
+                    </label>
+                    <strong id="targetPercentSliderValue" style="font-family:var(--font-stamp); font-size:1.1rem; color:var(--stamp-red);">75%</strong>
+                  </div>
+                  <input type="range" class="form-field-input" id="thresholdSlider" min="50" max="100" value="75" style="margin-top:0.5rem;" oninput="App.updateTargetThreshold(this.value)">
+                  <p style="font-size:0.75rem; color:var(--ink-muted); margin-top:0.35rem;">
+                    Configurable institutional threshold automatically updates all advice and recovery directives.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+          </section>
+
+          <!-- TAB 5: ACADEMICS & WHAT-IF SIMULATOR -->
+          <section class="dossier-view-panel" id="panel-academics">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>ACADEMIC PERFORMANCE & WHAT-IF CGPA SIMULATOR</h2>
+                <p>Semester SGPA progression, internal marks breakdown, and configurable grade projections</p>
+              </div>
+              <span class="stamp-seal approved">COE VERIFIED</span>
+            </div>
+
+            <!-- CGPA Hero & Simulator Grid -->
+            <div class="attendance-split-grid" style="margin-bottom:2rem;">
+              
+              <div class="attendance-index-sheet">
+                <span class="stamp-seal approved">FIRST CLASS WITH DISTINCTION</span>
+                <div class="attendance-meter-number">8.42</div>
+                <div class="attendance-target-label">CUMULATIVE CGPA • 68 CREDITS</div>
+
+                <div style="margin:1.5rem 0; text-align:left; font-size:0.8rem; line-height:1.8;">
+                  <div>• Semester 1 SGPA: <strong>8.10</strong> (22 Credits)</div>
+                  <div>• Semester 2 SGPA: <strong>8.40</strong> (23 Credits)</div>
+                  <div>• Semester 3 SGPA: <strong>8.75</strong> (23 Credits)</div>
+                  <div>• Current Semester 4: <strong>In Progress</strong></div>
+                </div>
+
+                <div class="dispatch-why-box" style="text-align:left; margin-bottom:0;">
+                  Target overall CGPA is <strong>8.80</strong>. Scoring <strong>9.10+</strong> in Semester 4 will achieve this target.
+                </div>
+              </div>
+
+              <!-- What-If Simulator Card -->
+              <div class="paper-card">
+                <span class="stamp-seal verified">WHAT-IF ACADEMIC SIMULATOR</span>
+                <h3 style="font-family:var(--font-editorial); font-size:1.45rem; margin:0.5rem 0;">
+                  Project Cumulative CGPA Trajectory
+                </h3>
+                <p style="color:var(--ink-secondary); font-size:0.84rem;">
+                  Simulate your projected Semester 4 SGPA to calculate final cumulative outcome.
+                </p>
+
+                <div style="margin:1.5rem 0;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-family:var(--font-stamp); font-size:0.85rem; text-transform:uppercase;">
+                      Projected Semester 4 SGPA:
+                    </label>
+                    <strong id="whatIfSgpaDisplay" style="font-family:var(--font-stamp); font-size:1.4rem; color:var(--stamp-blue);">9.10</strong>
+                  </div>
+                  <input type="range" class="form-field-input" id="whatIfSgpaSlider" min="7.00" max="10.00" step="0.05" value="9.10" style="margin-top:0.5rem;" oninput="App.updateWhatIfCgpa(this.value)">
+                </div>
+
+                <div class="dispatch-why-box" id="whatIfResultBox">
+                  With a <strong>9.10 SGPA</strong> in Semester 4 (24 credits), your Cumulative CGPA increases from <strong>8.42</strong> to <strong>8.60</strong>. To reach <strong>8.80</strong>, maintain this trajectory through Semester 5.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Academic Risk Radar & Internal Marks Breakdown -->
+            <div class="paper-card">
+              <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase; margin-bottom:1rem;">
+                ACADEMIC RISK RADAR (SUBJECT-WISE EVALUATION)
+              </h3>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:1.25rem;" id="subjectInternalsGrid">
+                <!-- Dynamically populated from CampusData.subjects -->
+              </div>
+            </div>
+
+          </section>
+
+          <!-- TAB 6: DOCUMENT VAULT ("FILL ONCE, REUSE SAFELY") -->
+          <section class="dossier-view-panel" id="panel-vault">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>SMART DOCUMENT VAULT & VERIFICATION</h2>
+                <p>Private academic credentials, official certificates & autofill templates • Zero public exposure</p>
+              </div>
+              <button class="btn-dispatch-action" onclick="App.openNewRequestModal('Bonafide Certificate')">
+                <span>+</span> Request Bonafide / Form
+              </button>
+            </div>
+
+            <!-- Vault Cards Grid -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;" id="documentVaultGrid">
+              <!-- Dynamically populated from CampusData.documents -->
+            </div>
+
+          </section>
+
+          <!-- TAB 7: ROUTINE APPROVALS & SIGNATURE WORKFLOW -->
+          <section class="dossier-view-panel" id="panel-requests">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>SMART ROUTINE APPROVALS (OD & SIGNATURES)</h2>
+                <p>Pre-routed approval tracking • Automated faculty availability checks • Transparent multi-tier audit trail</p>
+              </div>
+              <button class="btn-dispatch-action" onclick="App.openNewRequestModal('On-Duty (OD)')">
+                <span>+</span> Draft New OD Request
+              </button>
+            </div>
+
+            <div class="dispatch-why-box" style="margin-bottom:1.5rem;">
+              <strong>NOTICE ON LEGAL SIGNATURES:</strong> For official financial or external legal submissions, institutional manual protocol applies. CampusFlow Peer streamlines availability checks, draft preparation, advisor pre-endorsement, and workflow tracking.
+            </div>
+
+            <!-- Requests List -->
+            <div id="requestsListContainer">
+              <!-- Dynamically populated from CampusData.requests -->
+            </div>
+
+          </section>
+
+          <!-- TAB 8: DEADLINE RADAR & UPCOMING TESTS -->
+          <section class="dossier-view-panel" id="panel-deadlines">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>CAMPUS DEADLINE & ASSESSMENT RADAR</h2>
+                <p>Prioritized by temporal proximity • Assignments, cycle tests, circulars, and hackathons</p>
+              </div>
+              <span class="stamp-seal action">ACTIVE CHRONOLOGY</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;" id="deadlinesListContainer">
+              <!-- Dynamically populated from CampusData.deadlines -->
+            </div>
+
+          </section>
+
+          <!-- TAB 9: CAMPUS NAVIGATOR (LIGHTWEIGHT INDOOR MAP) -->
+          <section class="dossier-view-panel" id="panel-map">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>CAMPUS LOCATION & ROUTE NAVIGATOR</h2>
+                <p>Step-by-step indoor routing to lecture halls, faculty cabins, laboratories, and exam halls</p>
+              </div>
+            </div>
+
+            <div class="paper-card">
+              <h3 style="font-family:var(--font-stamp); font-size:1.15rem; margin-bottom:1rem; text-transform:uppercase;">
+                SELECT TARGET CAMPUS ROOM:
+              </h3>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('205')">Room 205 (DBMS Lecture)</button>
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('304')">Room 304 (Dr. Arun Sundaram)</button>
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('214')">Room 214 (Prof. Meena Krishnan)</button>
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('301')">Room 301 (HOD Office Suite)</button>
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('401')">Room 401 (Operating Systems)</button>
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('Lab 3')">Lab 3 (Cloud & DevOps Lab)</button>
+                <button class="typewriter-time-chip" onclick="App.showLocationModal('Auditorium')">Auditorium (HACKNEXT'26)</button>
+              </div>
+
+              <div id="inlineLocationDetails" class="dispatch-why-box" style="font-size:0.9rem;">
+                Click any room above to view building, floor, landmark, and turn-by-turn walking steps.
+              </div>
+            </div>
+
+          </section>
+
+          <!-- TAB 10: PREFERENCES & CRYPTOGRAPHY -->
+          <section class="dossier-view-panel" id="panel-preferences">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>SYSTEM PREFERENCES & PERSISTENT NODE</h2>
+                <p>Local-first storage configuration • Compliance targets • Cryptographic wipe</p>
+              </div>
+            </div>
+
+            <div class="paper-card">
+              <div class="form-field-group">
+                <label>Student Handle Alias:</label>
+                <input type="text" class="form-field-input" id="prefStudentName" value="Nivedha">
+              </div>
+
+              <div class="form-field-group">
+                <label>Roll Number / Registration Identifier:</label>
+                <input type="text" class="form-field-input" id="prefRollNo" value="7376231CS204">
+              </div>
+
+              <div class="form-field-group">
+                <label>Target Compliance Percentage (50% - 100%):</label>
+                <input type="number" class="form-field-input" id="prefTargetPercent" value="75" min="50" max="100">
+              </div>
+
+              <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+                <button class="btn-dispatch-action" onclick="App.savePreferences()">
+                  <span>💾</span> Save Preferences
+                </button>
+                <button class="btn-dossier-sm btn-outline-ink" onclick="App.handleFormatNode()" style="color:var(--stamp-red); border-color:var(--stamp-red);">
+                  <span>🗑️</span> Format Local Node
+                </button>
+              </div>
+            </div>
+
+          </section>
 
         </div>
 
-      </section>
-
-      <!-- VIEW 2: TIMETABLE (Operations Schedule • Zero Preload) -->
-      <section class="view-panel" id="panel-timetable">
-        
-        <!-- Header Card -->
-        <div class="schedule-header-card">
-          <div class="schedule-title-block">
-            <div class="schedule-icon-squircle">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            </div>
-            <div>
-              <h3>Operations Schedule</h3>
-              <p>Tactical Planning</p>
-            </div>
-          </div>
-
-          <div class="schedule-actions">
-            <!-- Reset Button with 3s Red Confirmation -->
-            <button class="btn-reset-schedule" id="btnResetTimetable" style="display:none;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              <span>Reset All</span>
-            </button>
-
-            <!-- AI Intelligence File Input -->
-            <input type="file" id="timetableFileInput" accept="image/*,.pdf" style="display:none;">
-            <button class="btn-ai-intel" id="btnAiIntel">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
-              <span>AI Intelligence</span>
-            </button>
-
-            <!-- Add Entry Button -->
-            <button class="btn-add-entry" id="btnOpenAddEntry">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>Add Entry</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Schedule Idle Card (Zero Preloaded Timetables Empty State) -->
-        <div class="schedule-idle-card" id="timetableIdleCard">
-          <div class="idle-glow-orb"></div>
-          <svg class="idle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
-          <div class="idle-text-block">
-            <h4>Schedule Idle</h4>
-            <p>No operational directives established. Initiate AI Intelligence or manual entry phase.</p>
-          </div>
-        </div>
-
-        <!-- Days Grid (When Timetable Exists) -->
-        <div class="days-grid" id="timetableDaysContainer">
-          <!-- Dynamically populated -->
-        </div>
-
-      </section>
-
-      <!-- VIEW 3: ATTENDANCE (Chronicle Ledger & Daily Manifest) -->
-      <section class="view-panel" id="panel-attendance">
-        
-        <div class="attendance-layout">
+        <!-- ================================================================== -->
+        <!-- ROLE VIEW: FACULTY (DR. ARUN SUNDARAM) -->
+        <!-- ================================================================== -->
+        <div id="roleViewFaculty" style="display:none;">
           
-          <!-- Chronicle Ledger (Calendar) -->
-          <div class="calendar-card">
-            <div class="calendar-header">
-              <div class="calendar-header-left">
-                <div class="calendar-icon-squircle">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                </div>
-                <div>
-                  <h3 id="calendarMonthTitle">October 2026</h3>
-                  <p>Chronicle Ledger</p>
-                </div>
-              </div>
-              <div class="calendar-nav-controls">
-                <button class="cal-nav-btn" onclick="App.changeMonth(-1)" title="Previous Month">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <button class="cal-nav-btn" onclick="App.changeMonth(1)" title="Next Month">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
-              </div>
+          <div class="section-dossier-title">
+            <div>
+              <h2>FACULTY ADVISORY DESK — DR. ARUN SUNDARAM</h2>
+              <p>Associate Professor & Class Advisor • Room 304 (Main Academic Block)</p>
+            </div>
+            <span class="stamp-seal approved">FACULTY ACCESS LEVEL</span>
+          </div>
+
+          <!-- Availability Controller -->
+          <div class="paper-card">
+            <h3 style="font-family:var(--font-stamp); font-size:1.15rem; margin-bottom:0.75rem; text-transform:uppercase;">
+              DECLARE LIVE CABIN STATUS:
+            </h3>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+              <button class="filter-tab-stamp active" onclick="App.setFacultyDeclaredStatus('available')">🟢 Available in Cabin (Free)</button>
+              <button class="filter-tab-stamp" onclick="App.setFacultyDeclaredStatus('class')">🔴 In Class (Lecture Hall)</button>
+              <button class="filter-tab-stamp" onclick="App.setFacultyDeclaredStatus('meeting')">🟡 In Department Council Meeting</button>
+              <button class="filter-tab-stamp" onclick="App.setFacultyDeclaredStatus('break')">☕ Short Break / Lunch</button>
+            </div>
+            <p style="font-size:0.8rem; color:var(--ink-secondary);">
+              Current consultation window: <strong>02:30 PM – 04:15 PM</strong>. Updating broadcasts to all enrolled students immediately.
+            </p>
+          </div>
+
+          <!-- Incoming Student Requests Queue -->
+          <div class="paper-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase;">
+                STUDENT ROUTINE REQUEST QUEUE (ACTION REQUIRED)
+              </h3>
+              <span class="stamp-seal pending">1 PENDING ENDORSEMENT</span>
             </div>
 
-            <!-- Weekday Headers -->
-            <div class="weekdays-row">
-              <div class="weekday-header">Sun</div>
-              <div class="weekday-header">Mon</div>
-              <div class="weekday-header">Tue</div>
-              <div class="weekday-header">Wed</div>
-              <div class="weekday-header">Thu</div>
-              <div class="weekday-header">Fri</div>
-              <div class="weekday-header">Sat</div>
-            </div>
-
-            <!-- Month Day Cells -->
-            <div class="month-days-grid" id="calendarDaysGrid">
+            <div id="facultyQueueContainer">
               <!-- Dynamically populated -->
             </div>
           </div>
 
-          <!-- Daily Manifest (Marking Attendance for Selected Date) -->
-          <div class="manifest-column">
-            
-            <div class="daily-manifest-card">
-              <div class="manifest-top-row">
-                <div>
-                  <div class="manifest-lead-label">Daily Manifest</div>
-                  <h3 class="manifest-date-title" id="manifestDateTitle">8th October</h3>
-                  <p class="manifest-day-name" id="manifestDayName">Thursday</p>
-                </div>
-                <div class="manifest-calendar-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                </div>
-              </div>
-
-              <!-- Saturday Phase Configuration (Overrides) -->
-              <div class="phase-config-box" id="saturdayPhaseBox" style="display:none;">
-                <div class="phase-config-label">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                  <span>Phase Configuration</span>
-                </div>
-                <div class="phase-btn-grid">
-                  <button class="phase-btn active" data-day="Default" onclick="App.setPhaseOverride('Default')">Default</button>
-                  <button class="phase-btn" data-day="Monday" onclick="App.setPhaseOverride('Monday')">Monday</button>
-                  <button class="phase-btn" data-day="Tuesday" onclick="App.setPhaseOverride('Tuesday')">Tuesday</button>
-                  <button class="phase-btn" data-day="Wednesday" onclick="App.setPhaseOverride('Wednesday')">Wednesday</button>
-                  <button class="phase-btn" data-day="Thursday" onclick="App.setPhaseOverride('Thursday')">Thursday</button>
-                  <button class="phase-btn" data-day="Friday" onclick="App.setPhaseOverride('Friday')">Friday</button>
-                  <button class="phase-btn" data-day="Holiday" onclick="App.setPhaseOverride('Holiday')">Holiday</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mission Scope (Lecture Slots) -->
-            <div class="mission-scope-card">
-              <div class="scope-header">
-                <h4>
-                  <div class="scope-header-indicator"></div>
-                  <span>Mission Scope</span>
-                </h4>
-                <div class="scope-count-badge" id="missionScopeTotalBadge">0 TOTAL</div>
-              </div>
-
-              <div class="scope-slots-list" id="missionScopeSlotsList">
-                <!-- Dynamically rendered slots or Zero Constraints -->
-              </div>
-            </div>
-
-          </div>
-
         </div>
 
-      </section>
-
-      <!-- VIEW 4: AI COMPANION -->
-      <section class="view-panel" id="panel-companion">
-        <div class="tactical-card">
-          <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
-            <div class="schedule-icon-squircle">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            </div>
-            <div>
-              <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase;">Campus AI Intelligence</h3>
-              <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Powered by Gemini 3.5 Flash-Lite & 3.8 Flash</p>
-            </div>
-          </div>
-
-          <div class="chat-window-box">
-            <div class="chat-messages-container" id="companionMessagesList"></div>
-            <div class="chat-input-bar">
-              <input type="text" class="chat-input-field" id="companionInput" placeholder="Ask: &quot;Can I bunk DBMS today?&quot;, &quot;How to recover to 78%?&quot;">
-              <button class="btn-chat-send" id="btnSendChat">Transmit</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 5: FACULTY MATRIX -->
-      <section class="view-panel" id="panel-faculty">
-        <div class="tactical-card" style="margin-bottom:1.5rem;">
-          <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:0.25rem;">Live Faculty Accessibility Matrix</h3>
-          <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Eliminate physical department search. Real-time availability & cabin locations.</p>
-        </div>
-        <div class="faculty-grid" id="facultyListGrid"></div>
-      </section>
-
-      <!-- VIEW 6: ROUTINE APPROVALS -->
-      <section class="view-panel" id="panel-approvals">
-        <div class="tactical-card" style="margin-bottom:1.5rem;">
-          <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:0.25rem;">Smart Routine Approvals (OD & Signatures)</h3>
-          <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Automated digital verification with zero paper trail.</p>
-        </div>
-        <div id="approvalsListContainer"></div>
-      </section>
-
-      <!-- VIEW 7: EVENTS HUB -->
-      <section class="view-panel" id="panel-events">
-        <div class="tactical-card" style="margin-bottom:1.5rem;">
-          <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:0.25rem;">Verified Campus Circulars & Hackathons</h3>
-          <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Autonomous notifications parsed directly into attendance impact.</p>
-        </div>
-        <div id="eventsListContainer"></div>
-      </section>
-
-      <!-- VIEW 8: SETTINGS (Exact LastbencherOS Architecture) -->
-      <section class="view-panel" id="panel-settings">
-        
-        <div class="settings-grid">
+        <!-- ================================================================== -->
+        <!-- ROLE VIEW: DEPARTMENT (CSE DEPARTMENT DESK) -->
+        <!-- ================================================================== -->
+        <div id="roleViewDept" style="display:none;">
           
-          <!-- Identity Section -->
-          <div class="settings-section-card">
+          <div class="section-dossier-title">
             <div>
-              <div class="settings-header-row">
-                <div class="settings-icon-squircle">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                </div>
-                <div>
-                  <h3>Identity</h3>
-                  <p>Personalize student profile.</p>
-                </div>
-              </div>
-
-              <div class="settings-fields">
-                <div class="form-group">
-                  <label>Full Handle</label>
-                  <input type="text" class="form-control" id="settingHandleInput" placeholder="Student Alias" value="Mohammed Irfaan">
-                </div>
-
-                <div class="form-group">
-                  <div class="slider-header-row">
-                    <label style="margin-bottom:0;">Threshold Limit</label>
-                    <div class="slider-percentage-val">
-                      <span id="targetPercentVal">78</span><span>%</span>
-                    </div>
-                  </div>
-                  <div class="range-slider-wrap">
-                    <input type="range" class="range-slider-input" id="targetPercentSlider" min="50" max="100" step="1" value="78">
-                    <div class="range-slider-fill" id="targetPercentFill" style="width:78%;"></div>
-                  </div>
-                  <p class="slider-hint-text">Adjusting this affects your Bunk Counselor strategy and Dashboard metrics instantly.</p>
-                </div>
-              </div>
+              <h2>DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING</h2>
+              <p>Room allocations, circular dispatches, and faculty consultation telemetry</p>
             </div>
-
-            <button class="btn-sync-settings" id="btnSyncSettings">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-              <span>Synchronize Configuration</span>
-            </button>
+            <span class="stamp-seal verified">DEPARTMENT DESK</span>
           </div>
 
-          <!-- Cryptography / Local Node Section -->
-          <div class="settings-section-card">
-            <div>
-              <div class="settings-header-row">
-                <div class="settings-icon-squircle" style="color:var(--color-zinc-400);">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </div>
-                <div>
-                  <h3>Cryptography</h3>
-                  <p>Security & node persistence.</p>
-                </div>
-              </div>
-
-              <div style="padding:1.25rem; background:rgba(5,5,5,0.6); border:1px solid var(--color-zinc-800); border-radius:1.25rem; margin-bottom:2rem;">
-                <p style="font-size:12px; color:var(--color-zinc-400); line-height:1.6;">
-                  Your credentials and records are stored in <strong style="color:var(--color-brand-blue); font-family:var(--font-mono);">Local Node (Browser)</strong>. Clearing node data will reset your academic progress to zero.
-                </p>
-              </div>
-            </div>
-
-            <button class="btn-format-node" id="btnFormatNode">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              <span>Format Data Node</span>
-            </button>
+          <div class="paper-card">
+            <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase; margin-bottom:1rem;">
+              ROOM & LAB ALLOCATIONS (TODAY)
+            </h3>
+            <table class="typewriter-table">
+              <thead>
+                <tr>
+                  <th>Room Code</th>
+                  <th>Location</th>
+                  <th>Current Occupant</th>
+                  <th>Course Code</th>
+                  <th>Capacity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Room 205</strong></td>
+                  <td>2nd Floor, Main Block</td>
+                  <td>Prof. Meena Krishnan</td>
+                  <td>DBMS (CS3501)</td>
+                  <td>60 Students</td>
+                </tr>
+                <tr>
+                  <td><strong>Room 302</strong></td>
+                  <td>3rd Floor, Main Block</td>
+                  <td>Dr. Arun Sundaram</td>
+                  <td>DSA (CS3502)</td>
+                  <td>60 Students</td>
+                </tr>
+                <tr>
+                  <td><strong>Room 401</strong></td>
+                  <td>4th Floor, Main Block</td>
+                  <td>Prof. Priya Ramachandran</td>
+                  <td>OS (CS3503)</td>
+                  <td>65 Students</td>
+                </tr>
+                <tr>
+                  <td><strong>Lab 3</strong></td>
+                  <td>3rd Floor, Tech Park</td>
+                  <td>Dr. Arun Sundaram</td>
+                  <td>Cloud & DevOps Lab</td>
+                  <td>35 Systems</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
         </div>
 
-      </section>
+        <!-- ================================================================== -->
+        <!-- ROLE VIEW: ADMINISTRATOR (CAMPUS PULSE) -->
+        <!-- ================================================================== -->
+        <div id="roleViewAdmin" style="display:none;">
+          
+          <div class="section-dossier-title">
+            <div>
+              <h2>CAMPUS PULSE — INSTITUTIONAL OPERATIONAL INTELLIGENCE</h2>
+              <p>Identify process bottlenecks, repeated information gaps, and student coordination delays</p>
+            </div>
+            <span class="stamp-seal action">ADMINISTRATIVE TELEMETRY</span>
+          </div>
 
-      <!-- App Footer (Exact LastbencherOS style) -->
-      <footer class="app-footer">
-        <p class="footer-text">
-          CampusFlow Peer <span>/</span> Built by ZanLeo Warrior — Mohammed Irfaan & Nivedha
-        </p>
-      </footer>
+          <!-- "Why Are Students Asking This?" Engine -->
+          <div class="paper-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase;">
+                "WHY ARE STUDENTS ASKING THIS?" — REPEATED QUERY ENGINE
+              </h3>
+              <span class="stamp-seal action">3 BOTTLENECKS IDENTIFIED</span>
+            </div>
+            <p style="font-size:0.84rem; color:var(--ink-secondary); margin-bottom:1.25rem;">
+              CampusFlow Peer clusters repeated student queries across physical corridors and WhatsApp channels to automatically diagnose institutional information gaps.
+            </p>
 
-    </main>
+            <div id="adminQueriesContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem;">
+              <!-- Dynamically populated from CampusData.repeatedQueries -->
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- App Dossier Footer -->
+    <footer style="background:var(--paper-card); border-top:2px solid var(--paper-border-dark); padding:1.25rem 2rem; text-align:center; font-size:0.75rem; color:var(--ink-muted);">
+      <p style="font-family:var(--font-stamp); text-transform:uppercase; letter-spacing:0.1em;">
+        CAMPUSFLOW PEER <span>/</span> Team ZanLeo Warrior — Mohammed Irfaan & Nivedha <span>/</span> PS06 Smart Education • HACKNEXT'26 Series 2.0
+      </p>
+    </footer>
 
   </div>
 
-  <!-- Modal: Configure Target Entry -->
-  <div class="modal-overlay" id="entryModal" style="display:none;">
-    <div class="modal-window">
-      <div class="modal-glow"></div>
-      
-      <h4 class="modal-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        <span>Configure Target Entry</span>
-      </h4>
+  <!-- ================================================================== -->
+  <!-- MODALS (TYPEWRITTEN ARCHIVAL FOLDERS) -->
+  <!-- ================================================================== -->
 
-      <div class="form-grid-4">
-        <div class="form-group">
-          <label>Designation</label>
-          <input type="text" class="form-control" id="entrySubject" placeholder="Subject Key...">
-        </div>
-        <div class="form-group">
-          <label>Temporal Day</label>
-          <select class="form-control" id="entryDay">
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-            <option value="Sunday">Sunday</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Commence</label>
-          <input type="time" class="form-control" id="entryStartTime" value="09:00">
-        </div>
-        <div class="form-group">
-          <label>Conclude</label>
-          <input type="time" class="form-control" id="entryEndTime" value="10:00">
-        </div>
+  <!-- Modal 1: Universal Search Response ("Why This Answer?" Explainable Card) -->
+  <div class="dossier-modal-backdrop" id="searchResultModal">
+    <div class="dossier-modal-folder">
+      <div class="modal-folder-header">
+        <h3 id="searchModalHeaderTitle">CAMPUS QUERY RESPONSE</h3>
+        <button class="btn-close-modal" onclick="App.closeSearchModal()">×</button>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn-abort" id="btnAbortEntry">Abort</button>
-        <button class="btn-commit" id="btnCommitEntry">Commit Entry</button>
+      <div style="margin-bottom:1.25rem;">
+        <span class="stamp-seal approved" id="searchModalStatusBadge">AVAILABLE NOW</span>
+        <h4 style="font-family:var(--font-editorial); font-size:1.6rem; margin:0.5rem 0 0.25rem;" id="searchModalTitle">Prof. Arun Sundaram</h4>
+        <p style="font-size:0.85rem; color:var(--ink-muted);" id="searchModalDept">CSE Department • Class Advisor</p>
+      </div>
+
+      <div class="dispatch-why-box" style="margin-bottom:1.25rem;">
+        <div style="font-family:var(--font-stamp); font-size:0.78rem; text-transform:uppercase; margin-bottom:0.45rem;">
+          WHY THIS ANSWER (EXPLAINABLE REASONING):
+        </div>
+        <ul id="searchModalWhyList" style="padding-left:1.2rem; line-height:1.7;">
+          <!-- Dynamically populated -->
+        </ul>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+        <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeSearchModal()">Dismiss</button>
+        <button class="btn-dispatch-action" id="searchModalActionButton" onclick="App.triggerSearchAction()">Execute Action</button>
       </div>
     </div>
   </div>
+
+  <!-- Modal 2: AI Timetable Extraction Review & Verification -->
+  <div class="dossier-modal-backdrop" id="aiVerificationModal">
+    <div class="dossier-modal-folder" style="max-width:820px;">
+      <div class="modal-folder-header">
+        <h3>AI TIMETABLE EXTRACTION REVIEW</h3>
+        <button class="btn-close-modal" onclick="App.closeVerificationModal()">×</button>
+      </div>
+
+      <div class="dispatch-why-box" style="margin-bottom:1.25rem;">
+        <strong>VERIFICATION DIRECTIVE:</strong> Review extracted sessions below before committing to your operations schedule. Slots with OCR confidence below 85% are highlighted for review.
+      </div>
+
+      <div style="max-height:340px; overflow-y:auto; border:1px solid var(--paper-border-dark); margin-bottom:1.5rem;">
+        <table class="typewriter-table" id="extractedReviewTable">
+          <!-- Populated dynamically -->
+        </table>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.8rem; color:var(--ink-muted);" id="extractedTotalSlotsCount">0 slots parsed</span>
+        <div style="display:flex; gap:0.75rem;">
+          <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeVerificationModal()">Abort</button>
+          <button class="btn-dispatch-action" onclick="App.commitExtractedTimetable()">Commit to Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Indoor Location & Directions -->
+  <div class="dossier-modal-backdrop" id="locationModal">
+    <div class="dossier-modal-folder">
+      <div class="modal-folder-header">
+        <h3 id="locModalTitle">CAMPUS ROOM DIRECTORY</h3>
+        <button class="btn-close-modal" onclick="App.closeLocationModal()">×</button>
+      </div>
+
+      <div style="margin-bottom:1.25rem;">
+        <div style="font-family:var(--font-stamp); font-size:0.8rem; color:var(--stamp-blue); text-transform:uppercase;" id="locModalBlockFloor">
+          MAIN ACADEMIC BLOCK • 2ND FLOOR
+        </div>
+        <h4 style="font-family:var(--font-editorial); font-size:1.6rem; margin:0.25rem 0;" id="locModalRoomName">Room 205 (Lecture Hall)</h4>
+      </div>
+
+      <div class="dispatch-why-box" style="margin-bottom:1.5rem;">
+        <strong style="display:block; margin-bottom:0.5rem;">STEP-BY-STEP INDOOR ROUTE:</strong>
+        <p id="locModalDirections" style="line-height:1.7;">Loading directions...</p>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn-dispatch-action" onclick="App.closeLocationModal()">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: New Routine Approval / OD Request -->
+  <div class="dossier-modal-backdrop" id="newRequestModal">
+    <div class="dossier-modal-folder">
+      <div class="modal-folder-header">
+        <h3 id="newRequestModalTitle">DRAFT ROUTINE APPROVAL REQUEST</h3>
+        <button class="btn-close-modal" onclick="App.closeNewRequestModal()">×</button>
+      </div>
+
+      <div class="form-field-group">
+        <label>Request Type:</label>
+        <select class="form-field-input" id="newReqType">
+          <option value="On-Duty (OD)">On-Duty (OD) Attendance Exemption</option>
+          <option value="Bonafide Certificate">Bonafide Certificate</option>
+          <option value="Medical Leave">Medical Leave Endorsement</option>
+          <option value="Project OD">External Project Review Clearance</option>
+        </select>
+      </div>
+
+      <div class="form-field-group">
+        <label>Purpose / Event Title:</label>
+        <input type="text" class="form-field-input" id="newReqTitle" placeholder="e.g. HACKNEXT'26 Hackathon Attendance Exemption">
+      </div>
+
+      <div class="form-field-group">
+        <label>Responsible Faculty Advisor:</label>
+        <select class="form-field-input" id="newReqFaculty">
+          <option value="Dr. Arun Sundaram">Dr. Arun Sundaram (CSE Advisor)</option>
+          <option value="Prof. Meena Krishnan">Prof. Meena Krishnan</option>
+          <option value="Dr. Karthik Narayanan">Dr. Karthik Narayanan (HOD)</option>
+        </select>
+      </div>
+
+      <div class="form-field-group">
+        <label>Impacted Lecture Periods:</label>
+        <input type="text" class="form-field-input" id="newReqHours" placeholder="e.g. 3 Periods (DBMS, OS, Discrete Maths)">
+      </div>
+
+      <div class="dispatch-why-box" style="margin-bottom:1.5rem;">
+        <strong>AUTOFILL ACTIVE:</strong> Student details (Nivedha, 7376231CS204, CSE 3rd Year) will be attached automatically without repeated manual entry.
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+        <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeNewRequestModal()">Cancel</button>
+        <button class="btn-dispatch-action" onclick="App.submitNewRequest()">Submit to Advisor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: One-Context View for Courses -->
+  <div class="dossier-modal-backdrop" id="oneContextModal">
+    <div class="dossier-modal-folder">
+      <div class="modal-folder-header">
+        <h3 id="oneCtxHeader">ONE-CONTEXT ACADEMIC VIEW</h3>
+        <button class="btn-close-modal" onclick="App.closeOneContextModal()">×</button>
+      </div>
+
+      <div id="oneCtxBodyContent">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Presentation Pitch Deck (For Hackathon Judges) -->
+  <div class="dossier-modal-backdrop" id="pitchDeckModal">
+    <div class="dossier-modal-folder" style="max-width:850px;">
+      <div class="modal-folder-header">
+        <h3>CAMPUSFLOW PEER — PRESENTATION PITCH DECK</h3>
+        <button class="btn-close-modal" onclick="App.closePitchDeckModal()">×</button>
+      </div>
+
+      <div style="font-family:var(--font-editorial); font-size:1.85rem; color:var(--ink-primary); line-height:1.2; margin-bottom:0.75rem;">
+        “From Scattered Campus Information to Connected Campus Action”
+      </div>
+
+      <div style="font-family:var(--font-stamp); font-size:0.8rem; color:var(--stamp-red); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1.5rem;">
+        Team: ZanLeo Warrior • Mohammed Irfaan | Nivedha • PS06 Smart Education • HACKNEXT'26 Series 2.0
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.5rem;">
+        <div class="dispatch-why-box">
+          <strong style="color:var(--stamp-red); display:block; margin-bottom:0.35rem;">1. THE IDENTIFIED PROBLEM:</strong>
+          Information is scattered across PDF timetables, WhatsApp circulars, notice boards, and staff doors. Students waste hours chasing signatures, calculating attendance buffers by hand, and guessing faculty availability.
+        </div>
+        <div class="dispatch-why-box">
+          <strong style="color:var(--stamp-green); display:block; margin-bottom:0.35rem;">2. THE CORE SOLUTION:</strong>
+          CampusFlow Peer is NOT an ERP. It is a <strong>connected campus intelligence layer</strong> that unifies scattered timetables, faculty cabin schedules, and routine approvals into actionable assistance.
+        </div>
+      </div>
+
+      <div class="paper-card" style="margin-bottom:1.5rem;">
+        <h4 style="font-family:var(--font-stamp); font-size:0.95rem; text-transform:uppercase; margin-bottom:0.5rem;">
+          THE 5-STEP VALUE FLOW:
+        </h4>
+        <p style="font-size:0.85rem; color:var(--ink-secondary); line-height:1.6;">
+          <strong>Scattered Info</strong> ➔ <strong>AI OCR Understanding</strong> ➔ <strong>Campus Graph Connection</strong> ➔ <strong>Predictive Telemetry</strong> ➔ <strong>Actionable Assistance</strong>
+        </p>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn-dispatch-action" onclick="App.closePitchDeckModal()">Close Pitch Deck</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="typewriter-toast" style="display:none;"></div>
 
   <!-- Scripts -->
   <script src="js/data.js"></script>
