@@ -29,11 +29,8 @@ const App = {
       });
     }
 
-    // 3. Pre-load timetable preset if state is empty so prototype is immediately impressive
-    const timetable = AppState.getTimetable();
-    if (timetable.length === 0) {
-      AppState.loadPresetTimetable();
-    }
+    // 3. Timetable starts strictly NILL ([]) — no preload on initial startup!
+    // Prototype only populates when user uploads or clicks Try Demo Upload.
 
     // 4. Initial Render
     this.refreshCurrentView();
@@ -119,6 +116,7 @@ const App = {
 
   refreshCurrentView() {
     this.renderDispatchHome();
+    this.renderWorkflowGraph();
     this.renderTimetableGrid();
     this.renderFacultyGrid();
     this.renderFacultyMatrixTable();
@@ -133,6 +131,19 @@ const App = {
   // 1. DISPATCH (HOME • TODAY / NOW / NEXT & TIMELINE)
   // ========================================================================
   renderDispatchHome() {
+    const timetable = AppState.getTimetable();
+    const nillBanner = document.getElementById("homeNillBanner");
+    const activeContent = document.getElementById("homeActiveContent");
+
+    if (timetable.length === 0) {
+      if (nillBanner) nillBanner.style.display = "block";
+      if (activeContent) activeContent.style.display = "none";
+      return;
+    }
+
+    if (nillBanner) nillBanner.style.display = "none";
+    if (activeContent) activeContent.style.display = "block";
+
     const container = document.getElementById("journalEntriesContainer");
     if (!container) return;
 
@@ -164,9 +175,738 @@ const App = {
     // Update Academic Twin Card Numbers
     const stats = AppState.getAttendanceStats();
     const attNum = document.getElementById("twinAttendanceNum");
-    if (attNum) attNum.textContent = `${stats.percentage}%`;
+    if (attNum) attNum.textContent = stats.isNill ? "NILL" : `${stats.percentage}%`;
   },
 
+  // ========================================================================
+  // INTERACTIVE CONNECTED WORKFLOW GRAPH ENGINE
+  // ========================================================================
+  selectedWorkflowNode: "ai_ocr",
+  workflowViewMode: "mesh",
+  workflowFilterCategory: "all",
+  workflowPulseTimer: null,
+
+  workflowNodes: [
+    // STAGE 1: RAW INFLUX (x: 75)
+    {
+      id: "doc_tt",
+      title: "Timetable Photo",
+      sub: "SNS CSE-3A Grid",
+      category: "input",
+      stage: 1,
+      icon: "📸",
+      badge: "RAW INFLUX",
+      accent: "#B91C1C",
+      x: 75,
+      y: 90,
+      w: 165,
+      h: 68,
+      connectedTo: ["ai_ocr"],
+      role: "Physical timetable snapshot uploaded via smartphone camera or college notice PDF.",
+      telemetry: { source: "Camera / Upload", format: "JPEG / PDF", slotsCaptured: "36 Potential", status: "UNSTRUCTURED" },
+      actionLabel: "Upload New Snap",
+      actionTab: "timetable"
+    },
+    {
+      id: "doc_circ",
+      title: "Dean Circular",
+      sub: "75% Policy & Exam Dates",
+      category: "input",
+      stage: 1,
+      icon: "📢",
+      badge: "CIRCULAR",
+      accent: "#B91C1C",
+      x: 75,
+      y: 220,
+      w: 165,
+      h: 68,
+      connectedTo: ["ai_ocr"],
+      role: "Institutional academic directive mandating 75% attendance threshold & cycle test windows.",
+      telemetry: { source: "Dean Academic Desk", issued: "01 Oct 2026", policy: "75% Minimum", status: "SYNCHRONIZED" },
+      actionLabel: "View Policy Circular",
+      actionTab: "vault"
+    },
+    {
+      id: "doc_fac",
+      title: "Faculty Manifest",
+      sub: "Cabins & Consult Hours",
+      category: "input",
+      stage: 1,
+      icon: "📜",
+      badge: "DIRECTORY",
+      accent: "#B91C1C",
+      x: 75,
+      y: 360,
+      w: 165,
+      h: 68,
+      connectedTo: ["ai_linker"],
+      role: "Department faculty directory mapping faculty cabins, consultation windows & designations.",
+      telemetry: { source: "CSE Office", cabinsMapped: "100%", professors: "6 Active", status: "VERIFIED" },
+      actionLabel: "View Faculty Grid",
+      actionTab: "faculty"
+    },
+
+    // STAGE 2: MULTIMODAL AI & EXTRACTION (x: 295)
+    {
+      id: "ai_ocr",
+      title: "Vision OCR Segmenter",
+      sub: "Period Detection (8:45-4:45)",
+      category: "ai",
+      stage: 2,
+      icon: "🤖",
+      badge: "NEURAL VISION",
+      accent: "#D97706",
+      x: 295,
+      y: 150,
+      w: 180,
+      h: 70,
+      connectedTo: ["sub_dbms", "sub_dsa", "ai_linker"],
+      role: "Multimodal neural vision parser segmenting the timetable grid, recognizing days and 8:45 AM - 4:45 PM periods.",
+      telemetry: { model: "Multimodal Vision AI", accuracy: "98.4%", parsedPeriods: "36 Sessions", latency: "1.2s" },
+      actionLabel: "Inspect AI Extractor",
+      actionTab: "timetable"
+    },
+    {
+      id: "ai_linker",
+      title: "Entity Cross-Linker",
+      sub: "Cabin & Room Matcher",
+      category: "ai",
+      stage: 2,
+      icon: "🔍",
+      badge: "CONTEXT GRAPH",
+      accent: "#D97706",
+      x: 295,
+      y: 330,
+      w: 180,
+      h: 70,
+      connectedTo: ["fac_arun", "fac_meena", "loc_campus"],
+      role: "Disambiguates timetable abbreviations to real instructors, cabin numbers, and campus rooms.",
+      telemetry: { matchEngine: "Fuzzy Graph Matcher", confidence: "99.1%", entitiesResolved: "6 Instructors", latency: "18ms" },
+      actionLabel: "Verify Entities",
+      actionTab: "faculty"
+    },
+
+    // STAGE 3: ACADEMIC KNOWLEDGE MESH (x: 525)
+    {
+      id: "sub_dsa",
+      title: "CS3502 DSA",
+      sub: "Room 302 • 4 Credits",
+      category: "mesh",
+      stage: 3,
+      icon: "📚",
+      badge: "COURSE ENTITY",
+      accent: "#1E3A8A",
+      x: 525,
+      y: 80,
+      w: 165,
+      h: 66,
+      connectedTo: ["fac_arun", "att_ledger"],
+      role: "Core Data Structures & Algorithms lecture entity instructed by Dr. Arun Sundaram.",
+      telemetry: { code: "CS3502", credits: 4, room: "Room 302", advisor: "Dr. Arun Sundaram" },
+      actionLabel: "Open One-Context",
+      actionTab: "timetable"
+    },
+    {
+      id: "sub_dbms",
+      title: "CS3501 DBMS",
+      sub: "Room 205 • 4 Credits",
+      category: "mesh",
+      stage: 3,
+      icon: "📚",
+      badge: "COURSE ENTITY",
+      accent: "#1E3A8A",
+      x: 525,
+      y: 190,
+      w: 165,
+      h: 66,
+      connectedTo: ["fac_meena", "att_ledger"],
+      role: "Database Management Systems core theory session taught by Prof. Meena Krishnan.",
+      telemetry: { code: "CS3501", credits: 4, room: "Room 205", instructor: "Prof. Meena Krishnan" },
+      actionLabel: "Locate Room 205",
+      actionTab: "map"
+    },
+    {
+      id: "fac_arun",
+      title: "Dr. Arun Sundaram",
+      sub: "Cabin 304 • Advisor",
+      category: "mesh",
+      stage: 3,
+      icon: "👨‍🏫",
+      badge: "AVAILABLE NOW",
+      accent: "#15803D",
+      x: 525,
+      y: 310,
+      w: 165,
+      h: 66,
+      connectedTo: ["act_od", "act_nav", "act_alert"],
+      role: "Class Advisor & Associate Professor currently available in Cabin 304 for academic signatures and OD.",
+      telemetry: { status: "AVAILABLE IN CABIN", cabin: "Room 304", floor: "3rd Floor Main Block", freeWindow: "2:30 - 4:15 PM" },
+      actionLabel: "Draft OD Petition",
+      actionTab: "requests"
+    },
+    {
+      id: "fac_meena",
+      title: "Prof. Meena Krishnan",
+      sub: "Cabin 214 • In Lecture",
+      category: "mesh",
+      stage: 3,
+      icon: "👩‍🏫",
+      badge: "IN LECTURE",
+      accent: "#B45309",
+      x: 525,
+      y: 420,
+      w: 165,
+      h: 66,
+      connectedTo: ["act_alert"],
+      role: "Assistant Professor currently conducting lecture in Room 205; free at 11:15 AM in Cabin 214.",
+      telemetry: { status: "IN CLASS (Room 205)", cabin: "Room 214", floor: "2nd Floor Main Block", freeAt: "11:15 AM" },
+      actionLabel: "Notify When Free",
+      actionTab: "faculty"
+    },
+
+    // STAGE 4: PERIOD ATTENDANCE LEDGER (x: 745)
+    {
+      id: "att_ledger",
+      title: "Period Attendance Ledger",
+      sub: "P1-P6 Dynamic Sync",
+      category: "attendance",
+      stage: 4,
+      icon: "📈",
+      badge: "AUDITABLE MATH",
+      accent: "#15803D",
+      x: 745,
+      y: 130,
+      w: 175,
+      h: 68,
+      connectedTo: ["att_buffer"],
+      role: "Daily period-by-period attendance manifest derived directly from extracted timetable periods.",
+      telemetry: { mathFormula: "P / (P + A)", loggedClasses: "50 Conducted", present: "36", absent: "14" },
+      actionLabel: "Mark Periods",
+      actionTab: "attendance"
+    },
+    {
+      id: "att_buffer",
+      title: "75% Compliance Buffer",
+      sub: "Safe Bunks / Recovery",
+      category: "attendance",
+      stage: 4,
+      icon: "🧮",
+      badge: "SCE FORMULA",
+      accent: "#15803D",
+      x: 745,
+      y: 280,
+      w: 175,
+      h: 68,
+      connectedTo: ["act_od"],
+      role: "Mathematical engine computing safe bunk buffer or consecutive mandatory classes required to regain compliance.",
+      telemetry: { threshold: "75%", standing: "72.0% (Action Required)", consecutiveNeeded: "6 Classes", safeBuffer: "0" },
+      actionLabel: "Run What-If Scenario",
+      actionTab: "attendance"
+    },
+    {
+      id: "loc_campus",
+      title: "Campus Spatial Mesh",
+      sub: "Main Academic Block",
+      category: "mesh",
+      stage: 3,
+      icon: "📍",
+      badge: "TOPOLOGY",
+      accent: "#4338CA",
+      x: 745,
+      y: 420,
+      w: 175,
+      h: 66,
+      connectedTo: ["act_nav"],
+      role: "Topological indoor graph of campus corridors, floors, stairs, and academic rooms.",
+      telemetry: { indexedRooms: "48 Cabins & Labs", block: "Main Academic Block", walkAvg: "2.4 minutes", status: "ROUTED" },
+      actionLabel: "Open Navigator",
+      actionTab: "map"
+    },
+
+    // STAGE 5: AUTONOMOUS ACTION (x: 965)
+    {
+      id: "act_od",
+      title: "1-Click OD Routing",
+      sub: "Pre-filled #REQ-737",
+      category: "action",
+      stage: 5,
+      icon: "✍️",
+      badge: "DISPATCH READY",
+      accent: "#6D28D9",
+      x: 965,
+      y: 130,
+      w: 165,
+      h: 68,
+      connectedTo: [],
+      role: "Automatically prepares OD petition pre-citing timetable periods and routes to available advisor Dr. Arun Sundaram.",
+      telemetry: { formId: "REQ-737", endorsementTarget: "Dr. Arun Sundaram", student: "Nivedha", status: "READY FOR DRAFT" },
+      actionLabel: "Review OD Petition",
+      actionTab: "requests"
+    },
+    {
+      id: "act_nav",
+      title: "Corridor Route Guide",
+      sub: "Turn-by-turn to 304",
+      category: "action",
+      stage: 5,
+      icon: "🗺️",
+      badge: "WAYFINDING",
+      accent: "#6D28D9",
+      x: 965,
+      y: 280,
+      w: 165,
+      h: 68,
+      connectedTo: [],
+      role: "Provides step-by-step corridor wayfinding from current lecture (Room 205) to faculty cabin (Room 304).",
+      telemetry: { route: "Room 205 ➔ Stair B ➔ 3rd Fl ➔ Cabin 304", distance: "65m", estimatedWalk: "90s", status: "OPTIMAL" },
+      actionLabel: "View Navigation Route",
+      actionTab: "map"
+    },
+    {
+      id: "act_alert",
+      title: "Free Window Ping",
+      sub: "Telegram / Push Broadcast",
+      category: "action",
+      stage: 5,
+      icon: "📱",
+      badge: "LIVE TRIGGER",
+      accent: "#6D28D9",
+      x: 965,
+      y: 420,
+      w: 165,
+      h: 68,
+      connectedTo: [],
+      role: "Dispatches automated notification when faculty finishes class and arrives at office cabin.",
+      telemetry: { webhook: "Telegram / Push Alert", condition: "Prof returns to cabin", recipients: "Nivedha", status: "ACTIVE" },
+      actionLabel: "Configure Alerts",
+      actionTab: "preferences"
+    }
+  ],
+
+  renderWorkflowGraph() {
+    const svg = document.getElementById("workflowSvgCanvas");
+    if (!svg) return;
+
+    // Filter nodes by category if active
+    const activeNodes = this.workflowNodes.filter(n => 
+      this.workflowFilterCategory === "all" || n.category === this.workflowFilterCategory
+    );
+    const activeNodeIds = new Set(activeNodes.map(n => n.id));
+
+    // Build unique edges
+    const edges = [];
+    this.workflowNodes.forEach(source => {
+      source.connectedTo.forEach(targetId => {
+        const target = this.workflowNodes.find(n => n.id === targetId);
+        if (target) {
+          edges.push({
+            id: `edge_${source.id}_${target.id}`,
+            source,
+            target,
+            isActive: activeNodeIds.has(source.id) && activeNodeIds.has(target.id)
+          });
+        }
+      });
+    });
+
+    // Generate SVG Edges
+    let edgesHtml = `<g id="wfEdgesGroup">`;
+    edges.forEach(e => {
+      const x1 = e.source.x + e.source.w;
+      const y1 = e.source.y + (e.source.h / 2);
+      const x2 = e.target.x;
+      const y2 = e.target.y + (e.target.h / 2);
+      const dx = Math.max(30, (x2 - x1) * 0.45);
+      const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+      
+      let edgeClass = "wf-edge";
+      if (!e.isActive) edgeClass += " dimmed";
+
+      edgesHtml += `
+        <path id="${e.id}" class="${edgeClass}" d="${d}" data-source="${e.source.id}" data-target="${e.target.id}" />
+      `;
+    });
+    edgesHtml += `</g>`;
+
+    // Generate SVG Nodes
+    let nodesHtml = `<g id="wfNodesGroup">`;
+    this.workflowNodes.forEach(n => {
+      let nodeClass = "wf-node-group";
+      if (!activeNodeIds.has(n.id)) nodeClass += " dimmed";
+      if (this.selectedWorkflowNode === n.id) nodeClass += " selected";
+
+      nodesHtml += `
+        <g class="${nodeClass}" id="node_${n.id}" data-id="${n.id}" onclick="App.selectWorkflowNode('${n.id}')">
+          <!-- Card Base -->
+          <rect class="wf-node-card" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="6" />
+          
+          <!-- Category Accent Stripe -->
+          <rect x="${n.x}" y="${n.y}" width="4" height="${n.h}" fill="${n.accent}" rx="2" />
+
+          <!-- Top Row: Icon + Stamped Badge -->
+          <text x="${n.x + 10}" y="${n.y + 18}" font-size="12">${n.icon}</text>
+          <text x="${n.x + 28}" y="${n.y + 17}" font-family="var(--font-stamp)" font-size="8.5" fill="${n.accent}" font-weight="bold" letter-spacing="0.05em">
+            ${n.badge}
+          </text>
+
+          <!-- Middle Row: Title -->
+          <text x="${n.x + 10}" y="${n.y + 36}" font-family="var(--font-editorial)" font-size="12" font-weight="700" fill="var(--ink-primary)">
+            ${n.title}
+          </text>
+
+          <!-- Bottom Row: Subtitle -->
+          <text x="${n.x + 10}" y="${n.y + 52}" font-family="var(--font-typewriter)" font-size="9" fill="var(--ink-secondary)">
+            ${n.sub}
+          </text>
+        </g>
+      `;
+    });
+    nodesHtml += `</g>`;
+
+    svg.innerHTML = `
+      <defs>
+        <pattern id="wfGridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+          <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(180, 160, 130, 0.15)" stroke-width="0.8"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#wfGridPattern)" />
+      ${edgesHtml}
+      ${nodesHtml}
+    `;
+
+    // Highlight active connections for current selected node
+    if (this.selectedWorkflowNode) {
+      this.highlightNodeConnections(this.selectedWorkflowNode);
+    } else {
+      this.selectWorkflowNode("ai_ocr", false);
+    }
+  },
+
+  highlightNodeConnections(nodeId) {
+    const node = this.workflowNodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const outgoingIds = new Set(node.connectedTo);
+    const incomingIds = new Set();
+    this.workflowNodes.forEach(other => {
+      if (other.connectedTo.includes(nodeId)) {
+        incomingIds.add(other.id);
+      }
+    });
+
+    const allNeighborIds = new Set([...outgoingIds, ...incomingIds, nodeId]);
+
+    // Update edges
+    document.querySelectorAll(".wf-edge").forEach(edgeEl => {
+      const src = edgeEl.getAttribute("data-source");
+      const tgt = edgeEl.getAttribute("data-target");
+      if (src === nodeId || tgt === nodeId) {
+        edgeEl.classList.remove("dimmed");
+        edgeEl.classList.add("active");
+      } else {
+        edgeEl.classList.remove("active");
+        edgeEl.classList.add("dimmed");
+      }
+    });
+
+    // Update node groups
+    document.querySelectorAll(".wf-node-group").forEach(nodeEl => {
+      const id = nodeEl.getAttribute("data-id");
+      nodeEl.classList.remove("selected", "connected", "dimmed");
+      if (id === nodeId) {
+        nodeEl.classList.add("selected");
+      } else if (allNeighborIds.has(id)) {
+        nodeEl.classList.add("connected");
+      } else {
+        nodeEl.classList.add("dimmed");
+      }
+    });
+  },
+
+  selectWorkflowNode(nodeId, updateTicker = true) {
+    this.selectedWorkflowNode = nodeId;
+    const node = this.workflowNodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    this.highlightNodeConnections(nodeId);
+
+    // Update Ticker
+    if (updateTicker) {
+      const ticker = document.getElementById("workflowTickerText");
+      if (ticker) {
+        ticker.textContent = `[INSPECT] Selected ${node.title} (${node.badge}) • Category: ${node.category.toUpperCase()} • Direct Links: ${node.connectedTo.length} Outbound.`;
+      }
+    }
+
+    // Populate Inspection Details Sheet
+    const sheet = document.getElementById("workflowInspectionDetails");
+    if (!sheet) return;
+
+    const outgoingNodes = this.workflowNodes.filter(n => node.connectedTo.includes(n.id));
+    const incomingNodes = this.workflowNodes.filter(n => n.connectedTo.includes(node.id));
+
+    const outPills = outgoingNodes.length > 0 ? outgoingNodes.map(o => `
+      <span class="workflow-tag-pill" onclick="App.selectWorkflowNode('${o.id}')">
+        ${o.icon} ${o.title}
+      </span>
+    `).join("") : `<span style="font-size:0.75rem; color:var(--ink-muted);">Terminal Endpoint (Actions Generated)</span>`;
+
+    const inPills = incomingNodes.length > 0 ? incomingNodes.map(i => `
+      <span class="workflow-tag-pill" onclick="App.selectWorkflowNode('${i.id}')">
+        ${i.icon} ${i.title}
+      </span>
+    `).join("") : `<span style="font-size:0.75rem; color:var(--ink-muted);">Root Source (External Physical Influx)</span>`;
+
+    const telemetryEntries = Object.entries(node.telemetry).map(([k, v]) => `
+      <div style="background:var(--paper-card-subtle); border:1px dashed var(--paper-border-dark); padding:0.6rem 0.8rem; border-radius:var(--radius-tag);">
+        <div style="font-family:var(--font-stamp); font-size:0.68rem; text-transform:uppercase; color:var(--ink-muted);">${k}</div>
+        <div style="font-family:var(--font-typewriter); font-size:0.85rem; font-weight:700; color:var(--ink-primary); margin-top:2px;">${v}</div>
+      </div>
+    `).join("");
+
+    sheet.innerHTML = `
+      <div class="workflow-inspection-header">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.35rem;">
+            <span style="font-size:1.5rem;">${node.icon}</span>
+            <h3 style="font-family:var(--font-editorial); font-size:1.4rem; font-weight:700; margin:0; color:var(--ink-primary);">
+              ${node.title}
+            </h3>
+            <span class="stamp-seal approved" style="color:${node.accent}; border-color:${node.accent};">
+              ${node.badge}
+            </span>
+          </div>
+          <p style="font-size:0.82rem; color:var(--ink-muted); font-family:var(--font-typewriter);">
+            ${node.sub} • Category: ${node.category.toUpperCase()} • Stage ${node.stage} of 5
+          </p>
+        </div>
+
+        <div>
+          <button class="btn-dossier-sm btn-primary-ink" onclick="App.switchTab('${node.actionTab}')">
+            <span>⚡</span> ${node.actionLabel}
+          </button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:0.6rem; margin-bottom:1.25rem;">
+        ${telemetryEntries}
+      </div>
+
+      <div class="dispatch-why-box" style="margin-bottom:1.25rem;">
+        <strong>OPERATIONAL ROLE:</strong> ${node.role}
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; border-top:1px dashed var(--paper-border); padding-top:1rem;">
+        <div>
+          <h5 style="font-family:var(--font-stamp); font-size:0.75rem; text-transform:uppercase; color:var(--ink-muted); margin-bottom:0.5rem;">
+            ← Inbound Feeds (${incomingNodes.length}):
+          </h5>
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            ${inPills}
+          </div>
+        </div>
+
+        <div>
+          <h5 style="font-family:var(--font-stamp); font-size:0.75rem; text-transform:uppercase; color:var(--ink-muted); margin-bottom:0.5rem;">
+            → Outbound Connected Actions (${outgoingNodes.length}):
+          </h5>
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            ${outPills}
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  resetWorkflowGraphSelection() {
+    this.selectedWorkflowNode = null;
+    this.workflowFilterCategory = "all";
+    document.querySelectorAll("#workflowCategoryBar .typewriter-time-chip").forEach(c => {
+      c.classList.toggle("active", c.textContent.includes("All Nodes"));
+    });
+    this.renderWorkflowGraph();
+    const ticker = document.getElementById("workflowTickerText");
+    if (ticker) {
+      ticker.textContent = "Graph reset. All 15 nodes and relations restored. Click any node to inspect context.";
+    }
+  },
+
+  filterWorkflowNodes(cat, btnEl) {
+    this.workflowFilterCategory = cat;
+    if (btnEl) {
+      document.querySelectorAll("#workflowCategoryBar .typewriter-time-chip").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+    this.renderWorkflowGraph();
+  },
+
+  setWorkflowViewMode(mode) {
+    this.workflowViewMode = mode;
+    const meshView = document.getElementById("workflowMeshView");
+    const pipeView = document.getElementById("workflowPipelineView");
+    const btnMesh = document.getElementById("btnGraphViewMesh");
+    const btnPipe = document.getElementById("btnGraphViewPipeline");
+    const catBar = document.getElementById("workflowCategoryBar");
+
+    if (mode === "mesh") {
+      if (meshView) meshView.style.display = "block";
+      if (pipeView) pipeView.style.display = "none";
+      if (btnMesh) btnMesh.classList.add("active");
+      if (btnPipe) btnPipe.classList.remove("active");
+      if (catBar) catBar.style.display = "flex";
+      this.renderWorkflowGraph();
+    } else {
+      if (meshView) meshView.style.display = "none";
+      if (pipeView) pipeView.style.display = "grid";
+      if (btnMesh) btnMesh.classList.remove("active");
+      if (btnPipe) btnPipe.classList.add("active");
+      if (catBar) catBar.style.display = "none";
+      this.inspectWorkflowStage(1);
+    }
+  },
+
+  triggerWorkflowPulse() {
+    const pulseSequence = [
+      { id: "doc_tt", log: "[PULSE 1/6] Ingested physical timetable snap (SNS CSE-3A Matrix)" },
+      { id: "ai_ocr", log: "[PULSE 2/6] Multimodal Neural Vision segmented 36 lecture slots (8:45 AM - 4:45 PM)" },
+      { id: "sub_dsa", log: "[PULSE 3/6] Context Graph linked CS3502 DSA ➔ Dr. Arun Sundaram (Cabin 304, Available)" },
+      { id: "att_ledger", log: "[PULSE 4/6] Attendance Ledger dynamically updated: 50 sessions registered (72.0%)" },
+      { id: "att_buffer", log: "[PULSE 5/6] 75% boundary calculated: -3.0% deficit ➔ 6 consecutive classes needed" },
+      { id: "act_od", log: "[PULSE 6/6] Autonomous Action: Pre-filled OD Exemption #REQ-737 ready for signature!" }
+    ];
+
+    let step = 0;
+    const ticker = document.getElementById("workflowTickerText");
+
+    if (this.workflowPulseTimer) clearInterval(this.workflowPulseTimer);
+
+    const runStep = () => {
+      if (step >= pulseSequence.length) {
+        clearInterval(this.workflowPulseTimer);
+        this.workflowPulseTimer = null;
+        if (ticker) {
+          ticker.textContent = "✦ Flow Pulse Complete: End-to-end operational pipeline executed with zero human chasing.";
+        }
+        this.showToast("⚡ Operational Workflow Pulse Complete!");
+        return;
+      }
+
+      const item = pulseSequence[step];
+      this.selectWorkflowNode(item.id, false);
+      if (ticker) ticker.textContent = item.log;
+
+      if (step > 0) {
+        const prevId = pulseSequence[step - 1].id;
+        const edgeEl = document.getElementById(`edge_${prevId}_${item.id}`) ||
+                       document.querySelector(`[data-source="${prevId}"][data-target="${item.id}"]`);
+        if (edgeEl) {
+          edgeEl.classList.add("pulse-active");
+          setTimeout(() => edgeEl.classList.remove("pulse-active"), 700);
+        }
+      }
+
+      step++;
+    };
+
+    runStep();
+    this.workflowPulseTimer = setInterval(runStep, 950);
+  },
+
+  inspectWorkflowStage(stageNum) {
+    document.querySelectorAll(".workflow-stage-card").forEach(c => c.classList.remove("active"));
+    const card = document.getElementById(`stageCard-${stageNum}`);
+    if (card) card.classList.add("active");
+
+    const stageData = {
+      1: {
+        title: "STAGE 1: SCATTERED PHYSICAL & DIGITAL INPUTS",
+        seal: "SOURCE CAPTURE",
+        desc: "Raw, unstructured physical timetable photos, WhatsApp circular screenshots, PDF curriculum sheets, and faculty cabin door slips. Information is fragmented across platforms, requiring constant manual decoding.",
+        telemetry: { inputTypes: "Images, PDFs, Text", segmentation: "Autonomous", humanEffort: "0 Manual Entry", latency: "0ms" },
+        formula: "Raw Capture ➔ Table Bounding Box Detection ➔ OCR Preprocessing",
+        actionText: "Upload Timetable",
+        actionTab: "timetable"
+      },
+      2: {
+        title: "STAGE 2: MULTIMODAL NEURAL UNDERSTANDING",
+        seal: "OCR & VISION AI",
+        desc: "High-precision vision models process the timetable grid, identifying days, slot intervals (8:45 AM to 4:45 PM), subject acronyms, course codes, and instructor designations with per-slot confidence scores.",
+        telemetry: { model: "Multimodal Vision AI", accuracy: "98.4%", verificationFlag: "< 85% Auto-Flag", latency: "1.2s" },
+        formula: "f(Image) = { Day_i, TimeWindow_j, Subject_k, Staff_m } with Confidence C_ijk",
+        actionText: "Inspect AI Extractor",
+        actionTab: "timetable"
+      },
+      3: {
+        title: "STAGE 3: CONNECTED ACADEMIC GRAPH SYNTHESIS",
+        seal: "RELATIONAL GRAPH",
+        desc: "Eliminates academic silos by connecting every course period to its corresponding professor, office cabin number, and real-time faculty availability window. Turns flat schedules into living campus intelligence.",
+        telemetry: { entitiesLinked: "14 Nodes", cabinsMapped: "100%", freeSlotsTracked: "Live", silos: "0 Remaining" },
+        formula: "Course ⟷ Instructor ⟷ Cabin ⟷ TimeWindow ⟷ Student Schedule",
+        actionText: "Explore Faculty Grid",
+        actionTab: "faculty"
+      },
+      4: {
+        title: "STAGE 4: DYNAMIC PERIOD ATTENDANCE LEDGER",
+        seal: "PRECISION AUDIT",
+        desc: "Converts the extracted schedule into an auditable period-by-period attendance manifest. Automatically computes exact compliance percentages against the 75% institutional policy, calculating consecutive recovery classes or safe bunk buffer hours.",
+        telemetry: { mathEngine: "SCE Policy", threshold: "75% Target", bufferClasses: "Live Dynamic", auditTrail: "100% Local" },
+        formula: "Consecutive Needed = ⌈(0.75 × Total - Present) / (1 - 0.75)⌉",
+        actionText: "View Attendance Ledger",
+        actionTab: "attendance"
+      },
+      5: {
+        title: "STAGE 5: AUTONOMOUS ACTION & DISPATCH LAYER",
+        seal: "CONNECTED ACTION",
+        desc: "When attendance deficits or timetable conflicts arise, CampusFlow Peer generates pre-filled On-Duty petitions, routes drafts to available class advisors, maps turn-by-turn indoor corridor paths, and issues alerts without chasing.",
+        telemetry: { oneClickOD: "Pre-filled #REQ-737", wayfinding: "Corridor Turn-by-Turn", telegramAlerts: "Instant", chasingSaved: "3+ Hours/Week" },
+        formula: "Context ➔ Recommendation ➔ 1-Click Action Dispatch",
+        actionText: "Open Requests Queue",
+        actionTab: "requests"
+      }
+    };
+
+    const d = stageData[stageNum] || stageData[1];
+    const sheet = document.getElementById("workflowInspectionDetails");
+    if (!sheet) return;
+
+    const telemHtml = Object.entries(d.telemetry).map(([k, v]) => `
+      <div style="background:var(--paper-card-subtle); border:1px dashed var(--paper-border-dark); padding:0.6rem 0.8rem; border-radius:var(--radius-tag);">
+        <div style="font-family:var(--font-stamp); font-size:0.68rem; text-transform:uppercase; color:var(--ink-muted);">${k}</div>
+        <div style="font-family:var(--font-typewriter); font-size:0.85rem; font-weight:700; color:var(--ink-primary); margin-top:2px;">${v}</div>
+      </div>
+    `).join("");
+
+    sheet.innerHTML = `
+      <div class="workflow-inspection-header">
+        <div>
+          <h3 style="font-family:var(--font-editorial); font-size:1.4rem; font-weight:700; margin:0 0 0.35rem; color:var(--ink-primary);">
+            ${d.title}
+          </h3>
+          <span class="stamp-seal approved">${d.seal}</span>
+        </div>
+        <div>
+          <button class="btn-dossier-sm btn-primary-ink" onclick="App.switchTab('${d.actionTab}')">
+            <span>⚡</span> ${d.actionText}
+          </button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:0.6rem; margin-bottom:1.25rem;">
+        ${telemHtml}
+      </div>
+
+      <div class="dispatch-why-box" style="margin-bottom:1.25rem;">
+        <strong>OPERATIONAL PIPELINE DIRECTIVE:</strong> ${d.desc}
+      </div>
+
+      <div style="border-top:1px dashed var(--paper-border); padding-top:0.85rem; font-family:var(--font-typewriter); font-size:0.8rem; color:var(--ink-secondary);">
+        <strong>ALGORITHMIC PIPELINE MAPPING:</strong> <code>${d.formula}</code>
+      </div>
+    `;
+  },
+
+  // ========================================================================
+  // 2. TIMETABLE AI & OPERATIONS SCHEDULE
   // ========================================================================
   // 2. TIMETABLE AI & OPERATIONS SCHEDULE
   // ========================================================================
@@ -223,9 +963,22 @@ const App = {
   },
 
   loadPresetSchedule() {
-    AppState.loadPresetTimetable();
-    this.renderTimetableGrid();
+    const slots = GeminiService.generateAutonomousExtraction();
+    AppState.setTimetable(slots);
+    this.refreshCurrentView();
     this.showToast("⚡ SNS College CSE Timetable Loaded & Connected to Graph!");
+  },
+
+  simulateDemoUpload() {
+    this.showToast("📸 Ingesting SNS College CSE Timetable Slip...");
+    setTimeout(() => {
+      this.showToast("🤖 Running Multimodal Period Segmentation (8:45 AM - 4:45 PM)...");
+      setTimeout(() => {
+        const slots = GeminiService.generateAutonomousExtraction();
+        this.extractedPendingSlots = slots;
+        this.openVerificationModal(slots);
+      }, 700);
+    }, 400);
   },
 
   async handleTimetableFile(input) {
@@ -304,8 +1057,8 @@ const App = {
     if (this.extractedPendingSlots.length > 0) {
       AppState.setTimetable([...this.extractedPendingSlots]);
       this.closeVerificationModal();
-      this.renderTimetableGrid();
-      this.showToast(`✓ Committed ${this.extractedPendingSlots.length} sessions to Operations Schedule!`);
+      this.refreshCurrentView();
+      this.showToast(`✓ Extracted ${this.extractedPendingSlots.length} lecture periods into Attendance Ledger!`);
       this.extractedPendingSlots = [];
     }
   },
@@ -479,9 +1232,38 @@ const App = {
   // ========================================================================
   // 4. ATTENDANCE INTELLIGENCE & SCENARIO PLANNER
   // ========================================================================
+  selectedAttendanceDay: "Wednesday",
+
+  selectAttendanceDay(dayName) {
+    this.selectedAttendanceDay = dayName;
+
+    // Update Day Pills
+    document.querySelectorAll("#attendanceDayPills .filter-tab-stamp").forEach(btn => {
+      if (btn.textContent.toLowerCase().includes(dayName.toLowerCase())) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    this.renderPeriodAttendanceMarker();
+  },
+
   renderAttendanceView() {
+    const timetable = AppState.getTimetable();
     const stats = AppState.getAttendanceStats();
-    const settings = AppState.getSettings();
+    const nillBanner = document.getElementById("attendanceNillBanner");
+    const activeSection = document.getElementById("attendanceActiveSection");
+
+    // Strictly NILL state if timetable is empty
+    if (timetable.length === 0 || stats.isNill) {
+      if (nillBanner) nillBanner.style.display = "block";
+      if (activeSection) activeSection.style.display = "none";
+      return;
+    }
+
+    if (nillBanner) nillBanner.style.display = "none";
+    if (activeSection) activeSection.style.display = "block";
 
     const pctText = document.getElementById("attendancePercentageText");
     const targetLabel = document.getElementById("attendanceTargetLabel");
@@ -528,6 +1310,116 @@ const App = {
     if (s5) s5.textContent = `${p5}%`;
     if (s10) s10.textContent = `${p10}%`;
     if (sm1) sm1.textContent = `${m1}%`;
+
+    // Render period marker & subject breakdown
+    this.renderPeriodAttendanceMarker();
+    this.renderSubjectAttendanceTable();
+  },
+
+  renderPeriodAttendanceMarker() {
+    const container = document.getElementById("periodSlotsContainer");
+    if (!container) return;
+
+    const timetable = AppState.getTimetable();
+    if (timetable.length === 0) {
+      container.innerHTML = `<p style="color:var(--ink-muted); font-size:0.82rem; text-align:center; padding:1.5rem;">Awaiting timetable upload...</p>`;
+      return;
+    }
+
+    const daySlots = timetable
+      .filter(s => s.day.toLowerCase() === this.selectedAttendanceDay.toLowerCase())
+      .sort((a, b) => (a.startTime || "").localeCompare(b.startTime || ""));
+
+    if (daySlots.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--ink-muted); font-size:0.85rem;">
+        No lecture periods extracted for ${this.selectedAttendanceDay}. Select another day above or check your timetable.
+      </div>`;
+      return;
+    }
+
+    const todayDateStr = new Date().toISOString().split("T")[0];
+
+    container.innerHTML = daySlots.map((slot, idx) => {
+      const periodNum = slot.periodNum || (idx + 1);
+      const status = AppState.getSlotStatus(todayDateStr, slot.id);
+
+      return `
+        <div class="period-slot-row">
+          <div class="period-label-col">
+            PERIOD ${periodNum}
+            <span>${slot.startTime} – ${slot.endTime}</span>
+          </div>
+
+          <div class="period-details-col">
+            <h4>${slot.subject}</h4>
+            <p>👤 ${slot.faculty || "Faculty"} • 📍 ${slot.room || "Room 205"}</p>
+          </div>
+
+          <div class="period-actions-col">
+            <button class="btn-att-toggle present ${status === 'present' ? 'active' : ''}" 
+                    onclick="App.toggleSlotAttendance('${todayDateStr}', '${slot.id}', 'present', ${JSON.stringify(slot).replace(/"/g, '&quot;')})">
+              <span>✓</span> Present
+            </button>
+            <button class="btn-att-toggle absent ${status === 'absent' ? 'active' : ''}" 
+                    onclick="App.toggleSlotAttendance('${todayDateStr}', '${slot.id}', 'absent', ${JSON.stringify(slot).replace(/"/g, '&quot;')})">
+              <span>✗</span> Absent
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  },
+
+  toggleSlotAttendance(dateStr, slotId, status, slotMeta) {
+    AppState.markSlotAttendance(dateStr, slotId, status, slotMeta);
+    this.renderAttendanceView();
+    const stats = AppState.getAttendanceStats();
+    this.showToast(`Marked ${slotMeta.subject || 'Class'} as ${status.toUpperCase()} (${stats.percentage}%)`);
+  },
+
+  renderSubjectAttendanceTable() {
+    const table = document.getElementById("subjectAttendanceTable");
+    if (!table) return;
+
+    const stats = AppState.getAttendanceStats();
+    if (!stats.subjectBreakdown || stats.subjectBreakdown.length === 0) {
+      table.innerHTML = `<tr><td style="text-align:center; padding:1rem; color:var(--ink-muted);">No subject breakdown records extracted yet.</td></tr>`;
+      return;
+    }
+
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Course Designation</th>
+          <th>Attended / Conducted</th>
+          <th>Percentage</th>
+          <th>Target (75%)</th>
+          <th>Status Standing</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${stats.subjectBreakdown.map(sub => `
+          <tr>
+            <td><strong>${sub.subject}</strong></td>
+            <td>${sub.present} / ${sub.total} classes</td>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-family:var(--font-stamp); font-weight:700;">${sub.percentage}%</span>
+                <div style="flex:1; height:6px; background:var(--paper-border); border-radius:3px; max-width:100px; overflow:hidden;">
+                  <div style="height:100%; width:${Math.min(100, sub.percentage)}%; background:${sub.isCompliant ? 'var(--stamp-green)' : 'var(--stamp-red)'};"></div>
+                </div>
+              </div>
+            </td>
+            <td>${stats.targetPercentage}%</td>
+            <td>
+              <span class="stamp-seal ${sub.isCompliant ? 'approved' : 'action'}">
+                ${sub.isCompliant ? 'COMPLIANT' : 'DEFICIT'}
+              </span>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    `;
   },
 
   runAttendanceScenario(attendN, missN) {

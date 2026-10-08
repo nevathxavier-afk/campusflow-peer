@@ -1,196 +1,49 @@
 ================================================================================
-📖 CAMPUSFLOW PEER — HOW IT WORKS (COMPLETE WALKTHROUGH & FILE GUIDE)
+📜 CAMPUSFLOW PEER — HOW IT WORKS & TECHNICAL PIPELINE
 ================================================================================
-Project: CampusFlow Peer
 Team: ZanLeo Warrior (Mohammed Irfaan & Nivedha)
 Hackathon: PS06 – Smart Education | HACKNEXT'26 Series 2.0
+Institution: SNS College of Technology (Autonomous)
 ================================================================================
 
-TABLE OF CONTENTS
-1. System Overview & The "Action Layer" Concept
-2. Codebase Architecture & File Catalog
-3. Deep-Dive: Feature by Feature Mechanics
-   3.1 AI Timetable Extraction & Verification Engine
-   3.2 Smart Attendance Planning & What-If Simulator
-   3.3 Live Faculty Accessibility Matrix & Room Locator
-   3.4 Smart Signature & Routine Approval Workflow
-   3.5 Event & Circular Extraction Hub
-   3.6 Natural Language Smart Campus Query Agent
-   3.7 Connected Workflow Visualizer (Canvas Graph)
-4. Local-First Storage & Offline PWA Sync
-5. Multi-Role Testing Guide for Hackathon Judges
-================================================================================
-
-1. SYSTEM OVERVIEW: THE "ACTION LAYER"
+1. THE PROBLEM PIPELINE
 --------------------------------------------------------------------------------
-Most campus portals act as passive filing cabinets: they display timetables, 
-attendance percentages, and PDF links, forcing the student to manually correlate 
-who teaches what, where they are, when they can be found, and how an upcoming event 
-affects attendance.
+In an institution, information is available everywhere:
+- Timetable PDFs and images
+- WhatsApp announcements
+- Department notices
+- Attendance records
+- Faculty schedules
+- Leave & OD approval slips
 
-CampusFlow Peer acts as an active Campus Companion. It parses unstructured files, 
-binds them to a live reactive graph, detects conflicts automatically, and presents 
-immediate 1-click actions:
-  - "Prof Arun is teaching DBMS right now in Room 205. He is free in Cabin 304 from 3–4 PM. [Request Signature]"
-  - "Symposium on Friday overlaps with Data Structures Lab. Attendance drop: -2.3%. [Apply OD Now]"
+The information is not missing; it is scattered, disconnected, and creates friction.
 
-
-2. CODEBASE ARCHITECTURE & FILE CATALOG
+2. THE CONNECTED CAMPUS PIPELINE
 --------------------------------------------------------------------------------
-The project is built as a high-performance, zero-dependency, local-first web application 
-utilizing modern Vanilla HTML5, CSS3, and ES6 JavaScript Modules.
+1. SCATTERED DOCUMENT INPUT:
+   - Student or department uploads an image or PDF timetable.
 
-File Structure:
-├── index.html                  Main application shell, UI sections, modals, and HUD
-├── css/
-│   └── style.css               Complete design system (cosmic-violet + cyber neon theme, 
-│                               glassmorphism, micro-animations, mobile responsive)
-├── js/
-│   ├── app.js                  Central coordinator, tab router, role manager, toast notifications
-│   ├── data.js                 Seed dataset: SNS College CSE/IT timetable, faculty profiles,
-│                               routine signature templates, events, cycle tests
-│   ├── timetable-parser.js     Document classifier, timetable OCR simulator, confidence checker
-│   ├── attendance-engine.js    Mathematical forecasting engine, what-if simulator
-│   ├── faculty-matrix.js       Live faculty accessibility board, status toggles, cabin locator
-│   ├── signature-flow.js       Routine approval engine (OD, Bonafide, Lab access) & audit trail
-│   ├── event-hub.js            Poster parser, calendar integration, and conflict warnings
-│   ├── smart-search.js         Natural Language query processor & campus intent resolver
-│   └── connected-graph.js      Interactive HTML5 Canvas node visualizer showing connected action
-├── manifest.json               PWA Web App Manifest for mobile installation
-├── sw.js                       Service Worker for offline asset caching & local-first performance
-├── solution.txt                Hackathon problem statement, differentiation, and impact analysis
-├── howitworks.txt              This complete walkthrough and explanation document
-├── architecture.txt            System architecture, data schemas, security model, and offline strategy
-└── start-server.ps1            Zero-dependency PowerShell HTTP server script
+2. DOCUMENT UNDERSTANDING:
+   - Multimodal OCR segmenter identifies table cells, days, periods, course designations, rooms, and faculty.
+   - Confidence scoring highlights uncertain fields for student review before commitment.
 
+3. CAMPUS GRAPH CONNECTION:
+   - Extracted periods automatically link to:
+     * Daily Attendance Ledger: Generates Present/Absent slots for those exact periods.
+     * Faculty Availability Grid: Shows when the assigned faculty is available in their cabin.
+     * Campus Navigator: Connects room codes to walking routes.
+     * Routine Approvals: Pre-routes OD attendance exemption requests directly to the faculty advisor.
 
-3. DEEP-DIVE: FEATURE BY FEATURE MECHANICS
+4. PREDICTIVE ACTION & TELEMETRY:
+   - Attendance percentage, bunk buffer, and consecutive required sessions recalculate deterministically.
+   - Universal campus search answers student questions with transparent explainable reasons ("Why This Answer?").
+
+3. DESIGN PARADIGM
 --------------------------------------------------------------------------------
-
-3.1 AI TIMETABLE EXTRACTION & DYNAMIC REHYDRATION (js/timetable-parser.js & js/data.js)
------------------------------------------------------------------------------------------
-- How it works:
-  1. The user uploads an image or PDF of a timetable or clicks a sample preset.
-  2. The parser analyzes the grid structure and extracts day, time period, course name,
-     course code, faculty initial/name, and classroom number.
-  3. Dynamic Whole-Campus Rehydration:
-     * As soon as a timetable is extracted, CampusFlow Peer extracts all unique courses,
-       all unique professors, and all classroom locations.
-     * It immediately generates the Attendance Cards for those specific courses!
-     * It immediately generates the Faculty Accessibility Matrix for those specific professors!
-     * It updates the Routine Approval dropdown so requests go directly to those teachers!
-     * It repaints the Connected Workflow Canvas to visualize those exact entities!
-  4. Confidence Scoring: Each cell is evaluated for clarity. Slots with ambiguous 
-     OCR confidence (<85%) are marked with an amber "Needs Verification" badge.
-  5. Verification Modal: Clicking any slot lets the user confirm or amend 
-     the detected room or professor with live whole-campus synchronization.
-
-3.2 CUSTOMIZABLE TARGET ATTENDANCE & WHAT-IF SIMULATOR (js/attendance-engine.js)
---------------------------------------------------------------------------------
-- Full Target Customization:
-  * Students can slide or pick any target percentage (e.g. 75% Autonomous Cutoff, 
-    80% Safe Buffer, 85% Placement Target, or 90% High Honors).
-  * ALL subject cards dynamically recalculate:
-    - Exactly how many classes are needed to cross that specific target.
-    - Exactly how many classes can be safely bunked without dropping below that target.
-    - The threshold marker line moves to the exact custom percentage mark.
-- Real-Time Class Logger:
-  * Each card has interactive "+ Attended" and "+ Missed" quick-log buttons to log 
-    today's lecture with instant percentage recalculation.
-- Interactive What-If Simulator:
-  * Dual sliders simulate future attended vs missed classes to test impact before 
-    making decisions.
-
-3.3 LIVE FACULTY ACCESSIBILITY MATRIX & ROOM LOCATOR (js/faculty-matrix.js)
----------------------------------------------------------------------------
-- Addresses the daily problem of "Where is Professor X?"
-- Every faculty card features:
-  * Current Real-Time Status Pill:
-    🟢 Free in Cabin | 🔵 In Class | 🟣 In Department Meeting | 🟡 Quick Break | 🔴 Busy
-  * Room & Floor Locator (e.g. "Main Block - Room 304, 3rd Floor")
-  * Today's Verified Free-Time Windows (e.g., "11:30 AM–12:30 PM & 3:00–4:15 PM")
-  * 1-Click Action Button: "Request Meeting / Signature" that instantly prefills 
-    the Smart Signature flow with the specific professor.
-  * Role Support: When logged in as Faculty, teachers can change their status 
-    in one click; changes immediately reflect across the platform.
-
-3.4 SMART SIGNATURE & ROUTINE APPROVAL WORKFLOW (js/signature-flow.js)
-----------------------------------------------------------------------
-- Current Problem: Students physically search for faculty across multiple buildings 
-  to get routine permissions (On-Duty OD forms, lab access, bonafide requests).
-- Security Boundary:
-  * ROUTINE/NON-FINANCIAL ACADEMICS: Handled digitally through CampusFlow Peer.
-  * SENSITIVE/FINANCIAL/STATUTORY: Routed to the physical office with prepopulated digital slips.
-- Workflow Stages:
-  1. Student Selects Purpose (OD for Symposium, Lab Entry, Project Review, Gate Pass).
-  2. System identifies the responsible Faculty Advisor / HOD automatically.
-  3. Attaches date, time, reason, and optional supporting document.
-  4. Faculty Dashboard receives request with 1-click options:
-     [Approve with QR Token] | [Request Changes] | [Reject with Note].
-  5. Student receives status notification and timestamped digital approval card.
-
-3.5 EVENT & CIRCULAR EXTRACTION HUB (js/event-hub.js)
------------------------------------------------------
-- Handles unstructured posters and circulars.
-- Automatically extracts:
-  * Event Title, Organizing Department, Date, Time, Venue, and Registration Cutoff.
-- Conflict Engine:
-  * Checks if the event clashes with an internal Cycle Test, Lab Session, or Class.
-  * Warning Badge: "⚠️ Class Conflict: DBMS Lab overlaps with this event. OD Required."
-- 1-Click Action: "Add to Calendar & Set 24h Reminder" or "Apply for Event OD".
-
-3.6 NATURAL LANGUAGE SMART CAMPUS QUERY AGENT (js/smart-search.js)
-------------------------------------------------------------------
-- Omnibar search at the top of the interface.
-- Answers real student campus questions:
-  * "When can I meet Prof Arun?" → "Prof. Arun is free 3:00–4:00 PM in Room 304."
-  * "Where is my next class?" → "Next: DBMS in Room 205 at 10:00 AM."
-  * "Can I bunk OS tomorrow?" → "You have 2 safe bunk classes remaining (Current: 78.4%)."
-  * "What tests do I have this week?" → "Cycle Test II: Operating Systems on Wednesday."
-
-3.7 CONNECTED WORKFLOW VISUALIZER (js/connected-graph.js)
----------------------------------------------------------
-- A visual node canvas inspired by Paperino's sleek modularity and LastbencherOS's 
-  cybernetic HUD.
-- Renders an interactive directed graph showing the live links:
-  [Timetable: DBMS] ──> [Prof. Arun] ──> [Room 304] ──> [OD Request] ──> [Symposium Event]
-- Clicking any node pulls up that entity's actionable quick-drawer.
-
-3.8 GOOGLE GEMINI FREE API INTEGRATION (js/gemini-service.js)
-------------------------------------------------------------
-- Connects directly to Google Gemini 1.5 Flash / Gemini 2.0 Flash via the Free Tier endpoint:
-  https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}
-- Multimodal OCR Timetable Parser:
-  * Converts uploaded timetable photos/PDFs into base64 inlineData.
-  * System prompt instructs Gemini to output strict JSON containing all 5 days, 6 periods,
-    subject codes, professors, and classroom room numbers with confidence scores.
-- Strategic Attendance AI Recovery Engine:
-  * Multi-variable reasoning: evaluates current subject percentages against the 75% SNS 
-    Autonomous cutoff, identifies danger-zone courses, calculates buffer margins, and
-    proposes a strategic weekly attendance schedule with automatic OD recommendation.
-- Live Campus Companion Chat:
-  * Injects live campus context (faculty status, room matrix, today's schedule, cycle tests)
-    into Gemini, answering natural language questions like "Can I bunk DBMS tomorrow?" or
-    "When can I meet Prof Arun?".
-- Zero-Failure Offline Fallback:
-  * If no API key is provided, the platform seamlessly runs on high-fidelity local heuristic
-    engines and includes a 1-click "Try Demo Simulation" mode so hackathon judges can test
-    either mode without friction.
-
-
-4. LOCAL-FIRST STORAGE & OFFLINE PWA CAPABILITY
------------------------------------------------
-- All schedules, attendance records, faculty caches, and requests are saved in 
-  browser LocalStorage / IndexedDB.
-- Operates reliably even during weak college Wi-Fi or cellular dead-zones in basements.
-- Registered Service Worker caches all scripts, stylesheets, and icons for instant 
-  sub-second loads.
-
-
-5. MULTI-ROLE TESTING GUIDE FOR HACKATHON JUDGES
-------------------------------------------------
-In the top navigation bar, judges can toggle between:
-- 👨🎓 Student Mode: Test timetable upload, attendance what-if, meeting requests, and search.
-- 👨🏫 Faculty Mode: Change live status (Free/Class/Meeting), review student signature requests.
-- 🏢 Admin / HOD Mode: View departmental conflict matrix, room occupancy, and analytics.
+- Unique Archival Paper & Typewriter Dossier:
+  * Warm ivory parchment styling
+  * Typewritten typography (Courier Prime, Special Elite, Newsreader)
+  * Stamped rubber seals
+  * Tactile index cards
+  * 1-click Paper / Carbon mode toggle
 ================================================================================

@@ -1,9 +1,9 @@
 ================================================================================
-🚀 CAMPUSFLOW PEER — WINNING HACKATHON SOLUTION SPECIFICATION
+📜 CAMPUSFLOW PEER — WINNING HACKATHON SOLUTION SPECIFICATION
 ================================================================================
 Project: CampusFlow Peer
 Subtitle: "From Scattered Campus Information to Connected Campus Action"
-Architecture: 100% LastbencherOS Cyberpunk HUD Parity + Connected Action Layer
+Architecture: Archival Paper & Typewriter Dossier + Connected Campus Action Layer
 Team: ZanLeo Warrior
 Members: Mohammed Irfaan | Nivedha
 Hackathon: PS06 – Smart Education | HACKNEXT'26 Series 2.0
@@ -13,75 +13,44 @@ Target Audience: Students, Faculty Members, Academic Teams & Department Heads
 
 1. EXECUTIVE SUMMARY & ARCHITECTURAL FOUNDATION
 --------------------------------------------------------------------------------
-CampusFlow Peer unifies the tactical cyber attendance HUD of LastbencherOS 
-(https://lastbencheros.netlify.app/) with the connected campus action graph.
+CampusFlow Peer is an intelligent, local-first campus operating layer that 
+connects scattered college information and converts it into actionable assistance.
 
-KEY USER MANDATES FULLY IMPLEMENTED:
-1. Zero Preloaded Timetables:
-   - Initial timetable state is completely clean and empty (`[]`).
-   - Displays the iconic LastbencherOS "Schedule Idle" dashed HUD card:
-     "No operational directives established. Initiate AI Intelligence or manual entry phase."
+KEY PRINCIPLE:
+"Existing systems store information. CampusFlow Peer connects information to action."
+
+KEY ARCHITECTURAL PILLARS:
+1. Zero Preloaded Timetables (Strictly Nill):
+   - Initial timetable state is completely clean and empty ([]).
+   - Shows the typewritten "Schedule is Nill" upload dossier card.
    - 100% of courses, daily lectures, and attendance slots are derived dynamically 
-     when the user uploads a timetable image or inputs lecture directives.
+     when the user uploads a timetable image/PDF.
 
-2. Exact LastbencherOS UI/UX & Design Parity:
-   - Deep Cyberpunk Tactical Dark styling (`#050505` zinc-950, `#0d0d0d` zinc-900, `#222226` zinc-800).
-   - High-contrast glowing accents: Brand Blue (`#00aaff`), Brand Green (`#00ff66`), Brand Red (`#ff0044`).
-   - Sidebar navigation with squircle icons, active indicators, and student handle profile.
-   - Header with bold italic title, goal pill, and live neural engine status.
-   - Dashboard:
-     * System Efficiency SVG radial gauge (circumference 691, radius 110) with animated fill,
-       "SYSTEM STABLE" vs "CRITICAL FAILURE" status, and dynamic Tactical Guidance box.
-     * Bunk Capacity card with huge 8xl number, ACTIVE / LOCKED pill, and remaining safe-zone text.
-     * Session Integrity card with mini SVG donut chart, Present & Absent pill counts.
-     * Weekly Activity Trend 7-day bar chart with animated glowing bars.
-     * Engagement Heatmap 21-cell tactical calendar grid with high-consistency metrics.
-   - Attendance (Chronicle Ledger):
-     * Interactive monthly calendar with month navigation and day dots (green for present, red for absent).
-     * Daily Manifest with formatted date (e.g., "8th October", "Thursday").
-     * Saturday Phase Configuration buttons (Default, Mon, Tue, Wed, Thu, Fri, Holiday).
-     * Mission Scope with lecture cards featuring large glowing Present and Absent toggles 
-       and live bottom progress bar.
-     * "Zero Constraints" empty state when no classes exist for the selected day.
-   - Timetable (Operations Schedule):
-     * Header with "OPERATIONS SCHEDULE" / "TACTICAL PLANNING".
-     * [Reset All] button with 3-second red countdown confirmation.
-     * [AI Intelligence] button powered by Gemini Flash for instant OCR extraction.
-     * [Add Entry] modal (Designation, Temporal Day, Commence, Conclude, Commit Entry).
-     * Populated days grid (Monday through Sunday) with lecture cards and hover delete buttons.
-   - Settings:
-     * Student Alias handle input.
-     * Customizable Threshold Limit Slider (50% to 100%) with live percentage display and glowing bar.
-     * Cryptography & Node Persistence with "Format Data Node" button.
+2. Interactive Connected Workflow Graph:
+   - Visualizes the complete academic data pipeline:
+     [1. Timetable Document] -> [2. AI OCR Extraction] -> [3. Period Attendance Ledger] -> [4. Faculty Availability Grid] -> [5. OD & Routine Approvals]
+   - Shows live data flowing between modules without confusing node graph physics.
 
-3. Pre-Connected New Gemini API (Zero User Prompts):
-   - Fully configured and active using Gemini 3.5 Flash-Lite & 3.8 Flash.
-   - Zero modal popups asking the user to connect API keys. Works silently out of the box.
-   - Multimodal extraction prompt matches LastbencherOS exact schema:
-     `[{ subject, day, startTime, endTime }]`.
+3. Archival Paper & Typewriter Dossier Design System:
+   - Warm Ivory Parchment (#FAF7F0) with authentic ruled paper gridlines.
+   - Charcoal Typewriter Ribbon Ink (#1C1917) with Courier Prime, Special Elite & Newsreader.
+   - Double-bordered rubber stamp seals (APPROVED, OPERATIONAL DIRECTIVE, ACTION REQUIRED).
+   - One-click Paper Mode (📜) / Carbon Ink Mode (🖨️) toggle.
 
-4. Extended Connected CampusFlow Peer Capabilities:
-   - AI Companion: Direct conversational agent for bunk advice, timetable analysis, and queries.
-   - Faculty Matrix: Real-time faculty accessibility, cabin locator, and free hours.
-   - Routine Approvals: Multi-tier digital signatures for OD and Hall Ticket clearance.
-   - Events Hub: Verified campus circulars, exam schedules, and automatic OD drafting.
+4. Four Demo User Roles:
+   - Student (Nivedha)
+   - Faculty (Dr. Arun Sundaram)
+   - Department (CSE Office)
+   - Administrator (Campus Pulse & "Why Are Students Asking This?" engine)
+
+5. Auditable Deterministic Telemetry:
+   - Attendance percentage, safe bunk buffer, and consecutive required classes.
+   - What-If academic CGPA simulator.
+   - Multi-tier routine approval routing with timestamps.
 
 ================================================================================
-2. MATHEMATICAL ENGINE & TELEMETRY PARITY (LastbencherOS `sce` Formula)
+2. LOCAL HOST & REPOSITORY
 ================================================================================
-The attendance calculation engine implements the exact mathematical formulas:
-- Total Classes: T = Present + Absent
-- Percentage: P = (Present / T) * 100 (or 0 if T = 0)
-- Target: TargetPercentage (default 78%, customizable from 50% to 100%)
-- Required to Reach Target:
-    If P < Target: Math.ceil(((Target/100) * T - Present) / (1 - (Target/100)))
-- Bunk Capacity (Safe to Bunk):
-    If P >= Target and T > 0: Math.floor((Present - (Target/100) * T) / (Target/100))
-
-================================================================================
-3. VERIFICATION & LOCAL HOST ENDPOINT
-================================================================================
-- Local Server: Running on http://localhost:8080/
-- Team: ZanLeo Warrior (Mohammed Irfaan & Nivedha)
-- Hackathon: PS06 – Smart Education | HACKNEXT'26 Series 2.0
+- Local Server: http://localhost:8080/
+- GitHub: https://github.com/nevathxavier-afk/campusflow-peer
 ================================================================================

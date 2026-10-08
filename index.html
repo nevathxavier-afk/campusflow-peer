@@ -38,7 +38,7 @@
         <input type="text" class="search-dossier-input" id="universalSearchInput" placeholder="Ask your campus anything (e.g. 'When can I meet Prof. Arun?', 'Where is Room 205?')...">
       </div>
 
-      <!-- Demo Role Selector & Actions -->
+      <!-- Demo Role Selector & Controls -->
       <div class="header-actions-group">
         
         <!-- 4-Role Demo Switcher -->
@@ -92,6 +92,10 @@
         
         <button class="dossier-tab-btn active" data-tab="home" onclick="App.switchTab('home')">
           <span>🏠</span> <span>Dispatch (Home)</span>
+        </button>
+
+        <button class="dossier-tab-btn" data-tab="workflow" onclick="App.switchTab('workflow')">
+          <span>🔀</span> <span>Connected Workflow</span>
         </button>
 
         <button class="dossier-tab-btn" data-tab="timetable" onclick="App.switchTab('timetable')">
@@ -159,81 +163,266 @@
           <!-- TAB 1: DISPATCH (MY CAMPUS • TODAY / NOW / NEXT) -->
           <section class="dossier-view-panel active" id="panel-home">
             
-            <div class="dispatch-banner">
-              <div class="stamp-seal approved dispatch-stamp-tag">OPERATIONAL DIRECTIVE</div>
-              <div style="font-family:var(--font-stamp); font-size:0.82rem; color:var(--stamp-red); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.35rem;">
-                TODAY • WEDNESDAY, 8 OCTOBER 2026
-              </div>
-              <h3>Good Morning, Nivedha</h3>
-              <p class="dispatch-sublead">
-                NEXT ACTION: <strong>DBMS starts in 24 minutes — Room 205</strong> (Prof. Meena Krishnan).
+            <!-- Home Nill State (if timetable is empty) -->
+            <div id="homeNillBanner" class="paper-card" style="text-align:center; padding:3rem 2rem; display:none;">
+              <div style="font-size:3rem; margin-bottom:0.75rem;">📜</div>
+              <span class="stamp-seal action" style="margin-bottom:0.75rem;">SCHEDULE IS NILL</span>
+              <h3 style="font-family:var(--font-editorial); font-size:1.75rem; margin:0.5rem 0;">Awaiting Timetable Upload</h3>
+              <p style="color:var(--ink-secondary); max-width:560px; margin:0 auto 1.5rem; line-height:1.6;">
+                No academic periods registered yet. Upload your timetable in the Timetable AI tab to extract all periods, activate attendance tracking, and generate your dynamic campus timeline.
               </p>
+              <div style="display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap;">
+                <button class="btn-dispatch-action" onclick="App.switchTab('timetable')">
+                  <span>📸</span> Upload Timetable (Image/PDF)
+                </button>
+                <button class="btn-pitch-deck" onclick="App.simulateDemoUpload()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
+                  <span>⚡</span> Try Demo Upload (SNS College CSE)
+                </button>
+              </div>
+            </div>
+
+            <!-- Home Active State (when timetable is uploaded) -->
+            <div id="homeActiveContent">
+              <div class="dispatch-banner">
+                <div class="stamp-seal approved dispatch-stamp-tag">OPERATIONAL DIRECTIVE</div>
+                <div style="font-family:var(--font-stamp); font-size:0.82rem; color:var(--stamp-red); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.35rem;">
+                  TODAY • WEDNESDAY, 8 OCTOBER 2026
+                </div>
+                <h3>Good Morning, Nivedha</h3>
+                <p class="dispatch-sublead" id="homeNextActionLead">
+                  NEXT ACTION: <strong>DBMS starts in 24 minutes — Room 205</strong> (Prof. Meena Krishnan).
+                </p>
+                
+                <div class="dispatch-why-box" id="homeNextActionWhy">
+                  <strong>WHY THIS ACTION:</strong> Your current DBMS attendance is at <strong>74.3%</strong>, marginally under your 75% threshold. Attending today's lecture restores your standing to compliant status.
+                </div>
+
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                  <button class="btn-dispatch-action" onclick="App.showLocationModal('205')">
+                    <span>🗺️</span> View Room 205 Route
+                  </button>
+                  <button class="btn-dossier-sm btn-outline-ink" onclick="App.openOneContextModal('CS3501')">
+                    <span>✦</span> One-Context View
+                  </button>
+                  <button class="btn-dossier-sm btn-outline-ink" onclick="App.switchTab('workflow')">
+                    <span>🔀</span> View Connected Workflow
+                  </button>
+                </div>
+              </div>
+
+              <!-- Personal Academic Twin 4-Card Summary -->
+              <div class="twin-index-cards-row">
+                <div class="twin-index-card" onclick="App.switchTab('attendance')">
+                  <div class="twin-card-category">
+                    <span>Attendance Standing</span>
+                    <span class="stamp-seal action" id="twinAttendanceSeal">ACTIVE</span>
+                  </div>
+                  <div class="twin-card-val" id="twinAttendanceNum">72.0%</div>
+                  <p class="twin-card-note" id="twinAttendanceSub">Derived from extracted periods</p>
+                </div>
+
+                <div class="twin-index-card" onclick="App.switchTab('academics')">
+                  <div class="twin-card-category">
+                    <span>Academic Standing</span>
+                    <span class="stamp-seal approved">CGPA 8.42</span>
+                  </div>
+                  <div class="twin-card-val">8.42</div>
+                  <p class="twin-card-note">68 Credits Completed • Target: 8.80</p>
+                </div>
+
+                <div class="twin-index-card" onclick="App.switchTab('deadlines')">
+                  <div class="twin-card-category">
+                    <span>Upcoming Tests</span>
+                    <span class="stamp-seal pending">3 Active</span>
+                  </div>
+                  <div class="twin-card-val">3</div>
+                  <p class="twin-card-note">DBMS Cycle Test II approaching in 3 days</p>
+                </div>
+
+                <div class="twin-index-card" onclick="App.switchTab('requests')">
+                  <div class="twin-card-category">
+                    <span>Routine Approvals</span>
+                    <span class="stamp-seal verified">1 Pending</span>
+                  </div>
+                  <div class="twin-card-val">1</div>
+                  <p class="twin-card-note">HACKNEXT'26 OD Exemption with Dr. Arun</p>
+                </div>
+              </div>
+
+              <!-- Typed Campus Timeline Sheet -->
+              <div class="timeline-journal-sheet">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--ink-primary); padding-bottom:0.75rem; margin-bottom:1.25rem;">
+                  <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase;">
+                    TODAY'S CONNECTED CAMPUS TIMELINE
+                  </h3>
+                  <span class="stamp-seal verified">EXTRACTED PERIOD SCHEDULE</span>
+                </div>
+
+                <div id="journalEntriesContainer">
+                  <!-- Dynamically populated from extracted timetable -->
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- TAB: INTERACTIVE CONNECTED WORKFLOW GRAPH -->
+          <!-- TAB: INTERACTIVE CONNECTED WORKFLOW GRAPH -->
+          <section class="dossier-view-panel" id="panel-workflow">
+            
+            <div class="section-dossier-title">
+              <div>
+                <h2>INTERACTIVE CONNECTED WORKFLOW GRAPH</h2>
+                <p>Visualizing how CampusFlow Peer transforms scattered physical campus documents into connected intelligence, precision attendance math, and autonomous action</p>
+              </div>
+              <span class="stamp-seal approved">OPERATIONAL TOPOLOGY</span>
+            </div>
+
+            <!-- Workflow Graph Board Container -->
+            <div class="workflow-graph-container">
               
-              <div class="dispatch-why-box">
-                <strong>WHY THIS ACTION:</strong> Your current DBMS attendance is at <strong>74.3%</strong>, marginally under your 75% threshold. Attending today's lecture restores your standing to compliant status.
+              <!-- Graph Toolbar & Filter Controls -->
+              <div class="workflow-controls-bar">
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span style="font-family:var(--font-stamp); font-size:0.75rem; text-transform:uppercase; color:var(--ink-muted);">Topology View:</span>
+                  <button class="filter-tab-stamp active" id="btnGraphViewMesh" onclick="App.setWorkflowViewMode('mesh')">🌐 Connected Entity Mesh</button>
+                  <button class="filter-tab-stamp" id="btnGraphViewPipeline" onclick="App.setWorkflowViewMode('pipeline')">📐 5-Stage Conveyor</button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <button class="btn-dossier-sm btn-primary-ink" onclick="App.triggerWorkflowPulse()">
+                    <span>▶</span> Fire Flow Pulse
+                  </button>
+                  <button class="btn-dossier-sm btn-outline-ink" onclick="App.resetWorkflowGraphSelection()">
+                    <span>↺</span> Reset View
+                  </button>
+                </div>
               </div>
 
-              <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-                <button class="btn-dispatch-action" onclick="App.showLocationModal('205')">
-                  <span>🗺️</span> View Room 205 Route
-                </button>
-                <button class="btn-dossier-sm btn-outline-ink" onclick="App.openOneContextModal('CS3501')">
-                  <span>✦</span> One-Context View
-                </button>
+              <!-- Secondary Filter Bar (Categories) -->
+              <div class="workflow-category-bar" id="workflowCategoryBar">
+                <span style="font-family:var(--font-stamp); font-size:0.7rem; text-transform:uppercase; color:var(--ink-muted);">Filter Nodes:</span>
+                <button class="typewriter-time-chip active" onclick="App.filterWorkflowNodes('all', this)">All Nodes (15)</button>
+                <button class="typewriter-time-chip" onclick="App.filterWorkflowNodes('input', this)">📄 Raw Influx</button>
+                <button class="typewriter-time-chip" onclick="App.filterWorkflowNodes('ai', this)">🤖 Vision OCR & Matcher</button>
+                <button class="typewriter-time-chip" onclick="App.filterWorkflowNodes('mesh', this)">📚 Knowledge Mesh</button>
+                <button class="typewriter-time-chip" onclick="App.filterWorkflowNodes('attendance', this)">📈 Attendance Ledger</button>
+                <button class="typewriter-time-chip" onclick="App.filterWorkflowNodes('action', this)">⚡ Autonomous Action</button>
               </div>
+
+              <!-- VIEW A: Interactive SVG Connected Graph Mesh -->
+              <div id="workflowMeshView" class="workflow-mesh-wrapper">
+                <svg id="workflowSvgCanvas" class="workflow-svg-board" viewBox="0 0 1100 560" preserveAspectRatio="xMidYMid meet">
+                  <!-- Rendered dynamically by App.renderWorkflowGraph() -->
+                </svg>
+              </div>
+
+              <!-- VIEW B: 5-Stage Conveyor Pipeline Flow (Alternative View) -->
+              <div id="workflowPipelineView" class="workflow-pipeline-flow" style="display:none; padding:1.25rem;">
+                
+                <div class="workflow-stage-card active" id="stageCard-1" onclick="App.inspectWorkflowStage(1)">
+                  <div>
+                    <div class="workflow-step-num">
+                      <span>STAGE 1</span>
+                      <span class="stamp-seal approved">INPUT</span>
+                    </div>
+                    <div class="workflow-stage-icon">📄</div>
+                    <h3 class="workflow-stage-title">Scattered Documents</h3>
+                    <p class="workflow-stage-desc">
+                      Timetable photos, WhatsApp circulars, syllabus notices, and faculty slips.
+                    </p>
+                  </div>
+                  <div class="workflow-stage-meta">
+                    <span>SOURCE CAPTURE</span>
+                    <span>100% UNSTRUCTURED</span>
+                  </div>
+                </div>
+
+                <div class="workflow-stage-card" id="stageCard-2" onclick="App.inspectWorkflowStage(2)">
+                  <div>
+                    <div class="workflow-step-num">
+                      <span>STAGE 2</span>
+                      <span class="stamp-seal verified">OCR & AI</span>
+                    </div>
+                    <div class="workflow-stage-icon">🤖</div>
+                    <h3 class="workflow-stage-title">Multimodal Understanding</h3>
+                    <p class="workflow-stage-desc">
+                      Table segmentation, period parsing, faculty matching, and verification scoring.
+                    </p>
+                  </div>
+                  <div class="workflow-stage-meta">
+                    <span>CONFIDENCE CHECK</span>
+                    <span>98% ACCURACY</span>
+                  </div>
+                </div>
+
+                <div class="workflow-stage-card" id="stageCard-3" onclick="App.inspectWorkflowStage(3)">
+                  <div>
+                    <div class="workflow-step-num">
+                      <span>STAGE 3</span>
+                      <span class="stamp-seal approved">GRAPH</span>
+                    </div>
+                    <div class="workflow-stage-icon">🔀</div>
+                    <h3 class="workflow-stage-title">Academic Graph Synthesis</h3>
+                    <p class="workflow-stage-desc">
+                      Links Course ➔ Assigned Faculty ➔ Allocated Room ➔ Temporal Period ➔ Dept.
+                    </p>
+                  </div>
+                  <div class="workflow-stage-meta">
+                    <span>RELATIONSHIPS</span>
+                    <span>ZERO SILOS</span>
+                  </div>
+                </div>
+
+                <div class="workflow-stage-card" id="stageCard-4" onclick="App.inspectWorkflowStage(4)">
+                  <div>
+                    <div class="workflow-step-num">
+                      <span>STAGE 4</span>
+                      <span class="stamp-seal action">TELEMETRY</span>
+                    </div>
+                    <div class="workflow-stage-icon">📈</div>
+                    <h3 class="workflow-stage-title">Period Attendance Ledger</h3>
+                    <p class="workflow-stage-desc">
+                      Instant period tracking, safe bunk buffer, and consecutive recovery math.
+                    </p>
+                  </div>
+                  <div class="workflow-stage-meta">
+                    <span>AUDITABLE MATH</span>
+                    <span>SCE FORMULA</span>
+                  </div>
+                </div>
+
+                <div class="workflow-stage-card" id="stageCard-5" onclick="App.inspectWorkflowStage(5)">
+                  <div>
+                    <div class="workflow-step-num">
+                      <span>STAGE 5</span>
+                      <span class="stamp-seal approved">ACTION</span>
+                    </div>
+                    <div class="workflow-stage-icon">⚡</div>
+                    <h3 class="workflow-stage-title">Autonomous Action Layer</h3>
+                    <p class="workflow-stage-desc">
+                      1-click OD signature routing, indoor walking routes, and consultation booking.
+                    </p>
+                  </div>
+                  <div class="workflow-stage-meta">
+                    <span>CONNECTED ACTION</span>
+                    <span>ZERO CHASING</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Live Typewriter Pulse Ticker Bar -->
+              <div class="workflow-pulse-ticker" id="workflowPulseTicker">
+                <div class="ticker-stamp-label">OPERATIONAL AUDIT LOG:</div>
+                <div class="ticker-text-stream" id="workflowTickerText">Graph idle. Click any node to inspect real connections or click "▶ Fire Flow Pulse" to trace live data flow.</div>
+              </div>
+
             </div>
 
-            <!-- Personal Academic Twin 4-Card Summary -->
-            <div class="twin-index-cards-row">
-              <div class="twin-index-card" onclick="App.switchTab('attendance')">
-                <div class="twin-card-category">
-                  <span>Attendance Standing</span>
-                  <span class="stamp-seal action">72.0%</span>
-                </div>
-                <div class="twin-card-val" id="twinAttendanceNum">72.0%</div>
-                <p class="twin-card-note">36 Attended of 50 Classes • Goal: 75%</p>
-              </div>
-
-              <div class="twin-index-card" onclick="App.switchTab('academics')">
-                <div class="twin-card-category">
-                  <span>Academic Standing</span>
-                  <span class="stamp-seal approved">CGPA 8.42</span>
-                </div>
-                <div class="twin-card-val">8.42</div>
-                <p class="twin-card-note">68 Credits Completed • Target: 8.80</p>
-              </div>
-
-              <div class="twin-index-card" onclick="App.switchTab('deadlines')">
-                <div class="twin-card-category">
-                  <span>Upcoming Tests</span>
-                  <span class="stamp-seal pending">3 Active</span>
-                </div>
-                <div class="twin-card-val">3</div>
-                <p class="twin-card-note">DBMS Cycle Test II approaching in 3 days</p>
-              </div>
-
-              <div class="twin-index-card" onclick="App.switchTab('requests')">
-                <div class="twin-card-category">
-                  <span>Routine Approvals</span>
-                  <span class="stamp-seal verified">1 Pending</span>
-                </div>
-                <div class="twin-card-val">1</div>
-                <p class="twin-card-note">HACKNEXT'26 OD Exemption with Dr. Arun</p>
-              </div>
-            </div>
-
-            <!-- Typed Campus Timeline Sheet -->
-            <div class="timeline-journal-sheet">
-              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--ink-primary); padding-bottom:0.75rem; margin-bottom:1.25rem;">
-                <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase;">
-                  TODAY'S CONNECTED CAMPUS TIMELINE
-                </h3>
-                <span class="stamp-seal verified">DYNAMIC SCHEDULE</span>
-              </div>
-
-              <div id="journalEntriesContainer">
-                <!-- Dynamically populated from CampusData.todayTimeline -->
-              </div>
+            <!-- Detailed Interactive Telemetry Sheet for Selected Node / Stage -->
+            <div class="workflow-inspection-sheet" id="workflowInspectionDetails">
+              <!-- Dynamically populated on click -->
             </div>
 
           </section>
@@ -243,54 +432,55 @@
             
             <div class="section-dossier-title">
               <div>
-                <h2>OPERATIONS SCHEDULE & AI INTELLIGENCE</h2>
-                <p>Upload timetable image/PDF or load realistic preset • Connects directly to Attendance & Faculty Graph</p>
+                <h2>OPERATIONS SCHEDULE & AI TIMETABLE EXTRACTOR</h2>
+                <p>Upload timetable image/PDF • Derives 100% of attendance periods & campus graph connections</p>
               </div>
               
               <div class="timetable-btn-cluster">
-                <!-- Preset Sample Button -->
-                <button class="btn-pitch-deck" onclick="App.loadPresetSchedule()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
-                  <span>⚡</span> Load SNS College CSE Timetable
-                </button>
-
                 <!-- Hidden file input for OCR upload -->
                 <input type="file" id="timetableUploadInput" accept="image/*,.pdf" style="display:none;" onchange="App.handleTimetableFile(this)">
                 <button class="btn-dispatch-action" onclick="document.getElementById('timetableUploadInput').click()">
-                  <span>📸</span> AI OCR Extract (Image/PDF)
+                  <span>📸</span> Upload Timetable (Image/PDF)
                 </button>
 
-                <!-- Add Entry Button -->
+                <!-- Demo Simulation Button -->
+                <button class="btn-pitch-deck" onclick="App.simulateDemoUpload()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
+                  <span>⚡</span> Try Demo Upload (SNS College CSE)
+                </button>
+
+                <!-- Manual Entry Button -->
                 <button class="btn-dossier-sm btn-outline-ink" onclick="App.openAddEntryModal()">
-                  <span>+</span> Manual Entry
+                  <span>+</span> Manual Period
                 </button>
 
                 <!-- Reset Button -->
                 <button class="btn-dossier-sm btn-outline-ink" id="btnResetTimetable" onclick="App.handleResetTimetable()">
-                  <span>🗑️</span> Reset
+                  <span>🗑️</span> Reset to Nill
                 </button>
               </div>
             </div>
 
-            <!-- Idle Empty State (shown if timetable is empty) -->
+            <!-- Idle / NILL State (shown if timetable is empty) -->
             <div id="timetableIdleCard" class="paper-card" style="text-align:center; padding:3.5rem 2rem; display:none;">
               <div style="font-size:3rem; margin-bottom:1rem;">📜</div>
-              <h3 style="font-family:var(--font-editorial); font-size:1.75rem; margin-bottom:0.5rem;">Schedule Sheet Idle</h3>
-              <p style="color:var(--ink-muted); max-width:520px; margin:0 auto 1.5rem;">
-                No timetable directives loaded yet. You can extract directly from a timetable photo or PDF, or load the instant SNS College CSE demo preset.
+              <span class="stamp-seal action" style="margin-bottom:0.75rem;">TIMETABLE DIRECTIVE: NILL</span>
+              <h3 style="font-family:var(--font-editorial); font-size:1.75rem; margin:0.5rem 0;">No Timetable Uploaded Yet</h3>
+              <p style="color:var(--ink-secondary); max-width:560px; margin:0 auto 1.5rem; line-height:1.6;">
+                Avoid preloaded data. Upload your own timetable image or PDF to extract all lecture periods with 100% pucca accuracy, or try the interactive SNS College CSE demo upload.
               </p>
               <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
-                <button class="btn-pitch-deck" onclick="App.loadPresetSchedule()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
-                  <span>⚡</span> 1-Click Load CSE Timetable
-                </button>
                 <button class="btn-dispatch-action" onclick="document.getElementById('timetableUploadInput').click()">
                   <span>📸</span> Upload Timetable Photo/PDF
+                </button>
+                <button class="btn-pitch-deck" onclick="App.simulateDemoUpload()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
+                  <span>⚡</span> Try Demo Timetable Upload
                 </button>
               </div>
             </div>
 
             <!-- Columns Grid (Monday through Saturday) -->
             <div class="timetable-columns-grid" id="timetableDaysGrid">
-              <!-- Dynamically populated -->
+              <!-- Dynamically populated from extracted timetable -->
             </div>
 
           </section>
@@ -343,87 +533,146 @@
 
           </section>
 
-          <!-- TAB 4: ATTENDANCE INTELLIGENCE & SCENARIO PLANNER -->
+          <!-- TAB 4: ATTENDANCE INTELLIGENCE & EXTRACTED PERIOD LEDGER -->
           <section class="dossier-view-panel" id="panel-attendance">
             
             <div class="section-dossier-title">
               <div>
-                <h2>ATTENDANCE INTELLIGENCE & SCENARIO PLANNER</h2>
-                <p>Auditable, deterministic attendance calculations • Simulate future class scenarios without guessing</p>
+                <h2>ATTENDANCE INTELLIGENCE & PERIOD LEDGER</h2>
+                <p>Derived 100% from your extracted timetable periods • Mark Present/Absent & simulate compliance</p>
               </div>
               <span class="stamp-seal verified">POLICY COMPLIANCE</span>
             </div>
 
-            <div class="attendance-split-grid">
+            <!-- Attendance Nill State (shown when no timetable is uploaded) -->
+            <div id="attendanceNillBanner" class="paper-card" style="text-align:center; padding:3.5rem 2rem; display:none;">
+              <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+              <span class="stamp-seal action" style="margin-bottom:0.75rem;">ATTENDANCE DIRECTIVE: NILL</span>
+              <h3 style="font-family:var(--font-editorial); font-size:1.75rem; margin:0.5rem 0;">No Lecture Periods Registered</h3>
+              <p style="color:var(--ink-secondary); max-width:560px; margin:0 auto 1.5rem; line-height:1.6;">
+                Attendance tracking is derived directly from your extracted timetable periods. Upload your timetable in the Timetable AI tab to extract your periods and activate period-by-period attendance tracking.
+              </p>
+              <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+                <button class="btn-dispatch-action" onclick="App.switchTab('timetable')">
+                  <span>📅</span> Go to Timetable AI
+                </button>
+                <button class="btn-pitch-deck" onclick="App.simulateDemoUpload()" style="background:var(--stamp-green); border-color:var(--stamp-green);">
+                  <span>⚡</span> Try Demo Upload
+                </button>
+              </div>
+            </div>
+
+            <!-- Attendance Active Content (shown when timetable exists) -->
+            <div id="attendanceActiveSection">
               
-              <!-- Metric Sheet -->
-              <div class="attendance-index-sheet">
-                <span class="stamp-seal action" id="attendanceComplianceSeal">ATTENTION REQUIRED</span>
-                <div class="attendance-meter-number" id="attendancePercentageText">72.0%</div>
-                <div class="attendance-target-label" id="attendanceTargetLabel">INSTITUTIONAL TARGET: 75%</div>
+              <div class="attendance-split-grid">
                 
-                <div style="margin:1.5rem 0; border-top:1px dashed var(--paper-border-dark); border-bottom:1px dashed var(--paper-border-dark); padding:1rem 0; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; text-align:left; font-size:0.8rem;">
-                  <div>Classes Attended: <strong id="attAttendedCount">36</strong></div>
-                  <div>Classes Missed: <strong id="attMissedCount">14</strong></div>
-                  <div>Total Conducted: <strong id="attTotalCount">50</strong></div>
-                  <div>Consecutive Needed: <strong id="attNeededCount" style="color:var(--stamp-red);">6 Classes</strong></div>
+                <!-- Metric Sheet -->
+                <div class="attendance-index-sheet">
+                  <span class="stamp-seal action" id="attendanceComplianceSeal">ATTENTION REQUIRED</span>
+                  <div class="attendance-meter-number" id="attendancePercentageText">72.0%</div>
+                  <div class="attendance-target-label" id="attendanceTargetLabel">INSTITUTIONAL TARGET: 75%</div>
+                  
+                  <div style="margin:1.5rem 0; border-top:1px dashed var(--paper-border-dark); border-bottom:1px dashed var(--paper-border-dark); padding:1rem 0; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; text-align:left; font-size:0.8rem;">
+                    <div>Classes Attended: <strong id="attAttendedCount">36</strong></div>
+                    <div>Classes Missed: <strong id="attMissedCount">14</strong></div>
+                    <div>Total Conducted: <strong id="attTotalCount">50</strong></div>
+                    <div>Consecutive Needed: <strong id="attNeededCount" style="color:var(--stamp-red);">6 Classes</strong></div>
+                  </div>
+
+                  <div class="dispatch-why-box" id="attendanceAdviceBox" style="text-align:left; margin-bottom:0;">
+                    <!-- Dynamic advice text -->
+                  </div>
                 </div>
 
-                <div class="dispatch-why-box" id="attendanceAdviceBox" style="text-align:left; margin-bottom:0;">
-                  <!-- Dynamic advice text -->
+                <!-- Interactive Scenario Simulator -->
+                <div class="paper-card scenario-planner-box">
+                  <span class="stamp-seal approved">WHAT-IF SCENARIO ENGINE</span>
+                  <h3 style="margin-top:0.5rem;">Simulate Attendance Scenarios</h3>
+                  <p style="color:var(--ink-secondary); font-size:0.84rem;">
+                    Select a scenario below to project your compliance percentage based on your current recorded totals.
+                  </p>
+
+                  <div class="scenario-buttons-row">
+                    <div class="btn-scenario-card" onclick="App.runAttendanceScenario(5, 0)">
+                      <h5>Attend Next 5</h5>
+                      <p id="scenPlus5Val">74.5%</p>
+                      <span style="font-size:0.72rem; color:var(--ink-muted);">+2.5% boost</span>
+                    </div>
+
+                    <div class="btn-scenario-card" onclick="App.runAttendanceScenario(10, 0)">
+                      <h5>Attend Next 10</h5>
+                      <p id="scenPlus10Val">76.7%</p>
+                      <span style="font-size:0.72rem; color:var(--stamp-green);">Crosses Target!</span>
+                    </div>
+
+                    <div class="btn-scenario-card" onclick="App.runAttendanceScenario(0, 1)">
+                      <h5>Miss 1 Future</h5>
+                      <p id="scenMinus1Val">70.6%</p>
+                      <span style="font-size:0.72rem; color:var(--stamp-red);">-1.4% drop</span>
+                    </div>
+
+                    <div class="btn-scenario-card" onclick="App.runAttendanceScenario('reach', 80)">
+                      <h5>Reach 80%</h5>
+                      <p>20 Classes</p>
+                      <span style="font-size:0.72rem; color:var(--ink-muted);">Mandatory count</span>
+                    </div>
+                  </div>
+
+                  <div class="dispatch-why-box" id="scenarioOutputBox">
+                    Select any scenario button above to project your exact attendance percentage and verify compliance.
+                  </div>
+
+                  <!-- Configurable Policy Slider -->
+                  <div style="margin-top:1.5rem; border-top:1px dashed var(--paper-border-dark); padding-top:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <label style="font-family:var(--font-stamp); font-size:0.8rem; text-transform:uppercase;">
+                        Adjust Institutional Target Threshold:
+                      </label>
+                      <strong id="targetPercentSliderValue" style="font-family:var(--font-stamp); font-size:1.1rem; color:var(--stamp-red);">75%</strong>
+                    </div>
+                    <input type="range" class="form-field-input" id="thresholdSlider" min="50" max="100" value="75" style="margin-top:0.5rem;" oninput="App.updateTargetThreshold(this.value)">
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- DAILY PERIOD ATTENDANCE MARKER (DERIVED DIRECTLY FROM EXTRACTED TIMETABLE) -->
+              <div class="period-marker-sheet">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--ink-primary); padding-bottom:0.75rem; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                  <div>
+                    <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase;">
+                      PERIOD ATTENDANCE MARKER (EXTRACTED LECTURES)
+                    </h3>
+                    <p style="font-size:0.78rem; color:var(--ink-muted);">Click Present or Absent on each extracted lecture period to update your attendance in real time.</p>
+                  </div>
+                  
+                  <!-- Day Selector Tabs -->
+                  <div class="dept-filter-pills" id="attendanceDayPills">
+                    <button class="filter-tab-stamp active" onclick="App.selectAttendanceDay('Wednesday')">Wednesday (Today)</button>
+                    <button class="filter-tab-stamp" onclick="App.selectAttendanceDay('Monday')">Monday</button>
+                    <button class="filter-tab-stamp" onclick="App.selectAttendanceDay('Tuesday')">Tuesday</button>
+                    <button class="filter-tab-stamp" onclick="App.selectAttendanceDay('Thursday')">Thursday</button>
+                    <button class="filter-tab-stamp" onclick="App.selectAttendanceDay('Friday')">Friday</button>
+                    <button class="filter-tab-stamp" onclick="App.selectAttendanceDay('Saturday')">Saturday</button>
+                  </div>
+                </div>
+
+                <!-- Periods List for Selected Day -->
+                <div id="periodSlotsContainer">
+                  <!-- Dynamically populated from extracted periods -->
                 </div>
               </div>
 
-              <!-- Interactive Scenario Simulator -->
-              <div class="paper-card scenario-planner-box">
-                <span class="stamp-seal approved">WHAT-IF SCENARIO ENGINE</span>
-                <h3 style="margin-top:0.5rem;">Simulate Academic Attendance Scenarios</h3>
-                <p style="color:var(--ink-secondary); font-size:0.84rem;">
-                  Select a hypothesis below to project your compliance percentage based on current recorded totals.
-                </p>
-
-                <div class="scenario-buttons-row">
-                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario(5, 0)">
-                    <h5>Attend Next 5</h5>
-                    <p id="scenPlus5Val">74.5%</p>
-                    <span style="font-size:0.72rem; color:var(--ink-muted);">+2.5% boost</span>
-                  </div>
-
-                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario(10, 0)">
-                    <h5>Attend Next 10</h5>
-                    <p id="scenPlus10Val">76.7%</p>
-                    <span style="font-size:0.72rem; color:var(--stamp-green);">Crosses Target!</span>
-                  </div>
-
-                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario(0, 1)">
-                    <h5>Miss 1 Future</h5>
-                    <p id="scenMinus1Val">70.6%</p>
-                    <span style="font-size:0.72rem; color:var(--stamp-red);">-1.4% drop</span>
-                  </div>
-
-                  <div class="btn-scenario-card" onclick="App.runAttendanceScenario('reach', 80)">
-                    <h5>Reach 80%</h5>
-                    <p>20 Classes</p>
-                    <span style="font-size:0.72rem; color:var(--ink-muted);">Mandatory count</span>
-                  </div>
-                </div>
-
-                <div class="dispatch-why-box" id="scenarioOutputBox">
-                  Select any scenario button above to project your exact attendance percentage and verify compliance.
-                </div>
-
-                <!-- Configurable Policy Slider -->
-                <div style="margin-top:1.5rem; border-top:1px dashed var(--paper-border-dark); padding-top:1.25rem;">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="font-family:var(--font-stamp); font-size:0.8rem; text-transform:uppercase;">
-                      Adjust Institutional Target Threshold:
-                    </label>
-                    <strong id="targetPercentSliderValue" style="font-family:var(--font-stamp); font-size:1.1rem; color:var(--stamp-red);">75%</strong>
-                  </div>
-                  <input type="range" class="form-field-input" id="thresholdSlider" min="50" max="100" value="75" style="margin-top:0.5rem;" oninput="App.updateTargetThreshold(this.value)">
-                  <p style="font-size:0.75rem; color:var(--ink-muted); margin-top:0.35rem;">
-                    Configurable institutional threshold automatically updates all advice and recovery directives.
-                  </p>
+              <!-- SUBJECT-WISE ATTENDANCE BREAKDOWN (EXTRACTED SUBJECTS) -->
+              <div class="paper-card" style="margin-top:1.5rem;">
+                <h3 style="font-family:var(--font-stamp); font-size:1.15rem; text-transform:uppercase; margin-bottom:1rem;">
+                  SUBJECT-WISE ATTENDANCE BREAKDOWN (EXTRACTED COURSES)
+                </h3>
+                <div style="overflow-x:auto;">
+                  <table class="typewriter-table" id="subjectAttendanceTable">
+                    <!-- Dynamically populated -->
+                  </table>
                 </div>
               </div>
 
@@ -495,7 +744,7 @@
                 ACADEMIC RISK RADAR (SUBJECT-WISE EVALUATION)
               </h3>
               <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:1.25rem;" id="subjectInternalsGrid">
-                <!-- Dynamically populated from CampusData.subjects -->
+                <!-- Dynamically populated from CampusData.subjectsPool -->
               </div>
             </div>
 
@@ -583,7 +832,6 @@
                 <button class="typewriter-time-chip" onclick="App.showLocationModal('301')">Room 301 (HOD Office Suite)</button>
                 <button class="typewriter-time-chip" onclick="App.showLocationModal('401')">Room 401 (Operating Systems)</button>
                 <button class="typewriter-time-chip" onclick="App.showLocationModal('Lab 3')">Lab 3 (Cloud & DevOps Lab)</button>
-                <button class="typewriter-time-chip" onclick="App.showLocationModal('Auditorium')">Auditorium (HACKNEXT'26)</button>
               </div>
 
               <div id="inlineLocationDetails" class="dispatch-why-box" style="font-size:0.9rem;">
@@ -828,7 +1076,7 @@
       </div>
 
       <div class="dispatch-why-box" style="margin-bottom:1.25rem;">
-        <strong>VERIFICATION DIRECTIVE:</strong> Review extracted sessions below before committing to your operations schedule. Slots with OCR confidence below 85% are highlighted for review.
+        <strong>VERIFICATION DIRECTIVE:</strong> Review extracted sessions below before committing to your operations schedule. Committing will instantly activate attendance tracking for these exact periods.
       </div>
 
       <div style="max-height:340px; overflow-y:auto; border:1px solid var(--paper-border-dark); margin-bottom:1.5rem;">
@@ -841,7 +1089,7 @@
         <span style="font-size:0.8rem; color:var(--ink-muted);" id="extractedTotalSlotsCount">0 slots parsed</span>
         <div style="display:flex; gap:0.75rem;">
           <button class="btn-dossier-sm btn-outline-ink" onclick="App.closeVerificationModal()">Abort</button>
-          <button class="btn-dispatch-action" onclick="App.commitExtractedTimetable()">Commit to Schedule</button>
+          <button class="btn-dispatch-action" onclick="App.commitExtractedTimetable()">Commit & Activate Attendance Tracking</button>
         </div>
       </div>
     </div>

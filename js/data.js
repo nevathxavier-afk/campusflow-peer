@@ -3,6 +3,7 @@
 // Team: ZanLeo Warrior (Mohammed Irfaan & Nivedha)
 // Hackathon: PS06 – Smart Education | HACKNEXT'26 Series 2.0
 // Concept: From Scattered Campus Information to Connected Campus Action
+// ZERO PRELOAD: Timetable and Attendance start 100% NILL until uploaded.
 // ==========================================================================
 
 const CampusData = {
@@ -10,7 +11,7 @@ const CampusData = {
   currentUser: {
     id: "stu_nivedha",
     name: "Nivedha",
-    role: "student", // "student" | "faculty" | "department" | "admin"
+    role: "student",
     department: "Computer Science & Engineering",
     deptCode: "CSE",
     year: "3rd Year",
@@ -24,7 +25,7 @@ const CampusData = {
     advisor: "Dr. Arun Sundaram"
   },
 
-  // 2. Demo Roles configuration for judge testing
+  // 2. Demo Roles configuration
   roles: [
     { id: "student", label: "Student", user: "Nivedha (3rd Year CSE)", icon: "🎓" },
     { id: "faculty", label: "Faculty", user: "Dr. Arun Sundaram (Assoc. Prof)", icon: "👨‍🏫" },
@@ -44,16 +45,15 @@ const CampusData = {
       roomCode: "304",
       block: "Main Academic Block",
       floor: "3rd Floor",
-      status: "available", // "available" | "class" | "meeting" | "break"
+      status: "available",
       statusLabel: "Available in Cabin",
       statusDetails: "Free for project consultations, academic queries & OD endorsements",
       currentWindow: "02:30 PM – 04:15 PM",
       declaredFreeWindows: ["11:30 AM - 12:30 PM", "02:30 PM - 04:15 PM"],
-      coursesTaught: ["Database Management Systems", "Cloud Infrastructure"],
-      avatarColor: "#00aaff",
+      coursesTaught: ["Data Structures & Algorithms", "Cloud & DevOps Lab"],
       scheduleToday: [
-        { period: 1, time: "09:00 - 10:00", status: "class", detail: "DBMS (Room 205)" },
-        { period: 2, time: "10:00 - 11:00", status: "class", detail: "Cloud Lab (Lab 3)" },
+        { period: 1, time: "09:00 - 10:00", status: "class", detail: "DSA (Room 302)" },
+        { period: 2, time: "10:00 - 11:00", status: "available", detail: "In Cabin (Room 304)" },
         { period: 3, time: "11:15 - 12:15", status: "available", detail: "In Cabin (Room 304)" },
         { period: 4, time: "01:00 - 02:00", status: "meeting", detail: "Faculty Council" },
         { period: 5, time: "02:00 - 03:00", status: "available", detail: "In Cabin (Room 304)" },
@@ -75,15 +75,39 @@ const CampusData = {
       statusDetails: "Teaching DBMS to CSE 3rd Year Section A",
       currentWindow: "Free at 11:15 AM",
       declaredFreeWindows: ["11:15 AM - 12:30 PM", "03:30 PM - 04:30 PM"],
-      coursesTaught: ["Data Structures & Algorithms", "DBMS"],
-      avatarColor: "#8b5cf6",
+      coursesTaught: ["Database Management Systems", "DBMS Lab"],
       scheduleToday: [
         { period: 1, time: "09:00 - 10:00", status: "available", detail: "In Cabin (Room 214)" },
         { period: 2, time: "10:00 - 11:00", status: "class", detail: "DBMS (Room 205)" },
         { period: 3, time: "11:15 - 12:15", status: "available", detail: "In Cabin (Room 214)" },
-        { period: 4, time: "01:00 - 02:00", status: "class", detail: "DSA (Room 302)" },
+        { period: 4, time: "01:00 - 02:00", status: "class", detail: "DBMS (Room 205)" },
         { period: 5, time: "02:00 - 03:00", status: "meeting", detail: "Curriculum Cell" },
         { period: 6, time: "03:15 - 04:15", status: "available", detail: "In Cabin (Room 214)" }
+      ]
+    },
+    {
+      id: "fac_priya",
+      name: "Prof. Priya Ramachandran",
+      designation: "Assistant Professor",
+      department: "CSE",
+      email: "priya.r@snsct.edu.in",
+      cabin: "Room 216, 2nd Floor (Main Academic Block)",
+      roomCode: "216",
+      block: "Main Academic Block",
+      floor: "2nd Floor",
+      status: "available",
+      statusLabel: "Available in Cabin",
+      statusDetails: "Reviewing Operating Systems assignment submissions",
+      currentWindow: "01:00 PM – 03:00 PM",
+      declaredFreeWindows: ["10:00 AM - 11:15 AM", "01:00 PM - 03:00 PM"],
+      coursesTaught: ["Operating Systems"],
+      scheduleToday: [
+        { period: 1, time: "09:00 - 10:00", status: "available", detail: "In Cabin" },
+        { period: 2, time: "10:00 - 11:00", status: "available", detail: "In Cabin" },
+        { period: 3, time: "11:15 - 12:15", status: "class", detail: "OS (Room 401)" },
+        { period: 4, time: "01:00 - 02:00", status: "available", detail: "In Cabin" },
+        { period: 5, time: "02:00 - 03:00", status: "class", detail: "OS (Room 401)" },
+        { period: 6, time: "03:15 - 04:15", status: "break", detail: "Staff Lounge" }
       ]
     },
     {
@@ -101,8 +125,7 @@ const CampusData = {
       statusDetails: "NBA Accreditation & Industry Advisory Board Review",
       currentWindow: "Free at 03:45 PM",
       declaredFreeWindows: ["03:45 PM - 04:45 PM"],
-      coursesTaught: ["Compiler Design", "Advanced Algorithms"],
-      avatarColor: "#f59e0b",
+      coursesTaught: ["Compiler Design"],
       scheduleToday: [
         { period: 1, time: "09:00 - 10:00", status: "class", detail: "Compiler Design (Room 401)" },
         { period: 2, time: "10:00 - 11:00", status: "available", detail: "HOD Office" },
@@ -128,7 +151,6 @@ const CampusData = {
       currentWindow: "10:30 AM – 12:30 PM",
       declaredFreeWindows: ["10:30 AM - 12:30 PM", "02:15 PM - 03:30 PM"],
       coursesTaught: ["Computer Networks", "Cyber Security"],
-      avatarColor: "#00ff66",
       scheduleToday: [
         { period: 1, time: "09:00 - 10:00", status: "available", detail: "In Cabin (Room 108)" },
         { period: 2, time: "10:00 - 11:00", status: "available", detail: "In Cabin (Room 108)" },
@@ -137,115 +159,17 @@ const CampusData = {
         { period: 5, time: "02:00 - 03:00", status: "class", detail: "Networks Lab" },
         { period: 6, time: "03:15 - 04:15", status: "break", detail: "Faculty Lounge" }
       ]
-    },
-    {
-      id: "fac_suresh",
-      name: "Dr. Suresh Kumar",
-      designation: "Professor & AI Research Lead",
-      department: "AI & DS",
-      email: "suresh.ai@snsct.edu.in",
-      cabin: "AI Centre of Excellence, Ground Floor (Innovation Block)",
-      roomCode: "AI-10",
-      block: "Innovation Block",
-      floor: "Ground Floor",
-      status: "class",
-      statusLabel: "In Lab Evaluation",
-      statusDetails: "Conducting Capstone Phase-I Project Reviews",
-      currentWindow: "Free at 04:00 PM",
-      declaredFreeWindows: ["04:00 PM - 05:00 PM"],
-      coursesTaught: ["Machine Learning", "Deep Learning Architectures"],
-      avatarColor: "#ec4899",
-      scheduleToday: [
-        { period: 1, time: "09:00 - 10:00", status: "class", detail: "ML Theory (Room 210)" },
-        { period: 2, time: "10:00 - 11:00", status: "class", detail: "ML Theory (Room 210)" },
-        { period: 3, time: "11:15 - 12:15", status: "meeting", detail: "Research Grant Sync" },
-        { period: 4, time: "01:00 - 02:00", status: "class", detail: "AI Lab Phase-I" },
-        { period: 5, time: "02:00 - 03:00", status: "class", detail: "AI Lab Phase-I" },
-        { period: 6, time: "03:15 - 04:15", status: "available", detail: "AI Innovation Lab" }
-      ]
     }
   ],
 
-  // 4. Subjects & Academic Courses
-  subjects: [
-    {
-      code: "CS3501",
-      name: "Database Management Systems",
-      short: "DBMS",
-      faculty: "Prof. Meena Krishnan",
-      credits: 4,
-      room: "Room 205",
-      type: "Theory + Lab",
-      attendance: { attended: 26, conducted: 35, percentage: 74.3 },
-      internals: { test1: 18, test1Max: 25, test2: 21, test2Max: 25, assignment: 9, assignMax: 10, quiz: 8, quizMax: 10, total: 56, max: 70 },
-      riskStatus: "attention", // "track" | "attention" | "action"
-      riskReason: "Attendance (74.3%) is marginally under your 75% target. Cycle Test II is in 3 days."
-    },
-    {
-      code: "CS3502",
-      name: "Data Structures & Algorithms",
-      short: "DSA",
-      faculty: "Dr. Arun Sundaram",
-      credits: 4,
-      room: "Room 302",
-      type: "Theory",
-      attendance: { attended: 31, conducted: 36, percentage: 86.1 },
-      internals: { test1: 23, test1Max: 25, test2: 24, test2Max: 25, assignment: 10, assignMax: 10, quiz: 9, quizMax: 10, total: 66, max: 70 },
-      riskStatus: "track",
-      riskReason: "Strong performance. Attendance is 86.1% with comfortable buffer."
-    },
-    {
-      code: "CS3503",
-      name: "Operating Systems",
-      short: "OS",
-      faculty: "Prof. Priya Ramachandran",
-      credits: 3,
-      room: "Room 401",
-      type: "Theory",
-      attendance: { attended: 24, conducted: 34, percentage: 70.6 },
-      internals: { test1: 16, test1Max: 25, test2: 19, test2Max: 25, assignment: 8, assignMax: 10, quiz: 7, quizMax: 10, total: 50, max: 70 },
-      riskStatus: "action",
-      riskReason: "Attendance (70.6%) requires 6 consecutive attendances to recover to 75% target."
-    },
-    {
-      code: "CS3504",
-      name: "Computer Networks",
-      short: "Networks",
-      faculty: "Prof. Divya Bharathi",
-      credits: 3,
-      room: "Room 102",
-      type: "Theory + Lab",
-      attendance: { attended: 28, conducted: 32, percentage: 87.5 },
-      internals: { test1: 22, test1Max: 25, test2: 21, test2Max: 25, assignment: 9, assignMax: 10, quiz: 9, quizMax: 10, total: 61, max: 70 },
-      riskStatus: "track",
-      riskReason: "Consistent scores and solid attendance buffer."
-    },
-    {
-      code: "MA3354",
-      name: "Discrete Mathematics",
-      short: "Discrete Maths",
-      faculty: "Dr. V. Ramanathan",
-      credits: 4,
-      room: "Room 208",
-      type: "Theory",
-      attendance: { attended: 27, conducted: 38, percentage: 71.0 },
-      internals: { test1: 14, test1Max: 25, test2: 17, test2Max: 25, assignment: 7, assignMax: 10, quiz: 7, quizMax: 10, total: 45, max: 70 },
-      riskStatus: "action",
-      riskReason: "Internal 1 was low (14/25) and attendance is 71%. Attend next 5 classes."
-    },
-    {
-      code: "CS3511",
-      name: "Cloud & DevOps Lab",
-      short: "Cloud Lab",
-      faculty: "Dr. Arun Sundaram",
-      credits: 2,
-      room: "Lab 3 (3rd Floor)",
-      type: "Practical Lab",
-      attendance: { attended: 12, conducted: 13, percentage: 92.3 },
-      internals: { test1: 24, test1Max: 25, test2: 25, test2Max: 25, assignment: 10, assignMax: 10, quiz: 10, quizMax: 10, total: 69, max: 70 },
-      riskStatus: "track",
-      riskReason: "Top laboratory performance with 92.3% attendance."
-    }
+  // 4. Default Subject Pool
+  subjectsPool: [
+    { code: "CS3501", name: "Database Management Systems", short: "DBMS", faculty: "Prof. Meena Krishnan", credits: 4, room: "Room 205" },
+    { code: "CS3502", name: "Data Structures & Algorithms", short: "DSA", faculty: "Dr. Arun Sundaram", credits: 4, room: "Room 302" },
+    { code: "CS3503", name: "Operating Systems", short: "OS", faculty: "Prof. Priya Ramachandran", credits: 3, room: "Room 401" },
+    { code: "CS3504", name: "Computer Networks", short: "Networks", faculty: "Prof. Divya Bharathi", credits: 3, room: "Room 102" },
+    { code: "MA3354", name: "Discrete Mathematics", short: "Discrete Maths", faculty: "Dr. V. Ramanathan", credits: 4, room: "Room 208" },
+    { code: "CS3511", name: "Cloud & DevOps Lab", short: "Cloud Lab", faculty: "Dr. Arun Sundaram", credits: 2, room: "Lab 3" }
   ],
 
   // 5. Semester History & CGPA
@@ -261,82 +185,7 @@ const CampusData = {
     ]
   },
 
-  // 6. Connected Today's Campus Timeline (Dynamic Schedule)
-  todayTimeline: [
-    {
-      time: "08:30 AM",
-      title: "Campus Arrival & Turnstile Check-in",
-      location: "Main Gate • North Entrance",
-      category: "arrival",
-      isPast: true,
-      badge: "Completed"
-    },
-    {
-      time: "09:00 AM",
-      title: "Data Structures & Algorithms (CS3502)",
-      location: "Room 302 (3rd Floor)",
-      faculty: "Dr. Arun Sundaram",
-      category: "lecture",
-      isPast: true,
-      badge: "Attended (Present)"
-    },
-    {
-      time: "10:00 AM",
-      title: "Database Management Systems (CS3501)",
-      location: "Room 205 (2nd Floor)",
-      faculty: "Prof. Meena Krishnan",
-      category: "lecture",
-      isNow: true,
-      startsInMin: 0,
-      badge: "Now In Session",
-      action: "View Room & Material"
-    },
-    {
-      time: "11:15 AM",
-      title: "Computer Networks (CS3504)",
-      location: "Room 102 (1st Floor)",
-      faculty: "Prof. Divya Bharathi",
-      category: "lecture",
-      startsInMin: 45,
-      badge: "Up Next",
-      action: "Check Pre-Read"
-    },
-    {
-      time: "12:30 PM",
-      title: "Lunch & Peer Hackathon Sync",
-      location: "Central Student Food Court",
-      category: "break",
-      badge: "Break"
-    },
-    {
-      time: "02:00 PM",
-      title: "Operating Systems (CS3503)",
-      location: "Room 401 (4th Floor)",
-      faculty: "Prof. Priya Ramachandran",
-      category: "lecture",
-      badge: "Mandatory Session",
-      note: "Needed to boost OS attendance to 75%"
-    },
-    {
-      time: "03:15 PM",
-      title: "Recommended Consultation: Meet Dr. Arun Sundaram",
-      location: "Room 304 (3rd Floor)",
-      faculty: "Dr. Arun Sundaram",
-      category: "advisory",
-      badge: "Optimal Slot",
-      why: "Prof. Arun is free in cabin 02:30–04:15 PM with zero conflicts.",
-      action: "Plan Visit / OD Signature"
-    },
-    {
-      time: "04:15 PM",
-      title: "CSE Department Circular Sync: HACKNEXT'26 Briefing",
-      location: "Auditorium Hall B",
-      category: "event",
-      badge: "Event"
-    }
-  ],
-
-  // 7. Deadline & Assessment Radar
+  // 6. Deadlines & Circulars
   deadlines: [
     {
       id: "dl_1",
@@ -345,7 +194,7 @@ const CampusData = {
       date: "2026-10-11",
       displayDate: "Friday, 11 Oct",
       time: "10:00 AM",
-      urgency: "today", // "today" | "tomorrow" | "week" | "later"
+      urgency: "today",
       urgencyLabel: "3 Days Remaining",
       venue: "Exam Hall 3",
       impact: "High Weightage (25 Marks)"
@@ -373,22 +222,10 @@ const CampusData = {
       urgencyLabel: "This Weekend",
       venue: "Innovation Hub Portal",
       impact: "Official OD Clearance Required"
-    },
-    {
-      id: "dl_4",
-      title: "Discrete Mathematics Tutorial Sheet 4",
-      subject: "Discrete Maths (MA3354)",
-      date: "2026-10-16",
-      displayDate: "Next Wednesday",
-      time: "09:00 AM",
-      urgency: "later",
-      urgencyLabel: "Next Week",
-      venue: "Submit to Class Rep",
-      impact: "Assignment 10 Marks"
     }
   ],
 
-  // 8. Campus Document Vault
+  // 7. Campus Document Vault
   documents: [
     {
       id: "doc_1",
@@ -425,34 +262,10 @@ const CampusData = {
       fileName: "bonafide_certificate_demo.pdf",
       previewText: "Certified that Ms. Nivedha is a bonafide student of 3rd Year B.E. Computer Science...",
       isPrivate: true
-    },
-    {
-      id: "doc_4",
-      name: "Paper Presentation Winner Certificate (IIT Madras Shaastra)",
-      type: "Activities",
-      issuedBy: "Shaastra Tech Committee",
-      date: "08 Jan 2026",
-      status: "verified",
-      statusLabel: "Verified Activity",
-      fileName: "shaastra_winner_cert.pdf",
-      previewText: "First Prize • Edge AI on Autonomous Campus Fleets • Certificate #SH-26-904",
-      isPrivate: true
-    },
-    {
-      id: "doc_5",
-      name: "HACKNEXT'26 On-Duty (OD) Attendance Exemption Request",
-      type: "College",
-      issuedBy: "Pending Advisor & HOD Review",
-      date: "08 Oct 2026",
-      status: "pending",
-      statusLabel: "In Workflow (Advisor Sign)",
-      fileName: "od_request_hacknext.pdf",
-      previewText: "DRAFT / DEMO • Requesting 3 lecture hours OD for Smart Education Hackathon track...",
-      isPrivate: true
     }
   ],
 
-  // 9. Routine Approval Requests Queue (OD, Bonafide, Signatures)
+  // 8. Routine Approvals Requests
   requests: [
     {
       id: "req_od_101",
@@ -466,125 +279,94 @@ const CampusData = {
       impactedLectures: "3 Periods (DBMS, OS, Discrete Maths)",
       targetFaculty: "Dr. Arun Sundaram",
       targetFacultyId: "fac_arun",
-      status: "under_review", // "submitted" | "under_review" | "approved" | "correction" | "rejected"
+      status: "under_review",
       statusLabel: "Awaiting Advisor Endorsement",
       purpose: "Representing SNSCT at HACKNEXT'26 Series 2.0 (PS06 Smart Education). Team: ZanLeo Warrior.",
       workflow: [
         { role: "Student", name: "Nivedha", action: "Submitted Draft", timestamp: "08 Oct 09:15 AM", status: "completed" },
         { role: "Class Advisor", name: "Dr. Arun Sundaram", action: "Pending Review", timestamp: "Active Now", status: "current" },
-        { role: "HOD", name: "Dr. Karthik Narayanan", action: "Final Sign-off", timestamp: "Waiting", status: "waiting" },
-        { role: "Academic Dean", name: "Dean Office", action: "COE Attendance Sync", timestamp: "Waiting", status: "waiting" }
-      ],
-      auditTrail: [
-        { time: "08 Oct 09:15 AM", text: "Student Nivedha generated OD request with event poster verified." },
-        { time: "08 Oct 09:16 AM", text: "Automated conflict check passed: zero exam clashes detected." },
-        { time: "08 Oct 09:20 AM", text: "Routed to Class Advisor Dr. Arun Sundaram's queue." }
-      ]
-    },
-    {
-      id: "req_bona_102",
-      type: "Bonafide Certificate",
-      title: "Bonafide Request for Passport Application",
-      studentName: "Nivedha",
-      studentRoll: "7376231CS204",
-      department: "CSE",
-      dateSubmitted: "06 Oct 2026, 02:40 PM",
-      status: "approved",
-      statusLabel: "Approved • Ready for Collection",
-      purpose: "Official proof of enrollment for Regional Passport Office.",
-      workflow: [
-        { role: "Student", name: "Nivedha", action: "Submitted", timestamp: "06 Oct 02:40 PM", status: "completed" },
-        { role: "Department Office", name: "CSE Dept Admin", action: "Verified Records", timestamp: "06 Oct 03:15 PM", status: "completed" },
-        { role: "HOD", name: "Dr. Karthik Narayanan", action: "Approved", timestamp: "06 Oct 04:30 PM", status: "completed" }
-      ],
-      auditTrail: [
-        { time: "06 Oct 02:40 PM", text: "Form pre-filled via Smart Vault and submitted." },
-        { time: "06 Oct 04:30 PM", text: "Approved by Dr. Karthik Narayanan. Official sealed copy ready at Room 301." }
+        { role: "HOD", name: "Dr. Karthik Narayanan", action: "Final Sign-off", timestamp: "Waiting", status: "waiting" }
       ]
     }
   ],
 
-  // 10. Campus Location / Light Navigation Graph
+  // 9. Campus Locations
   locations: [
     { code: "205", name: "Lecture Hall 205", block: "Main Academic Block", floor: "2nd Floor", directions: "Main Entrance -> Take East Staircase to 2nd Floor -> Turn right -> Second room on left (Opposite Seminar Hall 1)" },
     { code: "304", name: "Faculty Cabin 304 (Dr. Arun Sundaram)", block: "Main Academic Block", floor: "3rd Floor", directions: "Main Entrance -> Take Central Lift to 3rd Floor -> Walk down CSE Faculty Corridor -> Cabin 304 on right" },
     { code: "214", name: "Faculty Cabin 214 (Prof. Meena Krishnan)", block: "Main Academic Block", floor: "2nd Floor", directions: "Take East Staircase to 2nd Floor -> CSE Staff Room A -> Desk 214" },
     { code: "301", name: "HOD Office Suite (Dr. Karthik Narayanan)", block: "Main Academic Block", floor: "3rd Floor", directions: "Directly opposite Central Lift lobby, 3rd Floor CSE Wing" },
     { code: "401", name: "Smart Lecture Hall 401", block: "Main Academic Block", floor: "4th Floor", directions: "Take Lift to 4th Floor -> North Wing Room 401" },
-    { code: "Lab 3", name: "Cloud & Systems Computing Lab 3", block: "Tech Park Block", floor: "3rd Floor", directions: "Tech Park Skywalk -> Enter 3rd Floor Lab Suite -> Lab 3 on left" },
-    { code: "Auditorium", name: "Sri Meenakshi Auditorium", block: "Central Auditorium Block", floor: "Ground Floor", directions: "Campus Main Quadrangle -> Grand entrance opposite Fountain" }
+    { code: "Lab 3", name: "Cloud & Systems Computing Lab 3", block: "Tech Park Block", floor: "3rd Floor", directions: "Tech Park Skywalk -> Enter 3rd Floor Lab Suite -> Lab 3 on left" }
   ],
 
-  // 11. "Why Are Students Asking This?" Operational Insights (Admin & Dept)
+  // 10. Admin Insights
   repeatedQueries: [
     {
       query: "When is the next Cycle Test II timetable coming?",
       count: 48,
       department: "CSE & IT",
       gapIdentified: "Information Gap: Timetable notification scattered in PDF circular.",
-      recommendation: "Auto-sync COE exam circular directly into student timeline.",
-      status: "Resolved via CampusFlow"
+      recommendation: "Auto-sync COE exam circular directly into student timeline."
     },
     {
       query: "Where can I find the Bonafide / OD request form?",
       count: 37,
       department: "All Engineering Branches",
       gapIdentified: "Navigation Gap: Students walking to office to collect physical paper slips.",
-      recommendation: "Queue-less digital pre-routing via Smart Vault.",
-      status: "Live in Prototype"
+      recommendation: "Queue-less digital pre-routing via Smart Vault."
     },
     {
       query: "Is Dr. Arun Sundaram free for signing project synopsis?",
       count: 29,
       department: "CSE",
       gapIdentified: "Coordination Delay: Students waiting outside faculty cabin during class hours.",
-      recommendation: "Digitized Faculty Availability Grid with declared consultation windows.",
-      status: "Live in Prototype"
+      recommendation: "Digitized Faculty Availability Grid with declared consultation windows."
     }
   ],
 
-  // 12. Realistic Preset Weekly Timetable (Monday - Saturday)
-  presetTimetable: [
+  // 11. Pucca Accurate Full Weekly Timetable Dataset for SNS College of Technology B.E. CSE 3rd Year
+  // Available to be parsed when uploaded
+  accurateCollegeTimetable: [
     // Monday
-    { id: "slot_mon_1", day: "Monday", startTime: "09:00", endTime: "10:00", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205" },
-    { id: "slot_mon_2", day: "Monday", startTime: "10:00", endTime: "11:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302" },
-    { id: "slot_mon_3", day: "Monday", startTime: "11:15", endTime: "12:15", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401" },
-    { id: "slot_mon_4", day: "Monday", startTime: "01:00", endTime: "02:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208" },
-    { id: "slot_mon_5", day: "Monday", startTime: "02:00", endTime: "03:00", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102" },
-    { id: "slot_mon_6", day: "Monday", startTime: "03:15", endTime: "04:15", subject: "Cloud & DevOps Lab", faculty: "Dr. Arun Sundaram", room: "Lab 3" },
+    { id: "slot_mon_1", day: "Monday", periodNum: 1, startTime: "09:00", endTime: "10:00", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205", confidence: 0.99 },
+    { id: "slot_mon_2", day: "Monday", periodNum: 2, startTime: "10:00", endTime: "11:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302", confidence: 0.98 },
+    { id: "slot_mon_3", day: "Monday", periodNum: 3, startTime: "11:15", endTime: "12:15", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401", confidence: 0.96 },
+    { id: "slot_mon_4", day: "Monday", periodNum: 4, startTime: "01:00", endTime: "02:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208", confidence: 0.95 },
+    { id: "slot_mon_5", day: "Monday", periodNum: 5, startTime: "02:00", endTime: "03:00", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102", confidence: 0.94 },
+    { id: "slot_mon_6", day: "Monday", periodNum: 6, startTime: "03:15", endTime: "04:15", subject: "Cloud & DevOps Lab", faculty: "Dr. Arun Sundaram", room: "Lab 3", confidence: 0.98 },
 
     // Tuesday
-    { id: "slot_tue_1", day: "Tuesday", startTime: "09:00", endTime: "10:00", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102" },
-    { id: "slot_tue_2", day: "Tuesday", startTime: "10:00", endTime: "11:00", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401" },
-    { id: "slot_tue_3", day: "Tuesday", startTime: "11:15", endTime: "12:15", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205" },
-    { id: "slot_tue_4", day: "Tuesday", startTime: "01:00", endTime: "02:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302" },
-    { id: "slot_tue_5", day: "Tuesday", startTime: "02:00", endTime: "04:00", subject: "DBMS Laboratory", faculty: "Prof. Meena Krishnan", room: "Lab 2" },
+    { id: "slot_tue_1", day: "Tuesday", periodNum: 1, startTime: "09:00", endTime: "10:00", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102", confidence: 0.97 },
+    { id: "slot_tue_2", day: "Tuesday", periodNum: 2, startTime: "10:00", endTime: "11:00", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401", confidence: 0.95 },
+    { id: "slot_tue_3", day: "Tuesday", periodNum: 3, startTime: "11:15", endTime: "12:15", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205", confidence: 0.98 },
+    { id: "slot_tue_4", day: "Tuesday", periodNum: 4, startTime: "01:00", endTime: "02:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302", confidence: 0.99 },
+    { id: "slot_tue_5", day: "Tuesday", periodNum: 5, startTime: "02:00", endTime: "04:00", subject: "DBMS Laboratory", faculty: "Prof. Meena Krishnan", room: "Lab 2", confidence: 0.99 },
 
-    // Wednesday (Today)
-    { id: "slot_wed_1", day: "Wednesday", startTime: "09:00", endTime: "10:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302" },
-    { id: "slot_wed_2", day: "Wednesday", startTime: "10:00", endTime: "11:00", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205" },
-    { id: "slot_wed_3", day: "Wednesday", startTime: "11:15", endTime: "12:15", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102" },
-    { id: "slot_wed_4", day: "Wednesday", startTime: "01:00", endTime: "02:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208" },
-    { id: "slot_wed_5", day: "Wednesday", startTime: "02:00", endTime: "03:00", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401" },
-    { id: "slot_wed_6", day: "Wednesday", startTime: "03:15", endTime: "04:15", subject: "Project Mentorship & OD Review", faculty: "Dr. Arun Sundaram", room: "Room 304" },
+    // Wednesday
+    { id: "slot_wed_1", day: "Wednesday", periodNum: 1, startTime: "09:00", endTime: "10:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302", confidence: 0.99 },
+    { id: "slot_wed_2", day: "Wednesday", periodNum: 2, startTime: "10:00", endTime: "11:00", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205", confidence: 0.99 },
+    { id: "slot_wed_3", day: "Wednesday", periodNum: 3, startTime: "11:15", endTime: "12:15", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102", confidence: 0.96 },
+    { id: "slot_wed_4", day: "Wednesday", periodNum: 4, startTime: "01:00", endTime: "02:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208", confidence: 0.95 },
+    { id: "slot_wed_5", day: "Wednesday", periodNum: 5, startTime: "02:00", endTime: "03:00", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401", confidence: 0.97 },
+    { id: "slot_wed_6", day: "Wednesday", periodNum: 6, startTime: "03:15", endTime: "04:15", subject: "Project Mentorship & OD Review", faculty: "Dr. Arun Sundaram", room: "Room 304", confidence: 0.98 },
 
     // Thursday
-    { id: "slot_thu_1", day: "Thursday", startTime: "09:00", endTime: "10:00", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401" },
-    { id: "slot_thu_2", day: "Thursday", startTime: "10:00", endTime: "11:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208" },
-    { id: "slot_thu_3", day: "Thursday", startTime: "11:15", endTime: "12:15", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205" },
-    { id: "slot_thu_4", day: "Thursday", startTime: "01:00", endTime: "03:00", subject: "Networks & Security Lab", faculty: "Prof. Divya Bharathi", room: "Lab 1" },
-    { id: "slot_thu_5", day: "Thursday", startTime: "03:15", endTime: "04:15", subject: "Library & Self-Study Seminar", faculty: "Dept Faculty", room: "Library" },
+    { id: "slot_thu_1", day: "Thursday", periodNum: 1, startTime: "09:00", endTime: "10:00", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401", confidence: 0.98 },
+    { id: "slot_thu_2", day: "Thursday", periodNum: 2, startTime: "10:00", endTime: "11:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208", confidence: 0.96 },
+    { id: "slot_thu_3", day: "Thursday", periodNum: 3, startTime: "11:15", endTime: "12:15", subject: "Database Management Systems", faculty: "Prof. Meena Krishnan", room: "Room 205", confidence: 0.99 },
+    { id: "slot_thu_4", day: "Thursday", periodNum: 4, startTime: "01:00", endTime: "03:00", subject: "Networks & Security Lab", faculty: "Prof. Divya Bharathi", room: "Lab 1", confidence: 0.99 },
 
     // Friday
-    { id: "slot_fri_1", day: "Friday", startTime: "09:00", endTime: "10:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208" },
-    { id: "slot_fri_2", day: "Friday", startTime: "10:00", endTime: "11:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302" },
-    { id: "slot_fri_3", day: "Friday", startTime: "11:15", endTime: "12:15", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401" },
-    { id: "slot_fri_4", day: "Friday", startTime: "01:00", endTime: "02:00", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102" },
-    { id: "slot_fri_5", day: "Friday", startTime: "02:00", endTime: "04:00", subject: "Cloud & DevOps Lab", faculty: "Dr. Arun Sundaram", room: "Lab 3" },
+    { id: "slot_fri_1", day: "Friday", periodNum: 1, startTime: "09:00", endTime: "10:00", subject: "Discrete Mathematics", faculty: "Dr. V. Ramanathan", room: "Room 208", confidence: 0.95 },
+    { id: "slot_fri_2", day: "Friday", periodNum: 2, startTime: "10:00", endTime: "11:00", subject: "Data Structures & Algorithms", faculty: "Dr. Arun Sundaram", room: "Room 302", confidence: 0.99 },
+    { id: "slot_fri_3", day: "Friday", periodNum: 3, startTime: "11:15", endTime: "12:15", subject: "Operating Systems", faculty: "Prof. Priya Ramachandran", room: "Room 401", confidence: 0.97 },
+    { id: "slot_fri_4", day: "Friday", periodNum: 4, startTime: "01:00", endTime: "02:00", subject: "Computer Networks", faculty: "Prof. Divya Bharathi", room: "Room 102", confidence: 0.96 },
+    { id: "slot_fri_5", day: "Friday", periodNum: 5, startTime: "02:00", endTime: "04:00", subject: "Cloud & DevOps Lab", faculty: "Dr. Arun Sundaram", room: "Lab 3", confidence: 0.99 },
 
     // Saturday
-    { id: "slot_sat_1", day: "Saturday", startTime: "09:00", endTime: "10:00", subject: "Technical Seminar & Hackathon Sync", faculty: "HOD & Mentors", room: "Auditorium" },
-    { id: "slot_sat_2", day: "Saturday", startTime: "10:00", endTime: "12:00", subject: "Industry Elective Workshop", faculty: "Industry Guest", room: "Seminar Hall 2" }
+    { id: "slot_sat_1", day: "Saturday", periodNum: 1, startTime: "09:00", endTime: "10:00", subject: "Technical Seminar & Hackathon Sync", faculty: "HOD & Mentors", room: "Auditorium", confidence: 0.95 },
+    { id: "slot_sat_2", day: "Saturday", periodNum: 2, startTime: "10:00", endTime: "12:00", subject: "Industry Elective Workshop", faculty: "Industry Guest", room: "Seminar Hall 2", confidence: 0.96 }
   ]
 };
 
@@ -597,8 +379,7 @@ const AppState = {
     ATTENDANCE: "cfp_attendance",
     SETTINGS: "cfp_settings",
     REQUESTS: "cfp_requests",
-    ROLE: "cfp_active_role",
-    DOCUMENTS: "cfp_documents"
+    ROLE: "cfp_active_role"
   },
 
   // Role Management
@@ -611,7 +392,7 @@ const AppState = {
     this.notifyUpdate("role");
   },
 
-  // Timetable
+  // 1. Timetable — Starts strictly NILL ([]) unless uploaded!
   getTimetable() {
     try {
       const data = localStorage.getItem(this.KEYS.TIMETABLE);
@@ -623,26 +404,33 @@ const AppState = {
 
   setTimetable(list) {
     localStorage.setItem(this.KEYS.TIMETABLE, JSON.stringify(list || []));
+    
+    // Once timetable is set, initialize attendance periods ledger for these exact periods
+    if (list && list.length > 0) {
+      this.initAttendanceFromTimetable(list);
+    } else {
+      localStorage.removeItem(this.KEYS.ATTENDANCE);
+    }
+    
     this.notifyUpdate("timetable");
   },
 
-  loadPresetTimetable() {
-    this.setTimetable([...CampusData.presetTimetable]);
-    return CampusData.presetTimetable;
-  },
-
   clearTimetable() {
-    this.setTimetable([]);
+    localStorage.removeItem(this.KEYS.TIMETABLE);
+    localStorage.removeItem(this.KEYS.ATTENDANCE);
+    this.notifyUpdate("timetable");
+    this.notifyUpdate("attendance");
   },
 
   addTimetableEntry(entry) {
     const list = this.getTimetable();
     const newEntry = {
       id: "slot_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
-      subject: (entry.subject || "Academic Lecture").trim(),
+      subject: (entry.subject || "Academic Course").trim(),
       faculty: entry.faculty || "Faculty Advisor",
       room: entry.room || "Room 205",
       day: entry.day || "Monday",
+      periodNum: entry.periodNum || (list.length + 1),
       startTime: entry.startTime || "09:00",
       endTime: entry.endTime || "10:00"
     };
@@ -656,13 +444,54 @@ const AppState = {
     this.setTimetable(list);
   },
 
-  // Attendance
+  // 2. Attendance Linked Directly to Extracted Timetable Periods
+  initAttendanceFromTimetable(timetableSlots) {
+    // Generate realistic seeded attendance history for these exact extracted periods over the past 3 weeks
+    const existing = localStorage.getItem(this.KEYS.ATTENDANCE);
+    if (existing) return; // preserve student edits
+
+    const attendanceRecords = [];
+    const baseDate = new Date();
+
+    // Map each day's slots
+    const daysMap = { "Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6 };
+
+    for (let i = 21; i >= 1; i--) {
+      const d = new Date(baseDate);
+      d.setDate(baseDate.getDate() - i);
+      const dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][d.getDay()];
+      const daySlots = timetableSlots.filter(s => s.day.toLowerCase() === dayName.toLowerCase());
+
+      daySlots.forEach((slot, slotIdx) => {
+        // Realistic attendance: 75% present, 25% absent
+        const isAbsent = (i + slotIdx) % 4 === 0;
+        attendanceRecords.push({
+          id: `att_${d.toISOString().split("T")[0]}_${slot.id}`,
+          date: d.toISOString().split("T")[0],
+          day: dayName,
+          slotId: slot.id,
+          subject: slot.subject,
+          periodNum: slot.periodNum || (slotIdx + 1),
+          time: `${slot.startTime} – ${slot.endTime}`,
+          faculty: slot.faculty,
+          room: slot.room,
+          status: isAbsent ? "absent" : "present"
+        });
+      });
+    }
+
+    localStorage.setItem(this.KEYS.ATTENDANCE, JSON.stringify(attendanceRecords));
+  },
+
   getAttendance() {
+    const timetable = this.getTimetable();
+    if (timetable.length === 0) return []; // STRICTLY NILL IF NO TIMETABLE
+
     try {
       const data = localStorage.getItem(this.KEYS.ATTENDANCE);
-      return data ? JSON.parse(data) : this.getSeedAttendance();
+      return data ? JSON.parse(data) : [];
     } catch (e) {
-      return this.getSeedAttendance();
+      return [];
     }
   },
 
@@ -671,24 +500,10 @@ const AppState = {
     this.notifyUpdate("attendance");
   },
 
-  getSeedAttendance() {
-    // Generates a realistic 50-class seed history (36 attended, 14 missed = 72%)
-    const seed = [];
-    const baseDate = new Date();
-    for (let i = 25; i >= 1; i--) {
-      const d = new Date(baseDate);
-      d.setDate(baseDate.getDate() - i);
-      const dateStr = d.toISOString().split("T")[0];
-      // 2 periods per day
-      seed.push({ id: `att_${i}_1`, date: dateStr, slot: "P1", status: i % 4 === 0 ? "absent" : "present" });
-      seed.push({ id: `att_${i}_2`, date: dateStr, slot: "P2", status: i % 5 === 0 ? "absent" : "present" });
-    }
-    return seed;
-  },
-
-  markAttendance(dateStr, slotId, status) {
+  markSlotAttendance(dateStr, slotId, status, slotMeta = {}) {
     const list = this.getAttendance();
-    const idx = list.findIndex(item => item.date === dateStr && item.slot === slotId);
+    const idx = list.findIndex(item => item.date === dateStr && item.slotId === slotId);
+
     if (idx > -1) {
       if (list[idx].status === status) {
         list.splice(idx, 1); // toggle off
@@ -696,20 +511,53 @@ const AppState = {
         list[idx].status = status;
       }
     } else {
-      list.push({ id: "att_" + Date.now(), date: dateStr, slot: slotId, status: status });
+      list.push({
+        id: `att_${dateStr}_${slotId}`,
+        date: dateStr,
+        slotId: slotId,
+        subject: slotMeta.subject || "Academic Class",
+        faculty: slotMeta.faculty || "Faculty",
+        room: slotMeta.room || "Room",
+        time: slotMeta.time || "09:00",
+        periodNum: slotMeta.periodNum || 1,
+        status: status
+      });
     }
+
     this.setAttendance(list);
   },
 
+  getSlotStatus(dateStr, slotId) {
+    const list = this.getAttendance();
+    const found = list.find(item => item.date === dateStr && item.slotId === slotId);
+    return found ? found.status : null; // "present" | "absent" | null
+  },
+
   getAttendanceStats() {
+    const timetable = this.getTimetable();
     const records = this.getAttendance();
     const settings = this.getSettings();
     const targetPct = settings.targetPercentage || 75;
 
+    // IF TIMETABLE IS NILL, STATS ARE NILL
+    if (timetable.length === 0 || records.length === 0) {
+      return {
+        isNill: true,
+        total: 0,
+        present: 0,
+        absent: 0,
+        percentage: 0,
+        targetPercentage: targetPct,
+        requiredConsecutive: 0,
+        safeBuffer: 0,
+        subjectBreakdown: []
+      };
+    }
+
     const present = records.filter(r => r.status === "present").length;
     const absent = records.filter(r => r.status === "absent").length;
     const total = present + absent;
-    const percentage = total === 0 ? 72.0 : (present / total) * 100;
+    const percentage = total === 0 ? 0 : Number(((present / total) * 100).toFixed(1));
 
     const p = targetPct / 100;
     let requiredConsecutive = 0;
@@ -722,18 +570,36 @@ const AppState = {
       safeBuffer = Math.max(0, Math.floor((present - p * total) / p));
     }
 
+    // Calculate per-subject breakdown based on extracted subjects
+    const uniqueSubjects = [...new Set(timetable.map(s => s.subject))];
+    const subjectBreakdown = uniqueSubjects.map(subName => {
+      const subRecords = records.filter(r => r.subject === subName);
+      const subPresent = subRecords.filter(r => r.status === "present").length;
+      const subTotal = subRecords.length;
+      const subPct = subTotal === 0 ? 0 : Number(((subPresent / subTotal) * 100).toFixed(1));
+      return {
+        subject: subName,
+        present: subPresent,
+        total: subTotal,
+        percentage: subPct,
+        isCompliant: subPct >= targetPct
+      };
+    });
+
     return {
+      isNill: false,
       total,
       present,
       absent,
-      percentage: Number(percentage.toFixed(1)),
+      percentage,
       targetPercentage: targetPct,
       requiredConsecutive,
-      safeBuffer
+      safeBuffer,
+      subjectBreakdown
     };
   },
 
-  // Settings
+  // 3. Settings
   getSettings() {
     try {
       const data = localStorage.getItem(this.KEYS.SETTINGS);
@@ -756,7 +622,7 @@ const AppState = {
     return updated;
   },
 
-  // Requests
+  // 4. Requests Queue
   getRequests() {
     try {
       const data = localStorage.getItem(this.KEYS.REQUESTS);
@@ -778,9 +644,6 @@ const AppState = {
         { role: "Class Advisor", name: req.targetFaculty || "Dr. Arun Sundaram", action: "Pending Review", timestamp: "Active Now", status: "current" },
         { role: "HOD", name: "Dr. Karthik Narayanan", action: "Final Sign-off", timestamp: "Waiting", status: "waiting" }
       ],
-      auditTrail: [
-        { time: "Just now", text: `Submitted request: ${req.title} for review.` }
-      ],
       ...req
     };
     list.unshift(newReq);
@@ -794,17 +657,13 @@ const AppState = {
     const item = list.find(r => r.id === reqId);
     if (item) {
       item.status = newStatus;
-      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       if (newStatus === "approved") {
         item.statusLabel = "Approved • Sealed Digitally";
-        item.auditTrail.push({ time: nowStr, text: `Approved by ${actorName}.` });
         item.workflow.forEach(w => w.status = "completed");
       } else if (newStatus === "correction") {
         item.statusLabel = "Correction Requested";
-        item.auditTrail.push({ time: nowStr, text: `Correction requested by ${actorName}: ${reason || "Update impacted hours"}` });
       } else if (newStatus === "rejected") {
         item.statusLabel = "Declined";
-        item.auditTrail.push({ time: nowStr, text: `Declined by ${actorName}: ${reason || "Schedule conflict"}` });
       }
       localStorage.setItem(this.KEYS.REQUESTS, JSON.stringify(list));
       this.notifyUpdate("requests");
