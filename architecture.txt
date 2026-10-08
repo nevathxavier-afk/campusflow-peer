@@ -1,0 +1,215 @@
+================================================================================
+🏛️ CAMPUSFLOW PEER — TECHNICAL ARCHITECTURE SPECIFICATION
+================================================================================
+Project: CampusFlow Peer
+Subtitle: Intelligent Local-First Campus Coordination & Action Platform
+Team: ZanLeo Warrior (Mohammed Irfaan & Nivedha)
+Hackathon: PS06 – Smart Education | HACKNEXT'26 Series 2.0
+Institution: SNS College of Technology (Autonomous)
+================================================================================
+
+1. ARCHITECTURAL PHILOSOPHY: LOCAL-FIRST ACTION LAYER
+--------------------------------------------------------------------------------
+CampusFlow Peer is designed around the core principle:
+"We are not eliminating servers; we are eliminating unnecessary dependence on them."
+
+In typical college environments, Wi-Fi coverage is spotty, basements and labs 
+have dead zones, and institutional servers frequently crash during peak hours 
+(such as exam announcements and attendance cutoffs).
+
+By adopting a Local-First reactive model:
+1. All client computations (timetable parsing, attendance projections, conflict checks, 
+   graph rendering, and natural language search) execute locally inside the browser.
+2. Data resides primarily on the client (IndexedDB / LocalStorage) with optimistic 
+   UI updates.
+3. Lightweight background synchronization handles multi-party updates (faculty live status, 
+   approval state transitions, and circular feeds).
+
+
+2. SYSTEM ARCHITECTURE DIAGRAM
+--------------------------------------------------------------------------------
+                  ┌────────────────────────────────────────┐
+                  │           UNSTRUCTURED INPUTS          │
+                  │ (Timetable Img, Event Poster, Circular)│
+                  └───────────────────┬────────────────────┘
+                                      │
+                                      ▼
+                  ┌────────────────────────────────────────┐
+                  │    HEURISTIC & GEMINI FLASH AI ENGINE  │
+                  │   - Google Gemini 1.5 Flash Vision OCR │
+                  │   - Document Layout Classifier         │
+                  │   - OCR Tokenizer & Entity Resolver    │
+                  │   - Confidence Scorer & Human Review   │
+                  └───────────────────┬────────────────────┘
+                                      │
+                                      ▼
+                  ┌────────────────────────────────────────┐
+                  │         CAMPUS KNOWLEDGE GRAPH         │
+                  │ (Reactive In-Memory Entity Store)      │
+                  │  Timetable ↔ Faculty ↔ Room ↔ Requests │
+                  └──────┬────────────┬─────────────┬──────┘
+                         │            │             │
+        ┌────────────────┘            │             └────────────────┐
+        ▼                             ▼                              ▼
+┌──────────────┐              ┌───────────────┐              ┌───────────────┐
+│  ATTENDANCE  │              │   CONFLICT    │              │  FACULTY &    │
+│  PROJECTION  │              │   DETECTION   │              │  SIGNATURE    │
+│  ENGINE      │              │   MATRIX      │              │  WORKFLOW     │
+│  (What-If &  │              │(Room, Class,  │              │ (Routine OD / │
+│   Buffer)    │              │ Event clash)  │              │  Approvals)   │
+└───────┬──────┘              └───────┬───────┘              └───────┬───────┘
+        │                             │                              │
+        └─────────────────────────────┼──────────────────────────────┘
+                                      │
+                                      ▼
+                  ┌────────────────────────────────────────┐
+                  │     ACTIONABLE HUD & USER INTERFACE    │
+                  │  - Interactive Graph Canvas (HUD)      │
+                  │  - Smart Campus NL Assistant           │
+                  │  - 3-Role View (Student/Faculty/Admin) │
+                  │  - Mobile Responsive PWA Shell         │
+                  └────────────────────────────────────────┘
+
+
+3. CORE DATA SCHEMAS & ENTITY RELATIONSHIPS
+--------------------------------------------------------------------------------
+
+3.1 Timetable Entry Entity:
+{
+  id: "tt_mon_p1",
+  day: "Monday",
+  period: 1,
+  timeSlot: "09:00 - 09:50",
+  subjectCode: "19CS501",
+  subjectName: "Database Management Systems",
+  facultyId: "fac_arun",
+  room: "205",
+  building: "Main Academic Block",
+  confidenceScore: 0.96,
+  needsVerification: false
+}
+
+3.2 Faculty Profile Entity:
+{
+  id: "fac_arun",
+  name: "Dr. Arun Sundaram",
+  designation: "Associate Professor",
+  department: "Computer Science & Engineering",
+  cabin: "304",
+  floor: "3rd Floor",
+  currentStatus: "free", // "free" | "class" | "meeting" | "break" | "busy"
+  statusUpdatedAt: "10:45 AM",
+  freeTimeSlots: ["11:30 AM - 12:30 PM", "03:00 PM - 04:15 PM"],
+  coursesTaught: ["19CS501", "19CS702"],
+  advisoryBatch: "CSE 3rd Year - Section A"
+}
+
+3.3 Attendance Record Entity:
+{
+  courseCode: "19CS501",
+  courseName: "Database Management Systems",
+  totalConducted: 42,
+  attended: 31,
+  currentPercentage: 73.8,
+  targetPercentage: 75.0,
+  classesNeeded: 2,
+  safeBuffer: 0
+}
+
+3.4 Signature & Approval Request Entity:
+{
+  id: "req_od_104",
+  studentId: "22CSE104",
+  studentName: "Mohammed Irfaan",
+  requestType: "On-Duty (OD)",
+  purpose: "Paper Presentation at HACKNEXT'26",
+  eventDate: "2026-10-15",
+  targetFacultyId: "fac_arun",
+  status: "pending", // "pending" | "approved" | "changes_requested" | "rejected"
+  verificationToken: "CFP-OD-2026-993",
+  timeline: [
+    { timestamp: "09:30 AM", action: "Submitted by Student" }
+  ]
+}
+
+3.5 Campus Event Entity:
+{
+  id: "evt_symp_26",
+  title: "Xelerate '26 National Tech Symposium",
+  organizer: "Dept of CSE, SNS College of Tech",
+  eventDate: "2026-10-15",
+  time: "09:00 AM - 04:30 PM",
+  venue: "Auditorium & Lab 3",
+  registrationDeadline: "2026-10-12",
+  requiresOD: true,
+  potentialConflicts: ["Overlaps with DBMS Lab (P3-P4)"]
+}
+
+
+4. MATHEMATICAL ENGINE & CONFLICT RESOLVER
+--------------------------------------------------------------------------------
+
+4.1 Attendance Formula Specification:
+Let:
+  A = Attended classes
+  C = Conducted classes
+  T = Target percentage (e.g. 75 / 100 = 0.75)
+
+Case 1 (Current percentage < Target):
+  (A + x) / (C + x) >= T
+  A + x >= T*C + T*x
+  x * (1 - T) >= T*C - A
+  x = ceil( (T*C - A) / (1 - T) )
+  where x is the number of consecutive upcoming classes the student MUST attend.
+
+Case 2 (Current percentage >= Target):
+  A / (C + y) >= T
+  A >= T*C + T*y
+  T*y <= A - T*C
+  y = floor( (A - T*C) / T )
+  where y is the safe-to-bunk buffer classes the student can miss without dropping below T.
+
+4.2 Conflict Detection Engine:
+The engine tests 3 simultaneous overlap matrices:
+  1. Faculty Schedule Clash: (Faculty teaches class C1 at slot S) AND (Scheduled in Department Meeting at slot S)
+  2. Room Collision: (Class C1 in Room R at slot S) AND (Class C2 or Event E in Room R at slot S)
+  3. Student Academic Clash: (Student enrolled in Class C1 at slot S) AND (Registered for Campus Event E at slot S)
+Any violation triggers real-time warning indicators with automatic remediation options 
+(e.g., auto-routing an OD request or suggesting an alternate cabin slot).
+
+
+5. SECURITY, AUDIT & ROLE-BASED ACCESS CONTROL (RBAC)
+--------------------------------------------------------------------------------
+CampusFlow Peer enforces a strict security boundary:
+- Routine Academic Workflows (Lab entry, internal OD, project reviews, bonafide verification) 
+  are managed digitally with verifiable cryptographically hashed tokens.
+- High-Stakes / Financial Transactions (Scholarships, fee refunds, official degree certs) 
+  are intentionally preserved as in-person or official portal steps, with CampusFlow Peer 
+  acting strictly as the navigation and cabin-scheduling assistant.
+
+Role Access Grid:
+  Feature                       Student       Faculty       Admin/HOD
+  --------------------------------------------------------------------
+  Upload Timetable & OCR           ✓             ✓              ✓
+  Attendance What-If               ✓             -              ✓ (View Dept)
+  Update Live Cabin Status         -             ✓              ✓
+  Submit Signature Request         ✓             -              -
+  Approve/Reject Signatures        -             ✓              ✓
+  Campus Conflict Matrix         Read          Read          Full Override
+  Broadcast Circular               -             ✓              ✓
+
+
+6. OFFLINE-FIRST & STORAGE LIFECYCLE
+--------------------------------------------------------------------------------
+1. Service Worker:
+   - Cache-first strategy for static assets (HTML, CSS, JS, Fonts).
+   - Network-fallback with transparent offline UX indicator.
+2. Local Storage Engine:
+   - Primary state serialized into browser `localStorage` and `IndexedDB`.
+   - Seed data hydrated automatically on initial launch.
+   - Any edits (status toggles, verification edits, new signature requests) 
+     persist across browser restarts.
+3. Zero External Build Overhead:
+   - Clean ES6 modular architecture runs directly in Chrome, Edge, Safari, 
+     and Firefox without compilation delays.
+================================================================================

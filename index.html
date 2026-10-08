@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusFlow Peer — Autonomous Student Operating System</title>
+  <meta name="description" content="Tactical Academic Operating System and Smart Attendance Intelligence. From scattered campus schedules to connected autonomous action.">
+  <meta name="theme-color" content="#050505">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Ambient Cyberpunk Lighting -->
+  <div class="ambient-glow" aria-hidden="true">
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+  </div>
+
+  <div class="app-layout">
+    
+    <!-- Left Sidebar (LastbencherOS Architecture) -->
+    <aside class="sidebar">
+      
+      <!-- Brand Logo -->
+      <a href="#dashboard" class="sidebar-brand" onclick="App.switchTab('dashboard'); return false;">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-name">CampusFlow <br><span>PEER</span></h1>
+          <p class="brand-tagline">Autonomous Node 2026</p>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <button class="nav-link active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-tab="attendance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <span>Attendance</span>
+        </button>
+        <button class="nav-link" data-tab="timetable">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>Timetable</span>
+        </button>
+        <button class="nav-link" data-tab="companion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>AI Companion</span>
+        </button>
+        <button class="nav-link" data-tab="faculty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Faculty Matrix</span>
+        </button>
+        <button class="nav-link" data-tab="approvals">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Routine Approvals</span>
+        </button>
+        <button class="nav-link" data-tab="events">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Events Hub</span>
+        </button>
+        <button class="nav-link" data-tab="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar User Profile -->
+      <div class="sidebar-footer">
+        <div class="user-avatar" id="sidebarUserInitial">M</div>
+        <div class="user-info">
+          <p class="user-name" id="sidebarUserHandle">Mohammed Irfaan</p>
+          <div class="user-status">
+            <div class="pulse-dot"></div>
+            <p class="user-status-text">Connected</p>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="main-area">
+      
+      <!-- Top Tactical Header -->
+      <header class="top-header">
+        <div class="header-titles">
+          <h2 id="headerViewTitle">DASHBOARD</h2>
+          <p>Tactical Deployment</p>
+        </div>
+        <div class="header-badges">
+          <div class="pill-badge" id="headerGoalBadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>GOAL: 78%</span>
+          </div>
+          <div class="pill-badge" style="border-color: rgba(0, 255, 102, 0.3);">
+            <div class="pulse-dot" style="margin-right:2px;"></div>
+            <span style="color:var(--color-brand-green);">Gemini 3.5 Active</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEW 1: DASHBOARD -->
+      <section class="view-panel active" id="panel-dashboard">
+        
+        <!-- Hero Banner -->
+        <div class="dashboard-hero">
+          <div class="hero-glow-blob"></div>
+          <div class="hero-title-row">
+            <div class="hero-indicator-bar"></div>
+            <h1>CampusFlow <span>PEER</span></h1>
+          </div>
+          <p class="hero-lead">Your intelligent academic assistant and tactical attendance tracker.</p>
+          <p class="hero-sub">Designed to optimize your presence strategy and shield your academic performance. Track lectures, analyze attendance fluctuations, and maintain your target percentage with AI-driven precision.</p>
+        </div>
+
+        <!-- Time Range Filters -->
+        <div class="time-filter-bar">
+          <button class="filter-btn active" data-filter="all">ALL</button>
+          <button class="filter-btn" data-filter="month">MONTH</button>
+          <button class="filter-btn" data-filter="week">WEEK</button>
+          <button class="filter-btn" data-filter="day">DAY</button>
+        </div>
+
+        <!-- Main Dashboard 12-Column Grid -->
+        <div class="dashboard-grid">
+          
+          <!-- System Efficiency (Col 4) -->
+          <div class="efficiency-card">
+            <div>
+              <div class="card-header-label">
+                <div style="width:8px; height:8px; border-radius:50%; background:var(--color-brand-blue); box-shadow:var(--glow-blue);"></div>
+                <span>System Efficiency</span>
+              </div>
+              <p class="card-sub-label" id="efficiencyTargetLabel">Target: 78%</p>
+            </div>
+
+            <!-- Radial Gauge -->
+            <div class="radial-meter-wrap">
+              <div class="radial-glow-backdrop" id="radialGlowBackdrop"></div>
+              <svg class="radial-meter-svg" viewBox="0 0 256 256">
+                <circle class="radial-bg-circle" cx="128" cy="128" r="110"></circle>
+                <circle class="radial-fill-circle" id="radialFillCircle" cx="128" cy="128" r="110"></circle>
+              </svg>
+              <div class="radial-center-content">
+                <div class="radial-percentage-num" id="radialPercentageNum">0%</div>
+                <div class="radial-divider" id="radialDivider"></div>
+                <div class="radial-status-text" id="radialStatusText">SCHEDULE IDLE</div>
+              </div>
+            </div>
+
+            <!-- Tactical Guidance Box -->
+            <div class="guidance-box">
+              <div class="guidance-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:var(--color-brand-blue);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span class="guidance-title">Tactical Guidance</span>
+              </div>
+              <p class="guidance-text" id="tacticalGuidanceText">
+                No academic commitments logged yet. Establish timetable directives or manual entries to activate predictive bunk telemetry.
+              </p>
+            </div>
+          </div>
+
+          <!-- Bunk Capacity Card (Col 3) -->
+          <div class="bunk-capacity-card" id="bunkCapacityCard">
+            <div class="capacity-top">
+              <div class="card-header-label">Bunk Capacity</div>
+              <div class="status-pill" id="bunkStatusPill">LOCKED</div>
+            </div>
+            <div>
+              <div class="bunk-number" id="bunkCapacityNum">0</div>
+              <div class="bunk-subtext" id="bunkSubtext">Zero session redundancy.</div>
+            </div>
+            <div class="capacity-bottom-bar" id="bunkBottomBar"></div>
+          </div>
+
+          <!-- Session Integrity Card (Col 5) -->
+          <div class="integrity-card">
+            <div class="mini-donut-wrap">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" stroke="var(--color-zinc-800)" stroke-width="10" fill="none"></circle>
+                <circle id="donutPresentArc" cx="50" cy="50" r="45" stroke="var(--color-brand-green)" stroke-width="10" fill="none" stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"></circle>
+                <circle id="donutAbsentArc" cx="50" cy="50" r="45" stroke="var(--color-brand-red)" stroke-width="10" fill="none" stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"></circle>
+              </svg>
+            </div>
+            <div class="integrity-stats">
+              <div class="integrity-title">Session Integrity</div>
+              <div class="stat-pill-row">
+                <div class="stat-tag-wrap">
+                  <div class="stat-tag-dot" style="background:var(--color-brand-green); box-shadow:var(--glow-green);"></div>
+                  <span class="stat-tag-label">Present</span>
+                </div>
+                <span class="stat-tag-val" id="presentCountVal" style="color:var(--color-brand-green);">0</span>
+              </div>
+              <div class="stat-pill-row">
+                <div class="stat-tag-wrap">
+                  <div class="stat-tag-dot" style="background:var(--color-brand-red); box-shadow:var(--glow-red);"></div>
+                  <span class="stat-tag-label">Absent</span>
+                </div>
+                <span class="stat-tag-val" id="absentCountVal" style="color:var(--color-brand-red);">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Activity Trend (Col 5) -->
+          <div class="trend-card">
+            <div class="trend-top">
+              <h3>Weekly Activity Trend</h3>
+              <div class="pill-badge" style="padding:0.35rem 0.75rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                <span>7-Day Log</span>
+              </div>
+            </div>
+            <div class="bars-container" id="trendBarsContainer">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Engagement Heatmap (Col 3) -->
+          <div class="heatmap-card">
+            <div class="heatmap-title">Engagement Heatmap</div>
+            <div class="heatmap-grid" id="heatmapGrid">
+              <!-- 21 day cells dynamically rendered -->
+            </div>
+            <div class="heatmap-metrics">
+              <div class="metric-row">
+                <span>Consistency</span>
+                <span>High</span>
+              </div>
+              <div class="metric-row">
+                <span>Avg. Daily</span>
+                <span id="heatmapAvgDaily">0 Classes</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- VIEW 2: TIMETABLE (Operations Schedule • Zero Preload) -->
+      <section class="view-panel" id="panel-timetable">
+        
+        <!-- Header Card -->
+        <div class="schedule-header-card">
+          <div class="schedule-title-block">
+            <div class="schedule-icon-squircle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <div>
+              <h3>Operations Schedule</h3>
+              <p>Tactical Planning</p>
+            </div>
+          </div>
+
+          <div class="schedule-actions">
+            <!-- Reset Button with 3s Red Confirmation -->
+            <button class="btn-reset-schedule" id="btnResetTimetable" style="display:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>Reset All</span>
+            </button>
+
+            <!-- AI Intelligence File Input -->
+            <input type="file" id="timetableFileInput" accept="image/*,.pdf" style="display:none;">
+            <button class="btn-ai-intel" id="btnAiIntel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+              <span>AI Intelligence</span>
+            </button>
+
+            <!-- Add Entry Button -->
+            <button class="btn-add-entry" id="btnOpenAddEntry">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Add Entry</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Idle Card (Zero Preloaded Timetables Empty State) -->
+        <div class="schedule-idle-card" id="timetableIdleCard">
+          <div class="idle-glow-orb"></div>
+          <svg class="idle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <div class="idle-text-block">
+            <h4>Schedule Idle</h4>
+            <p>No operational directives established. Initiate AI Intelligence or manual entry phase.</p>
+          </div>
+        </div>
+
+        <!-- Days Grid (When Timetable Exists) -->
+        <div class="days-grid" id="timetableDaysContainer">
+          <!-- Dynamically populated -->
+        </div>
+
+      </section>
+
+      <!-- VIEW 3: ATTENDANCE (Chronicle Ledger & Daily Manifest) -->
+      <section class="view-panel" id="panel-attendance">
+        
+        <div class="attendance-layout">
+          
+          <!-- Chronicle Ledger (Calendar) -->
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <div class="calendar-header-left">
+                <div class="calendar-icon-squircle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <div>
+                  <h3 id="calendarMonthTitle">October 2026</h3>
+                  <p>Chronicle Ledger</p>
+                </div>
+              </div>
+              <div class="calendar-nav-controls">
+                <button class="cal-nav-btn" onclick="App.changeMonth(-1)" title="Previous Month">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="cal-nav-btn" onclick="App.changeMonth(1)" title="Next Month">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Weekday Headers -->
+            <div class="weekdays-row">
+              <div class="weekday-header">Sun</div>
+              <div class="weekday-header">Mon</div>
+              <div class="weekday-header">Tue</div>
+              <div class="weekday-header">Wed</div>
+              <div class="weekday-header">Thu</div>
+              <div class="weekday-header">Fri</div>
+              <div class="weekday-header">Sat</div>
+            </div>
+
+            <!-- Month Day Cells -->
+            <div class="month-days-grid" id="calendarDaysGrid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Daily Manifest (Marking Attendance for Selected Date) -->
+          <div class="manifest-column">
+            
+            <div class="daily-manifest-card">
+              <div class="manifest-top-row">
+                <div>
+                  <div class="manifest-lead-label">Daily Manifest</div>
+                  <h3 class="manifest-date-title" id="manifestDateTitle">8th October</h3>
+                  <p class="manifest-day-name" id="manifestDayName">Thursday</p>
+                </div>
+                <div class="manifest-calendar-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+              </div>
+
+              <!-- Saturday Phase Configuration (Overrides) -->
+              <div class="phase-config-box" id="saturdayPhaseBox" style="display:none;">
+                <div class="phase-config-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                  <span>Phase Configuration</span>
+                </div>
+                <div class="phase-btn-grid">
+                  <button class="phase-btn active" data-day="Default" onclick="App.setPhaseOverride('Default')">Default</button>
+                  <button class="phase-btn" data-day="Monday" onclick="App.setPhaseOverride('Monday')">Monday</button>
+                  <button class="phase-btn" data-day="Tuesday" onclick="App.setPhaseOverride('Tuesday')">Tuesday</button>
+                  <button class="phase-btn" data-day="Wednesday" onclick="App.setPhaseOverride('Wednesday')">Wednesday</button>
+                  <button class="phase-btn" data-day="Thursday" onclick="App.setPhaseOverride('Thursday')">Thursday</button>
+                  <button class="phase-btn" data-day="Friday" onclick="App.setPhaseOverride('Friday')">Friday</button>
+                  <button class="phase-btn" data-day="Holiday" onclick="App.setPhaseOverride('Holiday')">Holiday</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mission Scope (Lecture Slots) -->
+            <div class="mission-scope-card">
+              <div class="scope-header">
+                <h4>
+                  <div class="scope-header-indicator"></div>
+                  <span>Mission Scope</span>
+                </h4>
+                <div class="scope-count-badge" id="missionScopeTotalBadge">0 TOTAL</div>
+              </div>
+
+              <div class="scope-slots-list" id="missionScopeSlotsList">
+                <!-- Dynamically rendered slots or Zero Constraints -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- VIEW 4: AI COMPANION -->
+      <section class="view-panel" id="panel-companion">
+        <div class="tactical-card">
+          <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+            <div class="schedule-icon-squircle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div>
+              <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase;">Campus AI Intelligence</h3>
+              <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Powered by Gemini 3.5 Flash-Lite & 3.8 Flash</p>
+            </div>
+          </div>
+
+          <div class="chat-window-box">
+            <div class="chat-messages-container" id="companionMessagesList"></div>
+            <div class="chat-input-bar">
+              <input type="text" class="chat-input-field" id="companionInput" placeholder="Ask: &quot;Can I bunk DBMS today?&quot;, &quot;How to recover to 78%?&quot;">
+              <button class="btn-chat-send" id="btnSendChat">Transmit</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: FACULTY MATRIX -->
+      <section class="view-panel" id="panel-faculty">
+        <div class="tactical-card" style="margin-bottom:1.5rem;">
+          <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:0.25rem;">Live Faculty Accessibility Matrix</h3>
+          <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Eliminate physical department search. Real-time availability & cabin locations.</p>
+        </div>
+        <div class="faculty-grid" id="facultyListGrid"></div>
+      </section>
+
+      <!-- VIEW 6: ROUTINE APPROVALS -->
+      <section class="view-panel" id="panel-approvals">
+        <div class="tactical-card" style="margin-bottom:1.5rem;">
+          <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:0.25rem;">Smart Routine Approvals (OD & Signatures)</h3>
+          <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Automated digital verification with zero paper trail.</p>
+        </div>
+        <div id="approvalsListContainer"></div>
+      </section>
+
+      <!-- VIEW 7: EVENTS HUB -->
+      <section class="view-panel" id="panel-events">
+        <div class="tactical-card" style="margin-bottom:1.5rem;">
+          <h3 style="font-size:1.5rem; font-weight:900; font-style:italic; text-transform:uppercase; margin-bottom:0.25rem;">Verified Campus Circulars & Hackathons</h3>
+          <p style="font-size:11px; font-weight:800; color:var(--color-zinc-500); text-transform:uppercase; letter-spacing:0.3em;">Autonomous notifications parsed directly into attendance impact.</p>
+        </div>
+        <div id="eventsListContainer"></div>
+      </section>
+
+      <!-- VIEW 8: SETTINGS (Exact LastbencherOS Architecture) -->
+      <section class="view-panel" id="panel-settings">
+        
+        <div class="settings-grid">
+          
+          <!-- Identity Section -->
+          <div class="settings-section-card">
+            <div>
+              <div class="settings-header-row">
+                <div class="settings-icon-squircle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div>
+                  <h3>Identity</h3>
+                  <p>Personalize student profile.</p>
+                </div>
+              </div>
+
+              <div class="settings-fields">
+                <div class="form-group">
+                  <label>Full Handle</label>
+                  <input type="text" class="form-control" id="settingHandleInput" placeholder="Student Alias" value="Mohammed Irfaan">
+                </div>
+
+                <div class="form-group">
+                  <div class="slider-header-row">
+                    <label style="margin-bottom:0;">Threshold Limit</label>
+                    <div class="slider-percentage-val">
+                      <span id="targetPercentVal">78</span><span>%</span>
+                    </div>
+                  </div>
+                  <div class="range-slider-wrap">
+                    <input type="range" class="range-slider-input" id="targetPercentSlider" min="50" max="100" step="1" value="78">
+                    <div class="range-slider-fill" id="targetPercentFill" style="width:78%;"></div>
+                  </div>
+                  <p class="slider-hint-text">Adjusting this affects your Bunk Counselor strategy and Dashboard metrics instantly.</p>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-sync-settings" id="btnSyncSettings">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>Synchronize Configuration</span>
+            </button>
+          </div>
+
+          <!-- Cryptography / Local Node Section -->
+          <div class="settings-section-card">
+            <div>
+              <div class="settings-header-row">
+                <div class="settings-icon-squircle" style="color:var(--color-zinc-400);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <div>
+                  <h3>Cryptography</h3>
+                  <p>Security & node persistence.</p>
+                </div>
+              </div>
+
+              <div style="padding:1.25rem; background:rgba(5,5,5,0.6); border:1px solid var(--color-zinc-800); border-radius:1.25rem; margin-bottom:2rem;">
+                <p style="font-size:12px; color:var(--color-zinc-400); line-height:1.6;">
+                  Your credentials and records are stored in <strong style="color:var(--color-brand-blue); font-family:var(--font-mono);">Local Node (Browser)</strong>. Clearing node data will reset your academic progress to zero.
+                </p>
+              </div>
+            </div>
+
+            <button class="btn-format-node" id="btnFormatNode">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>Format Data Node</span>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- App Footer (Exact LastbencherOS style) -->
+      <footer class="app-footer">
+        <p class="footer-text">
+          CampusFlow Peer <span>/</span> Built by ZanLeo Warrior — Mohammed Irfaan & Nivedha
+        </p>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- Modal: Configure Target Entry -->
+  <div class="modal-overlay" id="entryModal" style="display:none;">
+    <div class="modal-window">
+      <div class="modal-glow"></div>
+      
+      <h4 class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>Configure Target Entry</span>
+      </h4>
+
+      <div class="form-grid-4">
+        <div class="form-group">
+          <label>Designation</label>
+          <input type="text" class="form-control" id="entrySubject" placeholder="Subject Key...">
+        </div>
+        <div class="form-group">
+          <label>Temporal Day</label>
+          <select class="form-control" id="entryDay">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Commence</label>
+          <input type="time" class="form-control" id="entryStartTime" value="09:00">
+        </div>
+        <div class="form-group">
+          <label>Conclude</label>
+          <input type="time" class="form-control" id="entryEndTime" value="10:00">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-abort" id="btnAbortEntry">Abort</button>
+        <button class="btn-commit" id="btnCommitEntry">Commit Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/gemini-service.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

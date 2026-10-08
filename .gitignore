@@ -1,0 +1,16 @@
+# Logs and temporary files
+*.log
+scratch/
+scratch-*.ps1
+check-*.ps1
+install-*.ps1
+fast-*.ps1
+get-*.ps1
+run-*.ps1
+find-*.ps1
+.system_generated/
+git-bin/
+
+# OS metadata
+.DS_Store
+Thumbs.db
